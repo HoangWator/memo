@@ -8,7 +8,7 @@
 }
 .main 
 {
-  display: flex;
+  height: 100vh;
 }
 input, button
 {
@@ -38,12 +38,15 @@ li
   padding: 5px 20px;
   border-radius: 0.5em;
   margin-bottom: 10px;
-  box-shadow: 0 0 5px #ccc;
+  border: 1px solid #dadce0;
   position: relative;
+
+  transition: 0.2s;
 }
 li:hover 
 {
   cursor: pointer;
+  background-color: #f5f5f5;
 }
 .show 
 {
@@ -51,8 +54,11 @@ li:hover
 }
 .word-section 
 {
-  width: 50%;
-  padding: 20px;
+  width: 100%;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  background-color: #fff;
 }
 .word-section ul
 {
@@ -61,6 +67,8 @@ li:hover
 }
 .learn-section 
 {
+  position: fixed;
+  top: 0;
   width: 100%;
   background-color: #fff;
   padding: 20px;
@@ -134,7 +142,7 @@ li:hover
   height: 400px;
   background-color: #fff;
   border-radius: 0.5em;
-  box-shadow: 0 0 5px #ccc;
+  border: 1px solid #dadce0;
   margin: 0 20px;
 
   display: flex;
@@ -171,7 +179,7 @@ li:hover
   font-size: 16px;
   color: red;
   background-color: #fff;
-  box-shadow: 0 0 5px #ccc;
+  border: 1px solid #dadce0;
   position: absolute;
   right: 10px;
   top: 10px;
@@ -180,4 +188,94 @@ li:hover
 {
   cursor: pointer;
   background-color: #f5f5f5;
+}
+
+.add-folder-btn 
+{
+  padding: 5px 20px;
+  margin: 20px;
+  background-color: #ddd;
+
+  color: #000;
+  font-size: 30px;
+}
+
+.add-folder-btn:hover 
+{
+  cursor: pointer;
+  background-color: #ccc;
+}
+.create-folder-section
+{
+  position: relative;
+
+  display: inline-block;
+}
+.create-folder-field
+{
+  position: absolute;
+  top: 20px;
+  left: 90px;
+  padding: 10px 10px 0 10px;
+  background-color: #fff;
+  box-shadow: 0 0 5px #ddd;
+  display: inline-block;
+  border-radius: 0.5em;
+}
+.create-folder-field h3 
+{
+  margin-bottom: 10px;
+}
+.create-folder-field button 
+{
+
+
+}
+
+.folder-list 
+{
+  display: inline-block;
+  width: 300px;
+
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.folder-list .folder 
+{
+  margin-bottom: 10px;
+  padding: 10px;
+  border-radius: 0.5em;
+  border: 1px solid #dadce0;
+  transition: 0.2s;
+}
+.folder-list .folder:hover 
+{
+  cursor: pointer;
+  background-color: #f5f5f5;
+}
+
+.word-section-header 
+{
+  padding: 10px;
+  box-shadow: 0 0 5px #ddd;
+}
+.word-section-header button 
+{
+  margin: 0;
+}
+.word-section-body
+{
+  width: 100%;
+  display: flex;
+}
+.word-section-left, .word-section-right {
+  width: 50%;
+  height: 100vh;
+  padding: 20px;
+}
+.word-section-left 
+{
+  border-right: 1px solid #ddd;
 }
