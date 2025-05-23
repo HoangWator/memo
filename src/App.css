@@ -30,7 +30,7 @@ ul
 {
   padding: 10px;
 }
-li 
+.word-section li 
 {
   width: 100%;
   list-style-type: none;
@@ -42,6 +42,12 @@ li
   position: relative;
 
   transition: 0.2s;
+
+}
+.word-section li 
+{
+  white-space: nowrap;
+  overflow: hidden;
 }
 li:hover 
 {
@@ -62,7 +68,7 @@ li:hover
 }
 .word-section ul
 {
-  max-height: 300px;
+  max-height: 500px;
   overflow-y: auto;
 }
 .learn-section 
@@ -192,19 +198,13 @@ li:hover
 
 .add-folder-btn 
 {
-  padding: 5px 20px;
-  margin: 20px;
-  background-color: #ddd;
-
-  color: #000;
-  font-size: 30px;
+  margin: 10px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
 }
 
-.add-folder-btn:hover 
-{
-  cursor: pointer;
-  background-color: #ccc;
-}
+
 .create-folder-section
 {
   position: relative;
@@ -214,8 +214,8 @@ li:hover
 .create-folder-field
 {
   position: absolute;
-  top: 20px;
-  left: 90px;
+  top: 10px;
+  left: 60px;
   padding: 10px 10px 0 10px;
   background-color: #fff;
   box-shadow: 0 0 5px #ddd;
@@ -278,4 +278,61 @@ li:hover
 .word-section-left 
 {
   border-right: 1px solid #ddd;
+}
+.word-section-left input 
+{
+  width: 100%;
+}
+.meaning-section 
+{
+  position: relative;
+}
+.meaning-list-section 
+{
+  position: absolute;
+  top: 42px;
+  border-radius: 0.5em;
+  border: 1px solid #dadce0;
+  width: 100%;
+  background-color: #fff;
+  padding: 5px;
+
+  display: flex;
+}
+.meaning-list-section .meaning-list 
+{
+  background-color: #fff;
+  width: 100%;
+  max-height: 200px;
+  overflow-y: auto;
+}
+.meaning-list-section .meaning-list .meaning
+{
+  border: none;
+  list-style-type: none;
+  padding: 5px;
+  margin: 0;
+  font-size: 18px;
+  transition: none;
+}
+.meaning-list-section .meaning-list .meaning:hover 
+{
+  cursor: pointer;
+  background-color: #dadce0;
+}
+.meaning-section .quit-meaning-list-btn
+{
+  background-color: #fff;
+  color: #000;
+  margin: 0 0 0 5px;
+  /* padding: 5px; */
+  display: inline-block;
+  line-height: 30px;
+  width: 30px;
+  text-align: center;
+}
+.meaning-section .quit-meaning-list-btn:hover 
+{
+  cursor: pointer;
+  background-color: #f5f5f5;
 }

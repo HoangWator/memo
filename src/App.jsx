@@ -2,6 +2,10 @@ import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
+import ReactDOM from 'react-dom'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faPlus,faArrowLeft,faTrash,faXmark } from '@fortawesome/free-solid-svg-icons'
+
 
 function App() {
   const [word, setWord] = useState('')
@@ -101,10 +105,58 @@ function App() {
     setShowWordSection(false)
   }
 
+  async function getWordMeaning(word){
+    const res = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
+    const data = await res.json();
+    const wordData = data[0];
+    // const phonetics = wordData.phonetics || [];
+
+    // let phoneticTxt = "", phoneticAudio = "";
+
+    // for(const phonetic of phonetics){
+    //     if(phonetic.text && !phoneticTxt)
+    //           phoneticTxt = phonetic.text
+    //     if(phonetic.audio && !phoneticAudio)
+    //           phoneticAudio = phonetic.audio;
+    //     if(phoneticTxt && phoneticAudio) break;
+    // }
+
+    const meaning = wordData.meanings[0];
+
+    return {
+        word: word.toLowerCase(),
+        // phonetic: {
+        //       text: phoneticTxt,
+        //       audio: phoneticAudio
+        // },
+        // speechPart: meaning.partOfSpeech,
+        definition: meaning.definitions,
+        // synonyms: meaning.synonyms,
+        // antonyms: meaning.antonyms,
+        // example: meaning.definitions[0].example || ""
+    }
+  }
+  const [meaningList, setMeaningList] = useState([])
+  const [showMeaningList, setShowMeaningList] = useState(false)
+  // Suggest meaning
+  const suggestMeaning = () => {
+    if (word) {
+      const wordData = getWordMeaning(word);
+      wordData.then((data) => {
+        setMeaningList(data.definition);
+      })
+      .catch((error) => {
+        console.error("Error fetching word meaning:", error);
+      });
+  
+      setShowMeaningList(true);
+    }    
+  }
+
   return (
     <div className="main">
       <div className="create-folder-section">
-        <button className='add-folder-btn' onClick={createFolder}>+</button>
+        <button className='add-folder-btn' onClick={createFolder}><FontAwesomeIcon className='icon' icon={faPlus} /></button>
         {showCreateFolder && (
           <div className="create-folder-field">
             <h3>Create a folder</h3>
@@ -128,7 +180,7 @@ function App() {
       {showWordSection && (
         <div className="word-section">
           <div className="word-section-header">
-            <button onClick={quitWordSection}>Back</button>
+            <button onClick={quitWordSection}><FontAwesomeIcon icon={faArrowLeft} /></button>
           </div>
           <div className="word-section-body">
             <div className="word-section-left">
@@ -137,17 +189,46 @@ function App() {
                 placeholder='Enter word'
                 value={word}
                 onChange={e => setWord(e.target.value)} 
+                onClick={() => setShowMeaningList(false)}
               />
-              <input 
-                type="text"
-                placeholder='Enter meaning'
-                value={meaning}
-                onChange={e => setMeaning(e.target.value)} 
-              />
+              <div className="meaning-section">
+                <input 
+                  type="text"
+                  placeholder='Enter meaning'
+                  value={meaning}
+                  onChange={e => {
+                    setMeaning(e.target.value)
+                    setShowMeaningList(false)
+                  }} 
+                  onClick={suggestMeaning}
+                />
+                {showMeaningList && meaningList && (
+                  <div className="meaning-list-section">
+                    <div className="meaning-list">
+                      {
+                        meaningList.map((meaning, index) => (
+                          <li 
+                            className="meaning" 
+                            key={index}
+                            onClick={() => {
+                              setMeaning(meaning.definition)
+                              setShowMeaningList(false)
+                            }}
+                          >{meaning.definition}</li>
+                        ))
+                      }
+                    </div>
+                    
+                    <button className='quit-meaning-list-btn' onClick={() => setShowMeaningList(false)}><FontAwesomeIcon icon={faXmark}/></button>
+                  </div>
+                )}
+              </div>
 
               <button onClick={addWord}>Add</button>
 
               <button className='learnBtn' onClick={learnBtn}>Learn</button>
+
+              
             </div>
 
             <div className="word-section-right">
@@ -155,15 +236,15 @@ function App() {
                 {
                   words.map((word, index) => 
                     <li key={index}>
-                      <h3>{word.name}</h3>
-                      <p>{word.mean}</p>
+                      <h3>{word.name.toLowerCase()}</h3>
+                      <p>{word.mean.toLowerCase()}</p>
                       <button 
                       className='deleteBtn'
                       onClick={() => {
                         const newWords = words.filter((words, i) => i !== index)
                         localStorage.setItem('words', JSON.stringify(newWords))
                         setWords(newWords)
-                      }}>Delete</button>
+                      }}><FontAwesomeIcon icon={faTrash} /></button>
                     </li>
                   )
                 }
