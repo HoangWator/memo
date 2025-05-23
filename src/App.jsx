@@ -136,9 +136,10 @@ function App() {
         // example: meaning.definitions[0].example || ""
     }
   }
+
+  // Suggest meaning feature
   const [meaningList, setMeaningList] = useState([])
   const [showMeaningList, setShowMeaningList] = useState(false)
-  // Suggest meaning
   const suggestMeaning = () => {
     if (word) {
       const wordData = getWordMeaning(word);
@@ -152,6 +153,29 @@ function App() {
       setShowMeaningList(true);
     }    
   }
+
+  //learn by matching feature
+  const [showMatching, setShowMatching] = useState(false)
+  const [nameWords, setNameWords] = useState([])
+  const [meanWords, setMeanWords] = useState([])
+
+  const generateMatching = () => {
+    const words = JSON.parse(localStorage.getItem('words'))
+    let nameWords = []
+    let meanWords = []
+    words.forEach(word => {
+      nameWords.push(word.name)
+      meanWords.push(word.mean)
+    })
+
+    setNameWords(nameWords)
+    setMeanWords(meanWords)
+    setShowMatching(true)
+  }
+
+  const [clickedIndex, setClickedIndex] = useState(-1)
+  
+
 
   return (
     <div className="main">
@@ -288,11 +312,39 @@ function App() {
               )
               }
             </div>
-
-            
-
           </div>
           <button onClick={() => setShowLearn(false)}>Quit</button>
+
+          <button onClick={generateMatching}>Matching</button>
+        </div>
+      }
+
+      {showMatching && 
+        <div className="matching-section">
+          <h1>Matching</h1>
+          <button onClick={() => setShowMatching(false)}>Quit</button>
+
+          <div className="matching-list">
+            <div className="matching-list-left">
+              {nameWords.map((word, index) => (
+                <div 
+                  className={clickedIndex == index ? "matching-word clicked" : "matching-word"}
+                  key={index} 
+                  onClick={() => setClickedIndex(index)}
+                >
+                  <h3>{word}</h3>
+                </div>
+              ))}
+            </div>
+
+            <div className="matching-list-right">
+              {meanWords.map((word, index) => (
+                <div className="matching-word" key={index}>
+                  <h3>{word}</h3>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       }
     </div>
