@@ -66,6 +66,22 @@ li:hover
   top: 0;
   background-color: #fff;
 }
+.word-section .word-section-right 
+.word-section .word-section-right.empty 
+{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+.word-section .word-section-right p.noWords 
+{
+  font-size: 18px;
+  color: #aaa;
+  text-align: center;
+}
+
+
 .word-section ul
 {
   max-height: 500px;
@@ -84,7 +100,15 @@ li:hover
   justify-content: center;
   align-items: center;
 }
-.learn-section > button {
+
+.learn-section .quitLearnSectionBtn 
+{
+  position: absolute;
+  top: 10px;
+  left: 10px;
+}
+.learn-section .openMatchingBtn
+{
   position: absolute;
   top: 10px;
   right: 10px;
@@ -150,6 +174,7 @@ li:hover
   border-radius: 0.5em;
   border: 1px solid #dadce0;
   margin: 0 20px;
+  padding: 20px;
 
   display: flex;
   flex-direction: column;
@@ -166,6 +191,7 @@ li:hover
 .card p 
 {
   font-size: 30px;
+  text-align: center;
 }
 
 
@@ -318,7 +344,7 @@ li:hover
 .meaning-list-section .meaning-list .meaning:hover 
 {
   cursor: pointer;
-  background-color: #dadce0;
+  background-color: #f5f5f5;
 }
 .meaning-section .quit-meaning-list-btn
 {
@@ -346,37 +372,88 @@ li:hover
   top: 0;
   background-color: #fff;
 }
+.matching-section .matching-header 
+{
+  padding: 10px 0;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  box-shadow: 0 0 10px #ddd;
+}
+.matching-section .matching-header button 
+{
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  margin: 0;
+}
+.matching-section .matching-content
+{
+  display: flex;
+  justify-content: center;
+  /* align-items: center; */
+  height: calc(100vh - 60px);
+  max-height: calc(100vh - 60px);
+  overflow-y: scroll;
+  padding: 20px;
+}
 
 .matching-list 
 {
   display: flex;
-  overflow-y: scroll;
-  max-height: 500px;
 }
 .matching-list .matching-word 
 {
   width: 300px;
   height: 300px;
   background-color: #fff; 
+  padding: 20px;
   border-radius: 0.5em;
   border: 1px solid #dadce0;
+  text-align: center;
   margin: 0 10px 10px 10px;
   display: flex;
   justify-content: center;
   align-items: center;
+  user-select: none;
 }
 .matching-word.clicked
 {
-  background-color: #666;
-  color: #ccc;
+  background-color: #ccc;
+  color: #000;
 }
-.matching-list .matching-word.clicked:hover 
+.matching-word.matched 
 {
-  cursor: cursor;
-  background-color: #444;
+  background-color: #d2ffcb;
+  border: 1px solid #43e477;
+  color: #000;
 }
-.matching-list .matching-word:hover 
+.matching-word.notMatched
+{
+  background-color: #ffcbcb;
+  border: 1px solid #ff0000;
+  color: #000;
+}
+.matching-word.notMatched:hover 
+{
+  cursor: pointer;
+  background-color: #faa8a8;
+}
+
+.matching-word:hover 
 {
   cursor: pointer;
   background-color: #f5f5f5;
 }
+.matching-word.clicked:hover 
+{
+  cursor: cursor;
+  background-color: #bbb;
+}
+.matching-word.matched:hover 
+{
+  background-color: #aaf39f;
+  color: #000;
+}
+
+
