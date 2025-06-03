@@ -156,10 +156,31 @@ function App() {
     }    
   }
 
+  //search word
+  const searchWord = (e) => {
+    const searchValue = e.target.value.toLowerCase()
+    console.log(searchValue)
+    const words = JSON.parse(localStorage.getItem('words'));
+
+    if (searchValue.length > 0) {
+      const filteredWords = words.filter(word => {
+        const name = word.name.toLowerCase()
+        const mean = word.mean.toLowerCase()
+
+        return name.includes(searchValue) || mean.includes(searchValue)
+      });
+      setWords(filteredWords);
+    }
+    else {
+      setWords(words);
+    }
+  }
+
   //matching feature
   const [showMatching, setShowMatching] = useState(false)
   const [nameWords, setNameWords] = useState([])
   const [meanWords, setMeanWords] = useState([])
+  const [mixedWords, setMixedWords] = useState([])
   const [clickedNameIndex, setClickedNameIndex] = useState(-1)
   const [clickedMeanIndex, setClickedMeanIndex] = useState(-1)
   const [clickedName, setClickedName] = useState('')
@@ -200,7 +221,13 @@ function App() {
     setNameWords(nameWords)
     setMeanWords(meanWords)
     setShowMatching(true)
+
+    const mixedWords = [...nameWords, ...meanWords]
+    shuffle(mixedWords)
+    setMixedWords(mixedWords)
+
   }
+
 
   const checkMatching = (name, mean) => {
     const words = JSON.parse(localStorage.getItem('words'))
@@ -365,7 +392,11 @@ function App() {
 
             <div className={word.length > 0 ? "word-section-right" : "word-section-right empty"}>
               <div className="searchBox-section">
-                <input type="text" className="searchBox" placeholder='Find your word...'/>
+                <input 
+                  type="text" 
+                  className="searchBox" 
+                  placeholder='Find your word...'
+                  onChange={searchWord}/>
                 <FontAwesomeIcon icon={faMagnifyingGlass} className='searchIcon'/>
               </div>
               <ul>
@@ -385,7 +416,7 @@ function App() {
                         </li>
                       )
                   ) : (
-                    <p className='noWords'>No words added yet!</p>
+                    <p className='noWords'>Nothing here!</p>
                   )
                 }
               </ul>
@@ -451,7 +482,7 @@ function App() {
 
           <div className="matching-content">
             <div className="matching-list">
-              <div className="matching-list-left">
+              {/* <div className="matching-list-left">
                 {nameWords.map((word, index) => {
                   const isCorrectPair = () => {
                     const isInMatchedList = matchedList.some(item => item.name === word);
@@ -538,6 +569,97 @@ function App() {
                     <h3>{word}</h3>
                   </div>
                 )})}
+              </div> */}
+
+              <div className="matching-list">
+                {mixedWords.map((word, index) => {
+                  const isInNameWords = nameWords.includes(word);
+
+                  if (isInNameWords) {
+                    const isCorrectPair = () => {
+                      const isInMatchedList = matchedList.some(item => item.name === word);
+                      const isInNoMatchedList = noMatchedList.some(item => item.name === word);
+                      if (isInMatchedList) {
+                        return 'matching-word matched'
+                      }
+                      else if (isInNoMatchedList) {
+                        return 'matching-word notMatched'
+                      }
+                      else {
+                        return clickedNameIndex === index ? 'matching-word clicked' : 'matching-word'
+                      }
+                    }
+
+                    return (
+                      <div 
+                        className={isCorrectPair()}
+                        key={index}
+                        onClick={() => {
+                          const isAlreadyInMatchedList = matchedList.some(item => item.name === word);
+                          const isAlreadyInNoMatchedList = noMatchedList.some(item => item.name === word);
+                          if (isAlreadyInMatchedList || isAlreadyInNoMatchedList) {
+                            return;
+                          }
+                          else {
+                            setClickedNameIndex(index)
+                            setClickedName(word)
+                            if (clickedMean) {
+                              checkMatching(word, clickedMean)      
+                              if (matchedList.length + noMatchedList.length === words.length) {
+                                // setShowMatching(false);
+                                // setClickedNameIndex(-1);
+                                // setClickedMeanIndex(-1);
+                                // setClickedName('');
+                                // setClickedMean('');
+                                alert('All words matched!');
+                              }                  
+                            }
+                          }
+                        }}
+                      >
+                        <h3>{word}</h3>
+                      </div>
+                    )
+                  }
+                  else {
+                    const isCorrectPair = () => {
+                      const isInMatchedList = matchedList.some(item => item.mean === word);
+                      const isInNoMatchedList = noMatchedList.some(item => item.mean === word);
+                      if (isInMatchedList) {
+                        return 'matching-word matched'
+                      }
+                      else if (isInNoMatchedList) {
+                        return 'matching-word notMatched'
+                      }
+                      else {
+                        return clickedMeanIndex === index ? 'matching-word clicked' : 'matching-word'
+                      }
+                    }
+
+                    return (
+                      <div 
+                        className={isCorrectPair()}
+                        key={index}
+                        onClick={() => {
+                          const isAlreadyInMatchedList = matchedList.some(item => item.mean === word);
+                          const isAlreadyInNoMatchedList = noMatchedList.some(item => item.mean === word);
+                          if (isAlreadyInMatchedList || isAlreadyInNoMatchedList) {
+                            return;
+                          }
+                          else {
+                            setClickedMeanIndex(index)
+                            setClickedMean(word)
+                            if (clickedName) {
+                              checkMatching(clickedName, word)                        
+                            }
+                          }
+
+                        }}
+                      >
+                        <h3>{word}</h3>
+                      </div>
+                    )
+                }})}
               </div>
 
               {matchedList.length + noMatchedList.length === words.length && <ResultSection />}
