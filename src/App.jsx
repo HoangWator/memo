@@ -4,7 +4,9 @@ import viteLogo from '/vite.svg'
 import './App.css'
 import ReactDOM from 'react-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPlus,faArrowLeft,faTrash,faXmark } from '@fortawesome/free-solid-svg-icons'
+import { faPlus,faArrowLeft,faTrash,faXmark,faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
+
+
 
 
 function App() {
@@ -19,7 +21,7 @@ function App() {
     setWords(prev => {
       if (word != '' && meaning != '') {
         const newWords = [...prev, {name: word, mean: meaning}]
-        newWords.reverse()
+        // newWords.reverse()
         const jsonWords = JSON.stringify(newWords)
     
         localStorage.setItem('words', jsonWords)
@@ -164,6 +166,7 @@ function App() {
   const [clickedMean, setClickedMean] = useState('')
   const [matchedList, setMatchedList] = useState([])
   const [noMatchedList, setNoMatchedList] = useState([])
+  const [resultTitle, setResultTitle] = useState('Hell nah')
 
   const generateMatching = () => {
     const words = JSON.parse(localStorage.getItem('words'))
@@ -201,7 +204,6 @@ function App() {
 
   const checkMatching = (name, mean) => {
     const words = JSON.parse(localStorage.getItem('words'))
-    console.log(words)
     const isCorrectPair = words.some(word => word.name === name && word.mean === mean);
 
     if (isCorrectPair) {
@@ -212,7 +214,6 @@ function App() {
         }
       });
       
-      console.log('Matched')
     } 
     else {
       setNoMatchedList(prev => {
@@ -222,22 +223,66 @@ function App() {
         }
         return prev
       });
-      console.log('Not Matched')
     }
     
     setClickedNameIndex(-1);
     setClickedMeanIndex(-1);
     setClickedName('');
     setClickedMean('');
-
-    
   }
+  
+  function ResultSection() {
+    const score = Math.floor(matchedList.length / words.length * 100)
 
-  // if (clickedName && clickedMean) {
-  //   console.log(clickedName, clickedMean)
-  // }
-  console.log('Matched List:', matchedList);
-  console.log('No Matched List:', noMatchedList);
+    if (score === 100) {
+      setResultTitle('Wow!')
+    }
+    else if (score >= 90 && score < 100) {
+      setResultTitle('Almost there!')
+    }
+    else if (score >= 80 && score < 100) {
+      setResultTitle('Good job!')
+    }
+    else if (score >= 50 && score < 80) {
+      setResultTitle('Not bad!')
+    }
+    else if (score == 0) {
+      setResultTitle('Hell nah 💀')
+    }
+    else {
+      setResultTitle('Keep trying!')
+    }
+    return (
+      <div className='result-section-container'>
+        <div className="result-section">
+          <h3 className="result-heading">{resultTitle}</h3>
+          <p className="result-text">{score + '%'}</p>
+
+          <div className="matchingBtns">
+            <button className='retryMatchingBtn' onClick={() => {
+              setClickedNameIndex(-1)
+              setClickedMeanIndex(-1)
+              setClickedName('')
+              setClickedMean('')
+              setMatchedList([])
+              setNoMatchedList([])
+              setShowMatching(false)
+              generateMatching()
+              }}>Retry</button>
+            <button className='quitMatchingBtn' onClick={() => {
+              setShowMatching(false)
+              setClickedNameIndex(-1)
+              setClickedMeanIndex(-1)
+              setClickedName('')
+              setClickedMean('')
+              setMatchedList([])
+              setNoMatchedList([])
+            }}>Quit</button>
+          </div>
+        </div>
+      </div>
+    )
+  }
   return (
     <div className="main">
       <div className="create-folder-section">
@@ -285,7 +330,7 @@ function App() {
                     setMeaning(e.target.value)
                     setShowMeaningList(false)
                   }} 
-                  onClick={suggestMeaning}
+                  // onClick={suggestMeaning}
                 />
                 {showMeaningList && meaningList && (
                   <div className="meaning-list-section">
@@ -312,12 +357,17 @@ function App() {
 
               <button onClick={addWord}>Add</button>
 
-              <button className='learnBtn' onClick={learnBtn}>Learn</button>
+              <button className='learnBtn' onClick={learnBtn}>Flashcard</button>
 
+              <button onClick={generateMatching} className='openMatchingBtn'>Matching</button>
               
             </div>
 
             <div className={word.length > 0 ? "word-section-right" : "word-section-right empty"}>
+              <div className="searchBox-section">
+                <input type="text" className="searchBox" placeholder='Find your word...'/>
+                <FontAwesomeIcon icon={faMagnifyingGlass} className='searchIcon'/>
+              </div>
               <ul>
                 {
                   words.length > 0 ? (
@@ -381,11 +431,10 @@ function App() {
           </div>
           <button onClick={() => setShowLearn(false)} className='quitLearnSectionBtn'><FontAwesomeIcon icon={faArrowLeft} /></button>
 
-          <button onClick={generateMatching} className='openMatchingBtn'>Matching</button>
         </div>
       }
 
-      {showMatching && 
+      {showMatching &&
         <div className="matching-section">
           <div className="matching-header">
             <button onClick={() => {
@@ -432,7 +481,15 @@ function App() {
                           setClickedNameIndex(index)
                           setClickedName(word)
                           if (clickedMean) {
-                            checkMatching(word, clickedMean)                        
+                            checkMatching(word, clickedMean)      
+                            if (matchedList.length + noMatchedList.length === words.length) {
+                              // setShowMatching(false);
+                              // setClickedNameIndex(-1);
+                              // setClickedMeanIndex(-1);
+                              // setClickedName('');
+                              // setClickedMean('');
+                              alert('All words matched!');
+                            }                  
                           }
                         }
                       }}
@@ -457,6 +514,7 @@ function App() {
                       return clickedMeanIndex === index ? 'matching-word clicked' : 'matching-word'
                     }
                   }
+
                   return (
                   <div 
                     className={isCorrectPair()}
@@ -474,12 +532,15 @@ function App() {
                           checkMatching(clickedName, word)                        
                         }
                       }
+
                     }}
                   >
                     <h3>{word}</h3>
                   </div>
                 )})}
               </div>
+
+              {matchedList.length + noMatchedList.length === words.length && <ResultSection />}
             </div>
           </div>
         </div>
