@@ -5,9 +5,7 @@ import './App.css'
 import ReactDOM from 'react-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus,faArrowLeft,faTrash,faXmark,faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
-
-
-
+import { geneAI } from './gemini'
 
 function App() {
   const [word, setWord] = useState('')
@@ -17,6 +15,15 @@ function App() {
     return localWords ?? []
   })
 
+  function shuffleArray(array) {
+    const arr = [...array]; // make a copy to avoid mutating original
+    for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+  
   const addWord = () => {
     setWords(prev => {
       if (word != '' && meaning != '') {
@@ -44,17 +51,13 @@ function App() {
   function Card({word}) {
     const [showDef, setShowDef] = useState(false)
 
-    const showMean = () => {
-      setShowDef(true)
+    const handleDef = () => {
+      setShowDef(!showDef)
     }
-    const hideMean = () => {
-      setShowDef(false)
-    }
-
     return (
       <div className="card">
         {showDef ? <p>{word.mean}</p> : <h1>{word.name}</h1>}
-        <button onClick={showDef ? hideMean : showMean}>{showDef ? "Hide" : "Show"}</button>
+        <button onClick={handleDef}>{showDef ? 'Hide' : 'Show'}</button>
       </div>
     )
   }
@@ -159,7 +162,6 @@ function App() {
   //search word
   const searchWord = (e) => {
     const searchValue = e.target.value.toLowerCase()
-    console.log(searchValue)
     const words = JSON.parse(localStorage.getItem('words'));
 
     if (searchValue.length > 0) {
@@ -220,7 +222,12 @@ function App() {
 
     setNameWords(nameWords)
     setMeanWords(meanWords)
-    setShowMatching(true)
+    if (words.length > 0) {
+      setShowMatching(true)
+    }
+    else {
+      alert("There are no words. Please enter your words!")
+    }
 
     const mixedWords = [...nameWords, ...meanWords]
     shuffle(mixedWords)
@@ -310,8 +317,104 @@ function App() {
       </div>
     )
   }
+
+  // Filling
+  const [showFilling, setShowFilling] = useState(false)
+  const [loader, setLoader] = useState(false)
+  const [fillingQuestions, setFillingQuestions] = useState([])
+
+  const Loader = () => (
+    <div className="loader-section">
+      <div className="loader-container">
+        <div className="loader"></div>
+      </div>
+    </div>
+  )
+
+  function FillingCard({data, order}) {
+    let question = data
+    let startQuestion,endQuestion,key,options
+    // console.log(data)
+    if (question.indexOf('[') != -1 && question.indexOf(']') != -1) {
+      startQuestion = question.slice(0, question.indexOf('['))
+      endQuestion = question.slice(question.indexOf(']') + 1)
+      key = question.slice(question.indexOf('[') + 1, question.indexOf(']'))
+      options = [key, 'Option 2', 'Option 3', 'Option 4']
+    }
+    if (question.indexOf('_') != -1) {
+      startQuestion = question.slice(0, question.indexOf('_'))
+      endQuestion = question.slice(question.indexOf('_') + 7)
+      key = question.slice(question.indexOf('_'), () => {
+        for (let i = question.indexOf('_'); i < question.length; i++) {
+          if (question[i] != '_') {
+            return i
+            break
+          }
+        }
+      })
+      if (clicked === -1) {
+        options = shuffleArray([key, 'Option 2', 'Option 3', 'Option 4'])
+      }
+    }
+
+    const [clicked, setClicked] = useState(-1)
+    const [userInput, setUserInput] = useState('')
+
+    return (
+      <div className="filling-card">
+        <p>{startQuestion}<span className='gap init'>{userInput}</span>{endQuestion}</p>
+
+        <div className="filling-options">
+          {options.map((item, index) => (
+            <div className="filling-option">
+              <input 
+                type='radio' 
+                id={'q'+order+'option'+index} 
+                onChange={() => {
+                  setClicked(index)
+                  setUserInput(item)
+                }}
+                checked={clicked === index}  
+              />
+              <label htmlFor={'q'+order+'option'+index}>{item}</label>
+            </div>
+          ))}
+        </div>
+      </div>
+    )
+  }
+
+  const generateFilling = () => {
+    const wordList = JSON.parse(localStorage.getItem('words'))
+    let words = []
+    for (const item of wordList) {
+      words.push(item.name)
+    }
+
+    
+    if (words.length > 0) {
+      setLoader(true)
+      geneAI(words).then((value) => {
+        console.log(value)
+        
+        setFillingQuestions(value)
+        setShowFilling(true)
+        setLoader(false)
+      })
+    }
+    else {
+      alert("Your word list is empty. Please enter your words!")
+    }
+  }
+
+  const quitFilling = () => {
+    setShowFilling(false)
+    setFillingQuestions([])
+  }
+
   return (
     <div className="main">
+      {loader && <Loader />}
       <div className="create-folder-section">
         <button className='add-folder-btn' onClick={createFolder}><FontAwesomeIcon className='icon' icon={faPlus} /></button>
         {showCreateFolder && (
@@ -387,6 +490,8 @@ function App() {
               <button className='learnBtn' onClick={learnBtn}>Flashcard</button>
 
               <button onClick={generateMatching} className='openMatchingBtn'>Matching</button>
+
+              <button onClick={generateFilling}>Filling</button>
               
             </div>
 
@@ -667,6 +772,17 @@ function App() {
           </div>
         </div>
       }
+
+      {showFilling && (
+        <div className="filling-section">
+          <div className="filling-header">
+            <button className='quitFillingBtn' onClick={quitFilling}><FontAwesomeIcon icon={faArrowLeft} /> Back</button>
+          </div>
+          <div className="filling-content">
+            {fillingQuestions.map((item,index) => <FillingCard data={item.question} key={index} order={index}/>)}
+          </div>
+        </div>
+      )}
     </div>
   )
 }
