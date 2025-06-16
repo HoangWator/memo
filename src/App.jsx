@@ -334,29 +334,39 @@ function App() {
   function FillingCard({data, order}) {
     let question = data.question
     let options = data.options
+    let ans = data.word
     let startQuestion,endQuestion
+    let gapClassName, labelClassName;
+
     if (question.indexOf('[') != -1 && question.indexOf(']') != -1) {
       startQuestion = question.slice(0, question.indexOf('['))
       endQuestion = question.slice(question.indexOf(']') + 1)
     }
     if (question.indexOf('_') != -1) {
       startQuestion = question.slice(0, question.indexOf('_'))
-      endQuestion = question.slice(() => {
-        for (let i = question.indexOf('_'); i < question.length; i++) {
-          if (question[i] != '_') {
-            return i
-            break
-          }
-        }
-      })
+      endQuestion = question.slice(question.indexOf('_'), question.length).replace(/_/g, '') 
+
     }
 
     const [clicked, setClicked] = useState(-1)
     const [userInput, setUserInput] = useState('')
 
+    if (userInput != '' && userInput === ans) {
+      gapClassName = 'gap right'
+      labelClassName = 'label right'
+    }
+    else if (userInput != '' && userInput !== ans) {
+      gapClassName = 'gap wrong'
+      labelClassName = 'label wrong'
+    }
+    else {
+      gapClassName = 'gap'
+      labelClassName = 'label'
+    }
+
     return (
       <div className="filling-card">
-        <p>{startQuestion}<span className='gap init'>{userInput}</span>{endQuestion}</p>
+        <p>{startQuestion}<span className={gapClassName}>{userInput}</span>{endQuestion}</p>
 
         <div className="filling-options">
           {options.map((item, index) => (
@@ -365,12 +375,15 @@ function App() {
                 type='radio' 
                 id={'q'+order+'option'+index} 
                 onChange={() => {
-                  setClicked(index)
-                  setUserInput(item)
+                  if (clicked === -1) {
+                    setClicked(index)
+                    setUserInput(item)
+                  }
+
                 }}
                 checked={clicked === index}  
               />
-              <label htmlFor={'q'+order+'option'+index}>{item}</label>
+              <label htmlFor={'q'+order+'option'+index} className={labelClassName}>{item}</label>
             </div>
           ))}
         </div>

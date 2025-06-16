@@ -70,8 +70,15 @@ function getContents(texts, words) {
             let newText = texts.slice(texts.indexOf(i))
             let questionList = getQuestions(newText)
             questionList.forEach(element => {
-                let key = element.slice(element.indexOf('[') + 1, element.indexOf(']'))
-                let options = shuffleArray([key, 'Option 2', 'Option 3', 'Option 4'])
+                let options
+                if (element.indexOf('[') != -1 && element.indexOf(']') != -1) {
+                    let key = element.slice(element.indexOf('[') + 1, element.indexOf(']')).toLowerCase()
+                    options = shuffleArray([key, 'Option 2', 'Option 3', 'Option 4'])
+                }
+                if (element.indexOf('_') != -1) {
+                    let key = words[i - 1].toLowerCase()
+                    options = shuffleArray([key, 'Option 2', 'Option 3', 'Option 4'])
+                }
                 contents.push({
                     word: words[i - 1], 
                     question: element,
@@ -85,11 +92,11 @@ function getContents(texts, words) {
             questionList.forEach(element => {
                 let options
                 if (element.indexOf('[') != -1 && element.indexOf(']') != -1) {
-                    let key = element.slice(element.indexOf('[') + 1, element.indexOf(']'))
+                    let key = element.slice(element.indexOf('[') + 1, element.indexOf(']')).toLowerCase()
                     options = shuffleArray([key, 'Option 2', 'Option 3', 'Option 4'])
                 }
                 if (element.indexOf('_') != -1) {
-                    let key = words[i - 1]
+                    let key = words[i - 1].toLowerCase()
                     options = shuffleArray([key, 'Option 2', 'Option 3', 'Option 4'])
                 }
                 contents.push({
