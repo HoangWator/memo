@@ -332,19 +332,16 @@ function App() {
   )
 
   function FillingCard({data, order}) {
-    let question = data
-    let startQuestion,endQuestion,key,options
-    // console.log(data)
+    let question = data.question
+    let options = data.options
+    let startQuestion,endQuestion
     if (question.indexOf('[') != -1 && question.indexOf(']') != -1) {
       startQuestion = question.slice(0, question.indexOf('['))
       endQuestion = question.slice(question.indexOf(']') + 1)
-      key = question.slice(question.indexOf('[') + 1, question.indexOf(']'))
-      options = [key, 'Option 2', 'Option 3', 'Option 4']
     }
     if (question.indexOf('_') != -1) {
       startQuestion = question.slice(0, question.indexOf('_'))
-      endQuestion = question.slice(question.indexOf('_') + 7)
-      key = question.slice(question.indexOf('_'), () => {
+      endQuestion = question.slice(() => {
         for (let i = question.indexOf('_'); i < question.length; i++) {
           if (question[i] != '_') {
             return i
@@ -352,9 +349,6 @@ function App() {
           }
         }
       })
-      if (clicked === -1) {
-        options = shuffleArray([key, 'Option 2', 'Option 3', 'Option 4'])
-      }
     }
 
     const [clicked, setClicked] = useState(-1)
@@ -366,7 +360,7 @@ function App() {
 
         <div className="filling-options">
           {options.map((item, index) => (
-            <div className="filling-option">
+            <div className="filling-option" key={index}>
               <input 
                 type='radio' 
                 id={'q'+order+'option'+index} 
@@ -779,7 +773,7 @@ function App() {
             <button className='quitFillingBtn' onClick={quitFilling}><FontAwesomeIcon icon={faArrowLeft} /> Back</button>
           </div>
           <div className="filling-content">
-            {fillingQuestions.map((item,index) => <FillingCard data={item.question} key={index} order={index}/>)}
+            {fillingQuestions.map((item,index) => <FillingCard data={item} key={index} order={index}/>)}
           </div>
         </div>
       )}

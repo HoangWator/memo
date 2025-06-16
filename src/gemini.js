@@ -69,12 +69,34 @@ function getContents(texts, words) {
         if (i == words.length) {
             let newText = texts.slice(texts.indexOf(i))
             let questionList = getQuestions(newText)
-            questionList.forEach(element => contents.push({word: words[i - 1], question: element}))
+            questionList.forEach(element => {
+                let key = element.slice(element.indexOf('[') + 1, element.indexOf(']'))
+                let options = shuffleArray([key, 'Option 2', 'Option 3', 'Option 4'])
+                contents.push({
+                    word: words[i - 1], 
+                    question: element,
+                    options: options
+                })   
+            })
         }
         else {
             let newText = texts.slice(texts.indexOf(i), texts.indexOf(i + 1))
             let questionList = getQuestions(newText)
-            questionList.forEach(element => contents.push({word: words[i - 1], question: element}))
+            questionList.forEach(element => {
+                let options
+                if (element.indexOf('[') != -1 && element.indexOf(']') != -1) {
+                    let key = element.slice(element.indexOf('[') + 1, element.indexOf(']'))
+                    options = shuffleArray([key, 'Option 2', 'Option 3', 'Option 4'])
+                }
+                if (element.indexOf('_') != -1) {
+                    let key = words[i - 1]
+                    options = shuffleArray([key, 'Option 2', 'Option 3', 'Option 4'])
+                }
+                contents.push({
+                    word: words[i - 1], 
+                    question: element, 
+                    options: options
+            })})
         }
     }
     return shuffleArray(contents)

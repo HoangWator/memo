@@ -587,6 +587,11 @@ li:hover
 {
   display: flex;
 }
+.filling-options .filling-option label:hover 
+{
+  background-color: #ccc;
+  cursor: pointer;
+}
 .filling-options .filling-option label 
 {
   min-width: 150px;
