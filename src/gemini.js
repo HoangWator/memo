@@ -9,7 +9,7 @@ export async function geneAI(words) {
     const prompt = `
         Create 3 fill-in-the-blank questions to learn how to use word '${newWords}'. 
         No '*', '_', '[', and ']' contained (important). 
-        Each questions have at least 10 words. 
+        Each questions have at least 10 words a. 
         Each words, I want you to return like this:
         [ordinal number]. [word that need to learn]
         -[Question 1]
@@ -65,6 +65,16 @@ function getContents(texts, words) {
 
         return questions //Return an array of questions
     }
+
+    // Return an array of options (containing the word to learn and 3 other options)
+    function getOptions(key, words) {
+        let otherOptions = words.filter(word => word.toLowerCase() !== key.toLowerCase());
+        otherOptions = shuffleArray(otherOptions.slice(0, 3)); // Get only 3 other
+        let options = [key, ...otherOptions];
+        return shuffleArray(options);
+    }
+
+
     for (let i = 1; i <= words.length; i++) {
         if (i == words.length) {
             let newText = texts.slice(texts.indexOf(i))
@@ -73,11 +83,16 @@ function getContents(texts, words) {
                 let options
                 if (element.indexOf('[') != -1 && element.indexOf(']') != -1) {
                     let key = element.slice(element.indexOf('[') + 1, element.indexOf(']')).toLowerCase()
-                    options = shuffleArray([key, 'Option 2', 'Option 3', 'Option 4'])
+                    options = getOptions(key, words)
                 }
                 if (element.indexOf('_') != -1) {
                     let key = words[i - 1].toLowerCase()
-                    options = shuffleArray([key, 'Option 2', 'Option 3', 'Option 4'])
+                    options = getOptions(key, words)
+                }
+                if (element.indexOf('[') != -1 && element.indexOf(']') != -1 && element.indexOf('_') != -1) {
+                    element.replace(/_/g, '')
+                    let key = element.slice(element.indexOf('[') + 1, element.indexOf(']')).toLowerCase()
+                    options = getOptions(key, words)
                 }
                 contents.push({
                     word: words[i - 1], 
@@ -93,11 +108,11 @@ function getContents(texts, words) {
                 let options
                 if (element.indexOf('[') != -1 && element.indexOf(']') != -1) {
                     let key = element.slice(element.indexOf('[') + 1, element.indexOf(']')).toLowerCase()
-                    options = shuffleArray([key, 'Option 2', 'Option 3', 'Option 4'])
+                    options = getOptions(key, words)
                 }
                 if (element.indexOf('_') != -1) {
                     let key = words[i - 1].toLowerCase()
-                    options = shuffleArray([key, 'Option 2', 'Option 3', 'Option 4'])
+                    options = getOptions(key, words)
                 }
                 contents.push({
                     word: words[i - 1], 

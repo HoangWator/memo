@@ -557,16 +557,27 @@ li:hover
 .filling-content 
 {
   overflow-y: scroll;
-  max-height: calc(100vh - 61px);
+  height: calc(100vh - 61px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
 }
 .filling-card 
 {
   padding: 40px 0;
+  width: 80%;
+}
+.filling-card p 
+{
+  margin-bottom: 20px;
+  line-height: 1.8;
+  text-align: center;
 }
 .filling-card .gap 
 {
   border-radius: 0.5em;
-  padding: 3px 10px;
+  padding: 0 5px;
   background-color: #f5f5f5;
   display: inline-block;
   min-width: 100px;
@@ -578,10 +589,19 @@ li:hover
 .filling-card .gap.right
 {
   background-color: #43e477;
+  min-width: 0;
 }
 .filling-card .gap.wrong 
 {
   background-color: #faa8a8;
+  min-width: 0;
+}
+
+.filling-options 
+{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .filling-options .filling-option input 
@@ -591,6 +611,7 @@ li:hover
 .filling-options .filling-option 
 {
   display: flex;
+  width: 30%;
 }
 .filling-options .filling-option .label:hover 
 {
@@ -599,7 +620,7 @@ li:hover
 }
 .filling-options .filling-option .label 
 {
-  min-width: 150px;
+  width: 100%;
   padding: 10px 30px;
   border: 2px solid #ccc;
   border-radius: 0.5em;
@@ -618,6 +639,43 @@ input[type='radio']:checked + .label.wrong
   background-color: #faa8a8;
 
 }
+.filling-answer-explain 
+{
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 40px;
+  border: 2px solid #dadce0;
+  padding: 15px;
+  border-radius: 0.5em;
+}
+.filling-answer-explain.right 
+{
+  background-color: #43e477;
+}
+.filling-answer-explain.wrong 
+{
+  background-color: #faa8a8;
+}
+.filling-answer-explain .mark-ans 
+{
+  text-decoration: underline;
+  font-weight: bold;
+}
+.filling-answer-explain h3 
+{
+  text-align: center;
+}
+.filling-answer-explain p
+{
+  margin: 10px 0;
+  font-size: 18px;
+}
+.filling-answer-explain button 
+{
+  float: right;
+  margin: 0;
+}
 
 /* loader */
 .loader-section {
@@ -626,7 +684,7 @@ input[type='radio']:checked + .label.wrong
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.3);
+  background-color: rgba(0, 0, 0, 0.1);
   z-index: 1;
 
   display: flex;
@@ -641,9 +699,9 @@ input[type='radio']:checked + .label.wrong
 }
 .loader-section .loader-container .loader 
 {
-  border: 8px solid #f3f3f3;
+  border: 8px solid #e3e3e3;
   border-radius: 50%;
-  border-top: 8px solid #666;
+  border-top: 8px solid #888;
   width: 60px;
   height: 60px;
   animation: spin 1s linear infinite;

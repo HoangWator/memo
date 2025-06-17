@@ -73,7 +73,7 @@ function App() {
   // Create a folder
   const [showCreateFolder, setShowCreateFolder] = useState(false)
   const createFolder = () => {
-    setShowCreateFolder(true)
+    setShowCreateFolder(!showCreateFolder)
   }
 
   const [folderName, setFolderName] = useState('')
@@ -322,12 +322,13 @@ function App() {
   const [showFilling, setShowFilling] = useState(false)
   const [loader, setLoader] = useState(false)
   const [fillingQuestions, setFillingQuestions] = useState([])
+  const [fillingIndex, setFillingIndex] = useState(0)
 
   const Loader = () => (
     <div className="loader-section">
-      <div className="loader-container">
-        <div className="loader"></div>
-      </div>
+        <div className="loader-container">
+          <div className="loader"></div>
+        </div>
     </div>
   )
 
@@ -336,7 +337,7 @@ function App() {
     let options = data.options
     let ans = data.word
     let startQuestion,endQuestion
-    let gapClassName, labelClassName;
+    let gapClassName, labelClassName, explainClassName;
 
     if (question.indexOf('[') != -1 && question.indexOf(']') != -1) {
       startQuestion = question.slice(0, question.indexOf('['))
@@ -354,14 +355,19 @@ function App() {
     if (userInput != '' && userInput === ans) {
       gapClassName = 'gap right'
       labelClassName = 'label right'
+      explainClassName = 'filling-answer-explain right'
+
     }
     else if (userInput != '' && userInput !== ans) {
       gapClassName = 'gap wrong'
       labelClassName = 'label wrong'
+      explainClassName = 'filling-answer-explain wrong'
+
     }
     else {
       gapClassName = 'gap'
       labelClassName = 'label'
+      explainClassName = 'filling-answer-explain'
     }
 
     return (
@@ -379,7 +385,6 @@ function App() {
                     setClicked(index)
                     setUserInput(item)
                   }
-
                 }}
                 checked={clicked === index}  
               />
@@ -387,6 +392,22 @@ function App() {
             </div>
           ))}
         </div>
+        
+        { clicked !== -1 && (
+          <div className={explainClassName}>
+            <h3>Answer:</h3>
+            <p>{startQuestion}<span className='mark-ans'>{ans}</span>{endQuestion}</p>
+            <button onClick={() => {
+              if (fillingIndex < fillingQuestions.length - 1) {
+                setFillingIndex(fillingIndex + 1)
+              }
+              else {
+                setFillingIndex(0)
+                setShowFilling(false)
+              }
+            }}>Next</button>
+          </div>
+        )}
       </div>
     )
   }
@@ -786,7 +807,7 @@ function App() {
             <button className='quitFillingBtn' onClick={quitFilling}><FontAwesomeIcon icon={faArrowLeft} /> Back</button>
           </div>
           <div className="filling-content">
-            {fillingQuestions.map((item,index) => <FillingCard data={item} key={index} order={index}/>)}
+            <FillingCard data={fillingQuestions[fillingIndex]} order={fillingIndex}/>
           </div>
         </div>
       )}
