@@ -4,8 +4,10 @@ import viteLogo from '/vite.svg'
 import './App.css'
 import ReactDOM from 'react-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPlus,faArrowLeft,faTrash,faXmark,faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
+import { faPlus,faArrowLeft,faTrash,faXmark,faMagnifyingGlass,faVolumeHigh } from '@fortawesome/free-solid-svg-icons'
 import { geneAI } from './gemini'
+import useSound from 'use-sound';
+import { getWordData } from './gemini'
 
 function App() {
   const [word, setWord] = useState('')
@@ -27,7 +29,7 @@ function App() {
   const addWord = () => {
     setWords(prev => {
       if (word != '' && meaning != '') {
-        const newWords = [...prev, {name: word, mean: meaning}]
+        const newWords = [...prev, {name: word.toLowerCase(), mean: meaning}]
         // newWords.reverse()
         const jsonWords = JSON.stringify(newWords)
     
@@ -110,37 +112,7 @@ function App() {
     setShowWordSection(false)
   }
 
-  async function getWordMeaning(word){
-    const res = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
-    const data = await res.json();
-    const wordData = data[0];
-    // const phonetics = wordData.phonetics || [];
-
-    // let phoneticTxt = "", phoneticAudio = "";
-
-    // for(const phonetic of phonetics){
-    //     if(phonetic.text && !phoneticTxt)
-    //           phoneticTxt = phonetic.text
-    //     if(phonetic.audio && !phoneticAudio)
-    //           phoneticAudio = phonetic.audio;
-    //     if(phoneticTxt && phoneticAudio) break;
-    // }
-
-    const meaning = wordData.meanings[0];
-
-    return {
-        word: word.toLowerCase(),
-        // phonetic: {
-        //       text: phoneticTxt,
-        //       audio: phoneticAudio
-        // },
-        // speechPart: meaning.partOfSpeech,
-        definition: meaning.definitions,
-        // synonyms: meaning.synonyms,
-        // antonyms: meaning.antonyms,
-        // example: meaning.definitions[0].example || ""
-    }
-  }
+  
 
   // Suggest meaning feature
   const [meaningList, setMeaningList] = useState([])
@@ -362,7 +334,6 @@ function App() {
       gapClassName = 'gap wrong'
       labelClassName = 'label wrong'
       explainClassName = 'filling-answer-explain wrong'
-
     }
     else {
       gapClassName = 'gap'
@@ -402,8 +373,8 @@ function App() {
                 setFillingIndex(fillingIndex + 1)
               }
               else {
-                setFillingIndex(0)
-                setShowFilling(false)
+                // setFillingIndex(0)
+                // setShowFilling(false)
               }
             }}>Next</button>
           </div>
@@ -438,9 +409,89 @@ function App() {
   const quitFilling = () => {
     setShowFilling(false)
     setFillingQuestions([])
+    setFillingIndex(0)
   }
 
-  
+  function ProgressBar() {
+    const progress = Math.floor((fillingIndex + 1) / fillingQuestions.length * 100);
+    let progressCln
+    if (progress > 0 && progress <= 25) {
+      progressCln = 'progress low';
+    }
+    else if (progress > 25 && progress <= 75) {
+      progressCln = 'progress medium';
+    }
+    else if (progress > 75 && progress <= 100) {
+      progressCln = 'progress high';
+    }
+    else {
+      progressCln = 'progress empty';
+    }
+    return (
+      <div className={progressCln} style={{width: `${progress}%`}}></div>
+    )
+  }
+
+  // Listening 
+
+  const [showListening, setShowListening] = useState(false)
+  const [listeningCardIndex, setListeningCardIndex] = useState(0)
+
+  const generateListening = () => {
+    const words = JSON.parse(localStorage.getItem('words'))
+    if (words.length > 0) {
+      setShowListening(true)
+    }
+    else {
+      alert("Your word list is empty. Please enter your words!")
+    }
+  }
+
+  function ListeningCard({word, order}) {
+    const speakWord = () =>  {
+      const utterance = new SpeechSynthesisUtterance(word);
+      speechSynthesis.speak(utterance);
+    }
+
+    const [userInput, setUserInput] = useState('')
+    
+    return (
+      <div className="listening-card">
+        <div className="listening-card-content">
+          <div className="speak-word-btn" onClick={speakWord}><FontAwesomeIcon icon={faVolumeHigh} className='icon'/></div>
+          <input 
+            type="text" 
+            placeholder='Type what you hear...'
+            onKeyDown={e => {
+              if (e.key === 'Enter') {
+                setUserInput(e.target.value)
+                console.log(e.target.value === word);
+              }
+            }}
+          />
+        </div>
+
+        { userInput && (
+          <div className={'listening-explain ' + (userInput.toLowerCase() === word.toLowerCase() ? 'right' : 'wrong')}>
+            <h4>Answer:</h4>
+            <p className='listening-answer'onClick={speakWord}>{word}<FontAwesomeIcon icon={faVolumeHigh} className='icon'/></p>
+            <button onClick={() => {
+              if (listeningCardIndex < words.length - 1) {
+                setListeningCardIndex(listeningCardIndex + 1);
+              }
+              else {
+                setListeningCardIndex(0);
+                setShowListening(false);
+              }
+              
+              setUserInput('');
+            }}>Next</button>
+          </div>
+        )}
+      </div>
+    )
+  }
+
   return (
     <div className="main">
       {loader && <Loader />}
@@ -521,6 +572,8 @@ function App() {
               <button onClick={generateMatching} className='openMatchingBtn'>Matching</button>
 
               <button onClick={generateFilling}>Filling</button>
+
+              <button onClick={generateListening}>Listening</button>
               
             </div>
 
@@ -806,9 +859,23 @@ function App() {
         <div className="filling-section">
           <div className="filling-header">
             <button className='quitFillingBtn' onClick={quitFilling}><FontAwesomeIcon icon={faArrowLeft} /> Back</button>
+            <div className="progess-bar">
+              <ProgressBar />
+            </div>
           </div>
           <div className="filling-content">
             <FillingCard data={fillingQuestions[fillingIndex]} order={fillingIndex}/>
+          </div>
+        </div>
+        )}
+      
+      {showListening && (
+        <div className="listening-section">
+          <div className="listening-header">
+            <button onClick={() => setShowListening(false)}><FontAwesomeIcon icon={faArrowLeft} /></button>
+          </div>
+          <div className="listening-content">
+            <ListeningCard key={listeningCardIndex} word={words[listeningCardIndex].name} order={listeningCardIndex}/>
           </div>
         </div>
       )}

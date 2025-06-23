@@ -9,7 +9,7 @@ export async function geneAI(words) {
     const prompt = `
         Create 3 fill-in-the-blank questions to learn how to use word '${newWords}'. 
         No '*', '_', '[', and ']' contained (important). 
-        Each questions have at least 10 words a. 
+        Each questions have at least 7 words. 
         Each words, I want you to return like this:
         [ordinal number]. [word that need to learn]
         -[Question 1]
@@ -122,4 +122,37 @@ function getContents(texts, words) {
         }
     }
     return shuffleArray(contents)
+}
+
+export async function getWordData(word) {
+  const res = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
+
+  const data = await res.json();
+  const wordData = data[0];
+  const phonetics = wordData.phonetics;
+
+  let phoneticTxt = "", phoneticAudio = "";
+
+  for(const phonetic of phonetics){
+      if(phonetic.text && !phoneticTxt)
+            phoneticTxt = phonetic.text
+      if(phonetic.audio && !phoneticAudio)
+            phoneticAudio = phonetic.audio;
+      if(phoneticTxt && phoneticAudio) break;
+  }
+
+  const meaning = wordData.meanings[0];
+
+  return {
+    word: word.toLowerCase(),
+    phonetic: {
+          text: phoneticTxt,
+          audio: phoneticAudio
+    },
+    speechPart: meaning.partOfSpeech,
+    definition: meaning.definitions,
+    synonyms: meaning.synonyms,
+    antonyms: meaning.antonyms,
+    example: meaning.definitions[0].example || ""
+  }
 }
