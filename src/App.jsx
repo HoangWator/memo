@@ -4,18 +4,96 @@ import viteLogo from '/vite.svg'
 import './App.css'
 import ReactDOM from 'react-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPlus,faArrowLeft,faTrash,faXmark,faMagnifyingGlass,faVolumeHigh } from '@fortawesome/free-solid-svg-icons'
+import { faPlus,faArrowLeft,faTrash,faXmark,faMagnifyingGlass,faVolumeHigh,faFolder,faDumbbell,faTrophy,faChartSimple,faEllipsis,faPenToSquare,faX } from '@fortawesome/free-solid-svg-icons'
 import { geneAI } from './gemini'
 import useSound from 'use-sound';
 import { getWordData } from './gemini'
+import { signInWithPopup,signOut  } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
+import { auth, db, googleProvider } from './firebase-config.js'
+import { isAlreadyLogin } from './handleData.js'
+import { addUser } from './handleData.js'
+import { getUserData } from './handleData.js'
+import { addFolderDB, deleteFolderDB } from './handleData.js'
+import { addWordDB } from './handleData.js'
+import { getFolderDataDB } from './handleData.js'
+
 
 function App() {
+  const [userID, setUserID] = useState('')
+  const [userName, setUserName] = useState('')
+  const [userData, setUserData] = useState('')
+  const [avatarUrl, setAvatarUrl] = useState('')
+
+  const [folderName, setFolderName] = useState('')
+  const [folders, setFolders] = useState([])
+
   const [word, setWord] = useState('')
   const [meaning, setMeaning] = useState('')
   const [words, setWords] = useState(() => {
     const localWords = JSON.parse(localStorage.getItem('words'))
     return localWords ?? []
   })
+  const [currentFolder, setCurrentFolder] = useState('')
+
+  const [showMoreOptions, setShowMoreOptions] = useState(false)
+
+  const [showLoginSection, setShowLoginSection] = useState(false)
+  const loginWithGoogle = async () => {
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+      // The signed-in user info.
+      const user = result.user;
+      alert(`Welcome ${user.displayName}!`);
+      setUserID(user.uid)
+      setUserName(user.displayName);
+      setAvatarUrl(user.photoURL);
+      console.log("User signed in:", user.uid);
+
+      // Check if user has logged in before
+      isAlreadyLogin(user.uid).then(data => {
+        if (data) {
+          console.log('This user has logged in before')
+        }
+        else {
+          console.log('This user is new')
+          addUser(user.uid)
+        }
+      })
+
+      // Get user's folders
+      getUserData(user.uid).then((data) => {
+        if (data) {
+          setFolders(data.folders)
+        }
+        else {
+          setFolders([])
+        }
+      })
+      
+      setShowLoginSection(false)
+    } catch (error) {
+      alert(error.message);
+    }
+
+  }
+
+  const showCurrentUser = () => {
+    const user = auth.currentUser;
+    if (user) {
+      const uid = user.uid;
+      console.log("Current User UID:", uid);
+    } else {
+      console.log("No user currently signed in.");
+    }
+  }
+
+  const exitAccount = () => {
+    signOut(auth).then(() => {
+      alert('Sign-out successful.')
+    }).catch((error) => {
+      alert(error.message);
+    });
+  }
 
   function shuffleArray(array) {
     const arr = [...array]; // make a copy to avoid mutating original
@@ -30,11 +108,6 @@ function App() {
     setWords(prev => {
       if (word != '' && meaning != '') {
         const newWords = [...prev, {name: word.toLowerCase(), mean: meaning}]
-        // newWords.reverse()
-        const jsonWords = JSON.stringify(newWords)
-    
-        localStorage.setItem('words', jsonWords)
-
         return newWords 
       }
       else {
@@ -42,6 +115,10 @@ function App() {
         return newWords
       }
     })
+
+    if (word != '' && meaning != '') {
+      addWordDB(userID, currentFolder, {name: word.toLowerCase(), mean: meaning})
+    }
 
     setWord('')
     setMeaning('')
@@ -78,38 +155,58 @@ function App() {
     setShowCreateFolder(!showCreateFolder)
   }
 
-  const [folderName, setFolderName] = useState('')
-  const [folders, setFolders] = useState(() => {
-    const localFolders = JSON.parse(localStorage.getItem('folders'))
-    return localFolders ?? []
-  })
-
-  const handleFolderNameChange = () => {
+  const addFolder = () => {
     if (folderName != '') {
-      setFolders(prev => {
-        const newFolders = [...prev, folderName]
-        const jsonFolders = JSON.stringify(newFolders)
-    
-        localStorage.setItem('folders', jsonFolders)
+      addFolderDB(userID, folderName)
 
-        return newFolders
+      getUserData(userID).then((data) => {
+        if (data) {
+          setFolders(data.folders)
+        }
+        else {
+          setFolders([])
+        }
       })
-      
     }
+
 
     setFolderName('')
     setShowCreateFolder(false)
   }
 
+  const deleteFolder = (uid, folderName) => {
+    deleteFolderDB(uid, folderName)
+    setFolders(folders.filter(folder => folder.name != folderName))
+    setShowAskToDelete(false)
+  }
+
+  const [showAskToDelete, setShowAskToDelete] = useState(false)
+
   const [showWordSection, setShowWordSection] = useState(false)
 
-  const openWordSection = () => {
+  const openWordSection = (folderName) => {
     setShowWordSection(true)
     setShowCreateFolder(false)
+    setLoader(true)
+    setCurrentFolder(folderName)
+
+    getFolderDataDB(userID, folderName).then((data) =>  {
+      if (data) {
+        setWords(data);
+        setLoader(false);
+      }
+    }).catch((error) => {
+      console.error("Error fetching folder data:", error);
+    });
   }
 
   const quitWordSection = () => {
     setShowWordSection(false)
+    setCurrentFolder('')
+    setWords([])
+    getUserData(userID).then((data) => {
+        setUserData(data)
+    })
   }
 
   
@@ -373,8 +470,8 @@ function App() {
                 setFillingIndex(fillingIndex + 1)
               }
               else {
-                // setFillingIndex(0)
-                // setShowFilling(false)
+                setFillingIndex(0)
+                setShowFilling(false)
               }
             }}>Next</button>
           </div>
@@ -433,7 +530,6 @@ function App() {
   }
 
   // Listening 
-
   const [showListening, setShowListening] = useState(false)
   const [listeningCardIndex, setListeningCardIndex] = useState(0)
 
@@ -492,31 +588,125 @@ function App() {
     )
   }
 
+  const [name, setName] = useState('')
+  const [birthYear, setBirthYear] = useState('2000')
+
   return (
     <div className="main">
       {loader && <Loader />}
-      <div className="create-folder-section">
-        <button className='add-folder-btn' onClick={createFolder}><FontAwesomeIcon className='icon' icon={faPlus} /></button>
-        {showCreateFolder && (
-          <div className="create-folder-field">
-            <h3>Create a folder</h3>
-            <input 
-              type="text" 
-              placeholder='Enter folder name' 
-              onChange={e => setFolderName(e.target.value)}
-              value={folderName}
+      <div className="header">
+        <h1>Memo</h1>
+
+        <div className="account-section">
+          <button onClick={() => setShowLoginSection(true)}>
+            <img 
+              src={avatarUrl || "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOEAAADhCAMAAAAJbSJIAAAAilBMVEX///8eLjMNIyl+hYgbLDEAHSQYKi8AGiETJiwAExulqasAFh4AGB/4+fna3N0HICYAEBnn6emRl5nMz9CytrjU1teip6mXnJ4hMje8wMFpcXOLkZM+SU3z9PRWYGOssLEuPEB1e31faGtDTlJUXWFMVlooNzxrc3Y2REji5OQAARHEyMmCiYtcZWdQtK/6AAAJVklEQVR4nO2dW2OiOhCAFUMSBAVEEVDES1Xs6v//e0fX7Vnbas1kBsK2fA99bBySzC2TSafT0tLS0tLS0tLS0tLS0tLS0nJlkB+icTw6rrL16WX7clpnq+MoHkeHcGD6p+EJo6K32OyEI2zfsqSUnPPzX8vybeG4SfnSK6LQ9I/UZlisllIIS3LWvQ/j3BJCLrNiYvrHggmLtRsIiz2S7Z2cTNqBu+4fTP9odSazTSCkgmy3nKXczCb/wsaczOaez4HiXeG+Vx4bvl7zQlu8v0L2c9NiPGSycgVGvD9CimDfzIlMF56FFu+K5S5S0+J8Ylx6UN3yFdIrx6ZFesd45+KX53u4lzRHxnTjqNg9KMyZN2OtDk/k8/cGdxdD0+J18h7p/vuI9HqGbUfK/Arlu+BLk9sxzIIqNuB7WJAZiz7GnMoAfo3FCyPyDbJKNOg9mJMZcMmjXT0TeMXaRXULGNtVmYj7cHtar4B7t64V+gbz9jXKF5ZV24h7+MvadOokqdLIP0YmNW3GtOYt+Bdu1+KoxrUZic8wJ65ewGlgTL4LQeUqdeQYFbDbdWbVCjgzLWDVIhqfwQtVimh4D75R3V6MmyHgWcSKNGrahCV6xanELk5sc3bwI8yuwLsJE1OezD14Qu+jlmZ80UfIklrAvYlo4it84mAqdk1L9AmXVKFGDdIyb5Bqm8GuSVrmDb6jS09ldSad1LEyKgHHzTH173GI0uHhw2oR0zBOYxUbukYv0KzTlM7fZpdqKEtKujUREDioOdXvkbaTbPer3mq/TeDlNg9gHH/41iNxZpj9uu4f3n5NfijWrzQm1u9hBRx6BD+D2cn047fO4x2JjB72lHhBsJwsPr1nmwcxxemcPOEETAn8UXf9SKeHa4J/7+GUzRztrrHXrzzk+BW9UvkcIyDem2FPEvEpfjOiPJsEOzyzfz0Z4pePHiPRF3CMVqTu8+87Ru9FhUEeUWJ3oaeSvJ0J5ChcO6ORYqdQbpXG2WItkrY6RdtCW80aD23kOHKhJ+AEu0H8o+JIR6xn6OqV3K6QHgeTqtFbiPXurZWOgDl2CgHDYj9m19UJMfpYFeeq58IirE4TfQ0JsaaCMcBg2ESJjsFA6xnQ3sAvU7iumWH1m4B4GmPslvDhB8PoqCKAhKYTbDIIHmFM0C5pAMlID9DpLg+6TNFGmHHQeOicLHiZbrCLlO1A4+2wEvINTMAQvWoYTH8v8YEwLP/dxzrD0LgUHWt3BawYfI1PsdmgAdFftCvXoAEJcmABZNXgd8XZ6EMEHFIM+CxDc8svik8KMcAFftF0fUht1pTg7MCGbMQ9QaYbpL7RxumMhFRn4HX3GU89ZgtJTkeW6gKiY+7f2OoxW0ywKwA5hXNAivX0fwNwhvGHBxeEeshNoWi6gCQfOm15BWDzezQn98qTSDOFXUv9tJTi0PCCGCkNNyLZFJC06YDom56NsErQNqEq1+Fz1ZA0xLvBb2Mun1uMfEn1PZly0emBZuNfsLZPP+uWrlzHU20AExFWefmLr0UcLAgLVx1Vc4FOfN3ib75aqPmGsjJXOb1H4mH8j0weBxnRjrS22lYtqh3RVjxzZ3V/GvOVQ1u36qtZp07nSF2q5/NPBUOXkiFJXTtuqR7noVPsn2B2sopuVc4g6iWCvKhT+SAhq+DiAbNEcpqm0fAwjNLpKRFWBUWryhEiQRrqHkz6nhMEgeP5hPWXtygno07NujyijnKN20sTK/NV4C+KEqKrP0yhWN1CPIdcWr79CN+SpGOpziHZPmSW55bZcRTH/XvE8eiYla5HplaV9yGNLmUykMc0fxZbDPK0Jx0a5aqsSynsIfOtDFCLkVkU/o2yPSTwaaTfgzXrPBxt/HdV9mnQfilzFvBmpIcFuh2Fsl+KjS046AThLwW2pYhybIGMD/1S9zbSocStHuX4EBfj2yf9a4GDE+rjKsf4qDyNwN3PzTAiKudpMLk2H3bW/Jk1Qgko59oQ+VIJrPm4w1zbaqjnS/Vz3qyLv/Kof6FTPeetf25B0q9Cu/8GoNxb9+wJf1XuN7o+FeDsqdAzF4zR9BrNNdcp4PxQ8wxYUHU5mOqZDMAZsN45PrOIBOx0tK57gW52a9ViEPZu1JpESC2GXj2NTdcyJtTZJqB6Gh1VA6yc+xqdNAOoOFGnrs2j7Gis84lBdW06tYkW5QscBw2T6IFGgK8SaBXyE+COI3CXwK8Egfb5c+DZMGCNcAj2DZXjazXg5ZjAOm94OSTyWvxHwIVg4F0CvhQEcJlUADuO4PsW4DszijdilceHejXgOzNgZUYsIfRusEZnBegyNSyhxt016P1DwxLq3HUG3iE1K6FW0wGg0TcrIdDcXwHe5TYrodZdbmBCyKiEevfxgbrGqISaPRVgaVOTEur2xYD5hiYl1PeJIQbDoIT6/WlA7X8MSojoMQS5f2xOQuCd6vcAen3ZtK8yTtT9DVwXU/UIQ9BGwOon7bh+bYCee6TpUkgqDJtcUK9xI20E/0t5G2L7JgJ6X/KETtcc1Fvco3tfAvqXco/ondu8UL+lQHAoCzmuFEnWw5Ml6nqUogctqI8wu/QJxgI5vKToI/wDekF3QqUX0k3AGNGR5bfvyX5ep0173OKKT9ZX/we8jfD937f4AW+U/IB3Zn7AW0E/4L2nhr3ZRZtR+MO3f3et0+k35u08nX6sSjTk/UOnwrdIm/GGperNGC2+/Tuk51k0vVCDSmfwwrd/D/isUU2+6exWpkVv+fbvcpt8W70ST+YeYWki0tC/16jD3q17MzKXPFz6mrjmzciJ61cViJZ1rlRrV8EDwM8YZLWZDeZkhEknAGNWTzbcYpQXHUCEWVD9NLIgq1OHfiRlVe9Gn9dk5R+R96gea7yL9HpmduAtw7VXleHg7om2hkWXdEPcWe4Kc+aGF+gN6c6llpG7iTENepdx6VHuR+mVzZLvQnpyqcyj5S6asz5vmayEwC9WLpx9bVESmLyYez5GSO57JVHNSmVMZtpCct8tj82dvhsms60D9gOkHWxmE/PmXZWwWLuBsJSqjRg7S+etC8pbtvUwLFZLKYQlH8rJuLSEkMus+CfW5l3CqOgtNjvhCNu/vKouOefy8sK6bwvHTeaLXhGZjByIGOSHaByPjqtsfXrZvpzW2eo4isfRIfx3tl1LS0tLS0tLS0tLS0tLS0tL1fwH0SzB6Je3D6oAAAAASUVORK5CYII="}
+              alt=""
+              style={{ width: 32, height: 32, borderRadius: "50%" }} 
             />
-            <button onClick={handleFolderNameChange}>Add folder</button>
-          </div>
-        )}
+            {userID ? userName : 'Sign in'}
+          </button>
+
+          {showLoginSection && (
+            <div className="login-section" onClick={() => setShowLoginSection(false)}>
+              <div className="login-container"  onClick={e => e.stopPropagation()}>
+                <button className='quitLogin' onClick={() => setShowLoginSection(false)}><FontAwesomeIcon icon={faXmark} /></button>
+                <h1>Sign in</h1>
+                <div className="login-options">
+                  <button onClick={loginWithGoogle}><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/800px-Google_%22G%22_logo.svg.png" alt="" />Continue with Google</button>
+                  <button><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Facebook_Logo_%282019%29.png/500px-Facebook_Logo_%282019%29.png" alt="" />Continue with Facebook</button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
-      <div className="folder-list">
-        {folders.map((folder, index) => (
-          <div className="folder" key={index} onClick={openWordSection}>{folder}</div>
-        ))}
+      <div className="content">
+        <div className="sidebar">
+          <ul>
+            <li><FontAwesomeIcon icon={faFolder} className='icon' />Vocabulary</li>
+            <li><FontAwesomeIcon icon={faDumbbell} className='icon' />Practice</li>
+            <li><FontAwesomeIcon icon={faTrophy} className='icon' />Rank</li>
+            <li><FontAwesomeIcon icon={faChartSimple} className='icon' />Progress</li>
+          </ul>
+        </div>
+
+        <div className="main-content">
+          <div className="vocabulary-section">
+            <button className='add-folder-btn' onClick={createFolder}><FontAwesomeIcon className='icon' icon={faPlus} />  Create folder</button>
+            {showCreateFolder && (
+              <div className="create-folder-section" onClick={() => setShowCreateFolder(false)}>
+                  <div className="create-folder-field" onClick={e => e.stopPropagation()}>
+                    <button onClick={() => setShowCreateFolder(false)} className='close-create-folder-btn'><FontAwesomeIcon icon={faX} /></button>
+                    <h3>Create a folder</h3>
+                    <input 
+                      type="text" 
+                      placeholder='Enter folder name' 
+                      onChange={e => setFolderName(e.target.value)}
+                      value={folderName}
+                    />
+                    <button onClick={addFolder}>Add folder</button>
+                  </div>
+              </div>
+            )}
+            <div className="search-folder">
+              <div className="search-field">
+                <FontAwesomeIcon icon={faMagnifyingGlass} className='search-icon' />
+                <input 
+                  type="text" 
+                  placeholder='Search folder...'
+                  onChange={e => {
+                    const searchValue = e.target.value.toLowerCase();
+                    const filteredFolders = JSON.parse(localStorage.getItem('folders')).filter(folder => folder.toLowerCase().includes(searchValue));
+                    setFolders(filteredFolders);
+                  }}
+                />
+              </div>
+              <button className='sort-btn' onClick={() => console.log(userData.folders.SAT.length)}>Sort</button>
+            </div>
+            <div className="folder-list">
+              {folders.map((folder, index) => (
+                <div className="folder-item" key={index}>
+                  <div className="folder" onClick={() => openWordSection(folder)}>
+                    <FontAwesomeIcon icon={faFolder} className='folder-icon' />
+                    <h2>{folder.name}</h2>
+                    <p>{folder.items.length || 0} words</p>
+                    
+                    <div className="more" onClick={(e) => {e.stopPropagation()}}>
+                      <FontAwesomeIcon icon={faEllipsis} />
+                      <div className="more-options">
+                        <button className='edit-folder-btn'><FontAwesomeIcon icon={faPenToSquare} /> Edit</button>
+                        <button className='delete-folder-btn' onClick={() => setShowAskToDelete(true)}><FontAwesomeIcon icon={faTrash} /> Delete</button>
+                        
+                      </div>
+                    </div>
+
+
+                  </div>
+                  {showAskToDelete &&(
+                    <div className="ask-to-delete-section" onClick={() => setShowAskToDelete(false)}>
+                      <div className="ask-to-delete" onClick={e => e.stopPropagation()}>
+                        <h3>Do you want to delete this folder?</h3>
+                        <div className="options">
+                          <button onClick={() => setShowAskToDelete(false)}>No, keep it</button>
+                          <button onClick={() => deleteFolder(userID, folder.name)} className='deleteFolderBtn'>Yes, delete it</button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            
+          </div>
+
+        </div>
       </div>
       
+
+
       {showWordSection && (
         <div className="word-section">
           <div className="word-section-header">
@@ -880,6 +1070,7 @@ function App() {
         </div>
       )}
     </div>
+    
   )
 }
 
