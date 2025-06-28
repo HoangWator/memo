@@ -39,14 +39,17 @@
   margin-bottom: 20px;
 
 }
-.login-section .login-container button 
+.login-section .login-container  button 
 {
   display: block;
-  margin-bottom: 20px;
   background-color: #fff;
   border: 2px solid #dadce0;
   color: #333;
   padding: 10px 20px;
+}
+.login-section .login-container .login-options button 
+{
+  width: 280px;
 }
 .login-section .login-container button.quitLogin 
 {
@@ -160,7 +163,7 @@
   padding: 10px 10px 10px 40px;
   width: 300px;
 }
-.vocabulary-section .search-folder  .sort-btn
+.vocabulary-section .search-folder .sort-btn
 {
   margin-left: 10px;
   padding: 10px;
@@ -222,10 +225,13 @@
 {
   display: inline-block;
   width: 100%;
+  max-height: 100%;
+  /* overflow-y: scroll; */
 
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
+  padding-bottom: 10px;
 }
 
 .folder-list .folder 
@@ -278,10 +284,10 @@
 {
   display: flex;
 }
-.folder-list .folder:hover .more-options 
+/* .folder-list .folder:hover .more-options 
 {
   display: none;
-}
+} */
 .folder-list .folder:hover .more:hover 
 {
   background-color: #f5f5f5;
@@ -290,13 +296,14 @@
 .folder-list .folder .more .more-options
 {
   position: absolute;
-  top: 30px;
+  top: 20px;
   right: -10px;
   background-color: #fff;
   box-shadow: 0 0 5px #ddd;
   border-radius: 0.5em;
   padding: 10px;
   display: none;
+  z-index: 1;
 }
 .folder-list .folder .more .more-options button 
 {
@@ -336,6 +343,7 @@
   justify-content: center;
   align-items: center;
   background-color: rgba(0, 0, 0, 0.1);
+  z-index: 2;
 }
 .ask-to-delete-section .ask-to-delete 
 {
@@ -372,6 +380,35 @@
 {
   background-color: #cc0000;
   border: 1px solid #cc0000;
+}
+
+.rename-folder-section 
+{
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 3;
+}
+.rename-folder
+{
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 0.5em;
+}
+.rename-folder h3 
+{
+  color: #333;
+}
+.rename-folder input 
+{
+  margin: 20px 0;
+  padding: 15px 20px;
 }
 
 input, button

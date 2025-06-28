@@ -47,10 +47,55 @@ export async function addFolderDB(uid, folderName) {
   }
 }
 
+export async function deleteFolderDB(uid, folderName) {
+  try {
+    await updateDoc(doc(db, "users", uid), {
+      [`folders.${folderName}`]: deleteField()
+    });
+  } catch (e) {
+    console.error("Error deleting document: ");
+  }
+}
+
+export async function renameFolderDB(uid, clickedFolder, newFolderName) {
+  try {
+    const docRef = doc(db, "users", uid);
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+      const folders = data.folders || {};
+
+      // If the old folder exists and the new one does not
+      if (folders[clickedFolder] && !folders[newFolderName]) {
+        // Copy the data to the new folder name
+        await updateDoc(docRef, {
+          [`folders.${newFolderName}`]: folders[clickedFolder],
+          [`folders.${clickedFolder}`]: deleteField()
+        });
+      } else {
+        console.error("Rename failed: Folder does not exist or new name already taken.");
+      }
+    }
+  } catch (e) {
+    console.error("Error deleting document: ");
+  }
+}
+
 export async function addWordDB(uid, folderName, word) {
   try {
     await updateDoc(doc(db, "users", uid), {
       [`folders.${folderName}`]: arrayUnion(word)
+    });
+  } catch (e) {
+    console.error("Error adding document: ", e);
+  }
+}
+
+export async function deleteWordDB(uid, folderName, word) {
+  try {
+    await updateDoc(doc(db, "users", uid), {
+      [`folders.${folderName}`]: arrayRemove(word)
     });
   } catch (e) {
     console.error("Error adding document: ", e);
@@ -74,12 +119,3 @@ export async function getFolderDataDB(uid, folderName) {
   }
 }
 
-export async function deleteFolderDB(uid, folderName) {
-  try {
-    await updateDoc(doc(db, "users", uid), {
-      [`folders.${folderName}`]: deleteField()
-    });
-  } catch (e) {
-    console.error("Error deleting document: ");
-  }
-}

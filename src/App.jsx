@@ -13,8 +13,8 @@ import { auth, db, googleProvider } from './firebase-config.js'
 import { isAlreadyLogin } from './handleData.js'
 import { addUser } from './handleData.js'
 import { getUserData } from './handleData.js'
-import { addFolderDB, deleteFolderDB } from './handleData.js'
-import { addWordDB } from './handleData.js'
+import { addFolderDB, deleteFolderDB, renameFolderDB } from './handleData.js'
+import { addWordDB,deleteWordDB } from './handleData.js'
 import { getFolderDataDB } from './handleData.js'
 
 
@@ -63,6 +63,7 @@ function App() {
       // Get user's folders
       getUserData(user.uid).then((data) => {
         if (data) {
+          console.log(Object.keys(data.folders))
           setFolders(Object.keys(data.folders))
           setUserData(data)
         }
@@ -152,6 +153,7 @@ function App() {
     setShowCreateFolder(!showCreateFolder)
   }
 
+  // Add folder to Firestore
   const addFolder = () => {
     if (folderName != '') {
       addFolderDB(userID, folderName)
@@ -159,9 +161,11 @@ function App() {
       getUserData(userID).then((data) => {
         if (data) {
           setFolders(Object.keys(data.folders))
+          setUserData(data)
         }
         else {
           setFolders([])
+          // setUserData(data)
         }
       })
     }
@@ -171,10 +175,28 @@ function App() {
     setShowCreateFolder(false)
   }
 
+  // Delete folder
   const deleteFolder = (uid, folderName) => {
     deleteFolderDB(uid, folderName)
-    setFolders(folders.filter(folder => folder.name != folderName))
+    setFolders(folders.filter(folder => folder != folderName))
     setShowAskToDelete(false)
+  }
+
+  // Rename folder
+  const [showRenameFolderSection, setShowRenameFolderSection] = useState(false)
+  const [newFolderName, setNewFolderName] = useState('')
+  const [renameTarget, setRenameTarget] = useState(null);
+
+  const renameFolder = async (uid, clickedFolder, newFolderName) => {
+    setShowRenameFolderSection(false)
+    console.log(clickedFolder)
+
+    await renameFolderDB(uid, clickedFolder, newFolderName)
+
+    const data = await getUserData(userID);
+    setUserData(data);
+    setFolders(Object.keys(data.folders));
+    setRenameTarget('')
   }
 
   const [showAskToDelete, setShowAskToDelete] = useState(false)
@@ -182,6 +204,7 @@ function App() {
   const [showWordSection, setShowWordSection] = useState(false)
 
   const openWordSection = (folderName) => {
+    console.log(folderName)
     setShowWordSection(true)
     setShowCreateFolder(false)
     setLoader(true)
@@ -641,6 +664,11 @@ function App() {
                       type="text" 
                       placeholder='Enter folder name' 
                       onChange={e => setFolderName(e.target.value)}
+                      onKeyDown={e => {
+                        if (e.key === 'Enter') {
+                          addFolder();
+                        }
+                      }}
                       value={folderName}
                     />
                     <button onClick={addFolder}>Add folder</button>
@@ -672,27 +700,50 @@ function App() {
                     <div className="more" onClick={(e) => {e.stopPropagation()}}>
                       <FontAwesomeIcon icon={faEllipsis} />
                       <div className="more-options">
-                        <button className='edit-folder-btn'><FontAwesomeIcon icon={faPenToSquare} /> Edit</button>
-                        <button className='delete-folder-btn' onClick={() => setShowAskToDelete(true)}><FontAwesomeIcon icon={faTrash} /> Delete</button>
-                        
+                        <button className='edit-folder-btn' onClick={() => {
+                          setShowRenameFolderSection(true)
+                          setRenameTarget(folder)
+                        }}><FontAwesomeIcon icon={faPenToSquare} /> Rename</button>
+                        <button className='delete-folder-btn' onClick={() => {
+                          setShowAskToDelete(true)
+                          setRenameTarget(folder)
+                        }}><FontAwesomeIcon icon={faTrash} /> Delete</button>
                       </div>
                     </div>
 
-
                   </div>
-                  {showAskToDelete &&(
+                  {showRenameFolderSection && renameTarget === folder && (
+                      <div className="rename-folder-section" onClick={() => setShowRenameFolderSection(false)}>
+                        <div className="rename-folder" onClick={e => e.stopPropagation()}>
+                          <h3>Rename folder</h3>
+                          <input type="text" placeholder='New folder name...'
+                            onChange={(e) => setNewFolderName(e.target.value)}
+                          />
+                          <button onClick={() => {
+                            renameFolder(userID, folder, newFolderName)
+                          }}>Rename</button>
+                        </div>
+                      </div>
+                    )
+                  }
+                  
+                  {showAskToDelete && renameTarget === folder  && (
                     <div className="ask-to-delete-section" onClick={() => setShowAskToDelete(false)}>
                       <div className="ask-to-delete" onClick={e => e.stopPropagation()}>
                         <h3>Do you want to delete this folder?</h3>
                         <div className="options">
                           <button onClick={() => setShowAskToDelete(false)}>No, keep it</button>
-                          <button onClick={() => deleteFolder(userID, folder.name)} className='deleteFolderBtn'>Yes, delete it</button>
+                          <button onClick={() => deleteFolder(userID, folder)} className='deleteFolderBtn'>Yes, delete it</button>
                         </div>
                       </div>
                     </div>
                   )}
                 </div>
               ))}
+
+              
+
+              
             </div>
 
             
@@ -785,6 +836,7 @@ function App() {
                             const newWords = words.filter((words, i) => i !== index)
                             localStorage.setItem('words', JSON.stringify(newWords))
                             setWords(newWords)
+                            deleteWordDB(userID, currentFolder, word)
                           }}><FontAwesomeIcon icon={faTrash} /></button>
                         </li>
                       )
