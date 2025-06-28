@@ -63,7 +63,8 @@ function App() {
       // Get user's folders
       getUserData(user.uid).then((data) => {
         if (data) {
-          setFolders(data.folders)
+          setFolders(Object.keys(data.folders))
+          setUserData(data)
         }
         else {
           setFolders([])
@@ -109,10 +110,6 @@ function App() {
       if (word != '' && meaning != '') {
         const newWords = [...prev, {name: word.toLowerCase(), mean: meaning}]
         return newWords 
-      }
-      else {
-        const newWords = JSON.parse(localStorage.getItem('words'))
-        return newWords
       }
     })
 
@@ -161,7 +158,7 @@ function App() {
 
       getUserData(userID).then((data) => {
         if (data) {
-          setFolders(data.folders)
+          setFolders(Object.keys(data.folders))
         }
         else {
           setFolders([])
@@ -205,7 +202,7 @@ function App() {
     setCurrentFolder('')
     setWords([])
     getUserData(userID).then((data) => {
-        setUserData(data)
+      setUserData(data)
     })
   }
 
@@ -663,16 +660,15 @@ function App() {
                   }}
                 />
               </div>
-              <button className='sort-btn' onClick={() => console.log(userData.folders.SAT.length)}>Sort</button>
+              <button className='sort-btn'>Sort</button>
             </div>
             <div className="folder-list">
               {folders.map((folder, index) => (
                 <div className="folder-item" key={index}>
                   <div className="folder" onClick={() => openWordSection(folder)}>
                     <FontAwesomeIcon icon={faFolder} className='folder-icon' />
-                    <h2>{folder.name}</h2>
-                    <p>{folder.items.length || 0} words</p>
-                    
+                    <h2>{folder}</h2>
+                    <p>{userData.folders[folder].length || 0} words</p>
                     <div className="more" onClick={(e) => {e.stopPropagation()}}>
                       <FontAwesomeIcon icon={faEllipsis} />
                       <div className="more-options">

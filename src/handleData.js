@@ -17,7 +17,7 @@ export async function isAlreadyLogin(uid) {
 export async function addUser(uid) {
   try {
     await setDoc(doc(db, "users", uid), {
-      folders: []
+      folders: {}
     });
 
   } catch (e) {
@@ -40,12 +40,8 @@ export async function getUserData(uid) {
 export async function addFolderDB(uid, folderName) {
   try {
     await updateDoc(doc(db, "users", uid), {
-      folders: arrayUnion({
-        name: folderName,
-        items: []
-      })
-    });
-
+      [`folders.${folderName}`]: []
+    })
   } catch (e) {
     console.error("Error adding document: ", e);
   }
@@ -53,32 +49,9 @@ export async function addFolderDB(uid, folderName) {
 
 export async function addWordDB(uid, folderName, word) {
   try {
-    const docRef = doc(db, "users", uid);
-    const docSnap = await getDoc(docRef);
-
-    if (docSnap.exists()) {
-      const data = docSnap.data();
-      const folders = data.folders || [];
-      // Find the folder by name
-      const folderIndex = folders.findIndex(f => f.name === folderName);
-      if (folderIndex !== -1) {
-        // Add the word to the folder's items
-        const updatedFolder = {
-          ...folders[folderIndex],
-          items: [...folders[folderIndex].items, word]
-        };
-        // Create a new folders array with the updated folder
-        const updatedFolders = [
-          ...folders.slice(0, folderIndex),
-          updatedFolder,
-          ...folders.slice(folderIndex + 1)
-        ];
-        // Update Firestore
-        await updateDoc(docRef, {
-          folders: updatedFolders
-        });
-      }
-    }
+    await updateDoc(doc(db, "users", uid), {
+      [`folders.${folderName}`]: arrayUnion(word)
+    });
   } catch (e) {
     console.error("Error adding document: ", e);
   }
@@ -103,21 +76,9 @@ export async function getFolderDataDB(uid, folderName) {
 
 export async function deleteFolderDB(uid, folderName) {
   try {
-    // Get the user document
-    const docRef = doc(db, "users", uid);
-    const docSnap = await getDoc(docRef);
-
-    if (docSnap.exists()) {
-      const data = docSnap.data();
-      const folders = data.folders || [];
-      // Find the folder object to remove
-      const folderToRemove = folders.find(f => f.name === folderName);
-      if (folderToRemove) {
-        await updateDoc(docRef, {
-          folders: arrayRemove(folderToRemove)
-        });
-      }
-    }
+    await updateDoc(doc(db, "users", uid), {
+      [`folders.${folderName}`]: deleteField()
+    });
   } catch (e) {
     console.error("Error deleting document: ");
   }
