@@ -1,38 +1,69 @@
 import { useState } from 'react'
+import { useEffect } from 'react';
+import { useRef } from 'react';
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
 import ReactDOM from 'react-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPlus,faArrowLeft,faTrash,faXmark,faMagnifyingGlass,faVolumeHigh,faFolder,faDumbbell,faTrophy,faChartSimple,faEllipsis,faPenToSquare,faX } from '@fortawesome/free-solid-svg-icons'
+import { faPlus,faArrowLeft,faTrash,faXmark,faMagnifyingGlass,faVolumeHigh,faFolder,faDumbbell,faTrophy,faChartSimple,faEllipsis,faPenToSquare,faX,faArrowRightFromBracket } from '@fortawesome/free-solid-svg-icons'
 import { geneAI } from './gemini'
 import useSound from 'use-sound';
 import { getWordData } from './gemini'
 import { signInWithPopup,signOut  } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
 import { auth, db, googleProvider } from './firebase-config.js'
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
 import { isAlreadyLogin } from './handleData.js'
 import { addUser } from './handleData.js'
 import { getUserData } from './handleData.js'
 import { addFolderDB, deleteFolderDB, renameFolderDB } from './handleData.js'
 import { addWordDB,deleteWordDB } from './handleData.js'
 import { getFolderDataDB } from './handleData.js'
+import { meaningSuggestion } from './gemini.js'
 
 
 function App() {
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUserID(user.uid);
+        setUserName(user.displayName);
+        setAvatarUrl(user.photoURL);
+
+        // Optionally, fetch user data here
+        getUserData(user.uid).then((data) => {
+          if (data) {
+            setFolders(Object.keys(data.folders));
+            setUserData(data);
+          } else {
+            setFolders([]);
+          }
+        });
+      } else {
+        setUserID('');
+        setUserName('');
+        setAvatarUrl('');
+        setFolders([]);
+        setUserData('');
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
   const [userID, setUserID] = useState('')
   const [userName, setUserName] = useState('')
   const [userData, setUserData] = useState('')
   const [avatarUrl, setAvatarUrl] = useState('')
+
+  const meaningInputRef = useRef(null);
+  const wordInputRef = useRef(null);
 
   const [folderName, setFolderName] = useState('')
   const [folders, setFolders] = useState([])
 
   const [word, setWord] = useState('')
   const [meaning, setMeaning] = useState('')
-  const [words, setWords] = useState(() => {
-    const localWords = JSON.parse(localStorage.getItem('words'))
-    return localWords ?? []
-  })
+  const [words, setWords] = useState([])
   const [currentFolder, setCurrentFolder] = useState('')
 
   const [showMoreOptions, setShowMoreOptions] = useState(false)
@@ -43,7 +74,6 @@ function App() {
       const result = await signInWithPopup(auth, googleProvider);
       // The signed-in user info.
       const user = result.user;
-      alert(`Welcome ${user.displayName}!`);
       setUserID(user.uid)
       setUserName(user.displayName);
       setAvatarUrl(user.photoURL);
@@ -89,12 +119,9 @@ function App() {
     }
   }
 
+  const [showLogoutSection, setShowLogoutSection] = useState(false)
   const exitAccount = () => {
-    signOut(auth).then(() => {
-      alert('Sign-out successful.')
-    }).catch((error) => {
-      alert(error.message);
-    });
+    signOut(auth)
   }
 
   function shuffleArray(array) {
@@ -107,14 +134,8 @@ function App() {
   }
   
   const addWord = () => {
-    setWords(prev => {
-      if (word != '' && meaning != '') {
-        const newWords = [...prev, {name: word.toLowerCase(), mean: meaning}]
-        return newWords 
-      }
-    })
-
     if (word != '' && meaning != '') {
+      setWords([...words, {name: word.toLowerCase(), mean: meaning}])
       addWordDB(userID, currentFolder, {name: word.toLowerCase(), mean: meaning})
     }
 
@@ -141,7 +162,6 @@ function App() {
 
   const [showLearn, setShowLearn] = useState(false)
   const learnBtn = () => {
-    const words = JSON.parse(localStorage.getItem('words'))
     setShowLearn(true)
     setData(words ?? [])
     setIndexLearn(0)
@@ -212,6 +232,7 @@ function App() {
 
     getFolderDataDB(userID, folderName).then((data) =>  {
       if (data) {
+        console.log(data)
         setWords(data);
         setLoader(false);
       }
@@ -223,7 +244,6 @@ function App() {
   const quitWordSection = () => {
     setShowWordSection(false)
     setCurrentFolder('')
-    setWords([])
     getUserData(userID).then((data) => {
       setUserData(data)
     })
@@ -232,21 +252,37 @@ function App() {
   
 
   // Suggest meaning feature
+  const meaningRefs = useRef([]);
+  
   const [meaningList, setMeaningList] = useState([])
   const [showMeaningList, setShowMeaningList] = useState(false)
+  const [selectedMeaningIndex, setSelectedMeaningIndex] = useState(-1);
+  const [meaningListLoader, setMeaningListLoader] = useState(false)
   const suggestMeaning = () => {
     if (word) {
-      const wordData = getWordMeaning(word);
-      wordData.then((data) => {
-        setMeaningList(data.definition);
-      })
-      .catch((error) => {
-        console.error("Error fetching word meaning:", error);
-      });
-  
       setShowMeaningList(true);
+      setMeaningListLoader(true)
+      
+      meaningSuggestion(word).then(data => {
+        console.log(data)
+        setMeaningList(data)
+        setMeaningListLoader(false)
+      })
     }    
   }
+
+  useEffect(() => {
+    if (
+      showMeaningList &&
+      selectedMeaningIndex !== -1 &&
+      meaningRefs.current[selectedMeaningIndex]
+    ) {
+      meaningRefs.current[selectedMeaningIndex].scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',
+      });
+    }
+  }, [selectedMeaningIndex, showMeaningList, meaningList]);
 
   //search word
   const searchWord = (e) => {
@@ -280,8 +316,7 @@ function App() {
   const [noMatchedList, setNoMatchedList] = useState([])
   const [resultTitle, setResultTitle] = useState('Hell nah')
 
-  const generateMatching = () => {
-    const words = JSON.parse(localStorage.getItem('words'))
+  const generateMatching = (words) => {
     let nameWords = []
     let meanWords = []
     words.forEach(word => {
@@ -389,7 +424,6 @@ function App() {
               setClickedMean('')
               setMatchedList([])
               setNoMatchedList([])
-              setShowMatching(false)
               generateMatching()
               }}>Retry</button>
             <button className='quitMatchingBtn' onClick={() => {
@@ -482,16 +516,21 @@ function App() {
         </div>
         
         { clicked !== -1 && (
-          <div className={explainClassName}>
+          <div className={'filling-answer-explain'}>
             <h3>Answer:</h3>
             <p>{startQuestion}<span className='mark-ans'>{ans}</span>{endQuestion}</p>
             <button onClick={() => {
               if (fillingIndex < fillingQuestions.length - 1) {
                 setFillingIndex(fillingIndex + 1)
+                setNumberQuestionDone(numberQuestionDone + 1)
               }
               else {
-                setFillingIndex(0)
-                setShowFilling(false)
+                // setFillingIndex(0)
+                if (numberQuestionDone < fillingQuestions.length) {
+                  setNumberQuestionDone(numberQuestionDone + 1)
+
+                }
+                // setShowFilling(false)
               }
             }}>Next</button>
           </div>
@@ -500,13 +539,9 @@ function App() {
     )
   }
 
-  const generateFilling = () => {
-    const wordList = JSON.parse(localStorage.getItem('words'))
+  const generateFilling = (wordList) => {
     let words = []
-    for (const item of wordList) {
-      words.push(item.name)
-    }
-
+    wordList.forEach(item => words.push(item.name))
     
     if (words.length > 0) {
       setLoader(true)
@@ -527,10 +562,13 @@ function App() {
     setShowFilling(false)
     setFillingQuestions([])
     setFillingIndex(0)
+    setNumberQuestionDone(0)
   }
 
+  const [numberQuestionDone, setNumberQuestionDone] = useState(0)
+
   function ProgressBar() {
-    const progress = Math.floor((fillingIndex + 1) / fillingQuestions.length * 100);
+    const progress = Math.floor(numberQuestionDone / fillingQuestions.length * 100);
     let progressCln
     if (progress > 0 && progress <= 25) {
       progressCln = 'progress low';
@@ -553,8 +591,7 @@ function App() {
   const [showListening, setShowListening] = useState(false)
   const [listeningCardIndex, setListeningCardIndex] = useState(0)
 
-  const generateListening = () => {
-    const words = JSON.parse(localStorage.getItem('words'))
+  const generateListening = (words) => {
     if (words.length > 0) {
       setShowListening(true)
     }
@@ -582,6 +619,16 @@ function App() {
               if (e.key === 'Enter') {
                 setUserInput(e.target.value)
                 console.log(e.target.value === word);
+              }
+              if (e.key === 'ArrowRight') {
+                if (listeningCardIndex < words.length - 1) {
+                  setListeningCardIndex(listeningCardIndex + 1);
+                }
+                else {
+                  setListeningCardIndex(0);
+                  setShowListening(false);
+                }
+                setUserInput('');
               }
             }}
           />
@@ -614,36 +661,12 @@ function App() {
   return (
     <div className="main">
       {loader && <Loader />}
-      <div className="header">
-        <h1>Memo</h1>
-
-        <div className="account-section">
-          <button onClick={() => setShowLoginSection(true)}>
-            <img 
-              src={avatarUrl || "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOEAAADhCAMAAAAJbSJIAAAAilBMVEX///8eLjMNIyl+hYgbLDEAHSQYKi8AGiETJiwAExulqasAFh4AGB/4+fna3N0HICYAEBnn6emRl5nMz9CytrjU1teip6mXnJ4hMje8wMFpcXOLkZM+SU3z9PRWYGOssLEuPEB1e31faGtDTlJUXWFMVlooNzxrc3Y2REji5OQAARHEyMmCiYtcZWdQtK/6AAAJVklEQVR4nO2dW2OiOhCAFUMSBAVEEVDES1Xs6v//e0fX7Vnbas1kBsK2fA99bBySzC2TSafT0tLS0tLS0tLS0tLS0tLS0nJlkB+icTw6rrL16WX7clpnq+MoHkeHcGD6p+EJo6K32OyEI2zfsqSUnPPzX8vybeG4SfnSK6LQ9I/UZlisllIIS3LWvQ/j3BJCLrNiYvrHggmLtRsIiz2S7Z2cTNqBu+4fTP9odSazTSCkgmy3nKXczCb/wsaczOaez4HiXeG+Vx4bvl7zQlu8v0L2c9NiPGSycgVGvD9CimDfzIlMF56FFu+K5S5S0+J8Ylx6UN3yFdIrx6ZFesd45+KX53u4lzRHxnTjqNg9KMyZN2OtDk/k8/cGdxdD0+J18h7p/vuI9HqGbUfK/Arlu+BLk9sxzIIqNuB7WJAZiz7GnMoAfo3FCyPyDbJKNOg9mJMZcMmjXT0TeMXaRXULGNtVmYj7cHtar4B7t64V+gbz9jXKF5ZV24h7+MvadOokqdLIP0YmNW3GtOYt+Bdu1+KoxrUZic8wJ65ewGlgTL4LQeUqdeQYFbDbdWbVCjgzLWDVIhqfwQtVimh4D75R3V6MmyHgWcSKNGrahCV6xanELk5sc3bwI8yuwLsJE1OezD14Qu+jlmZ80UfIklrAvYlo4it84mAqdk1L9AmXVKFGDdIyb5Bqm8GuSVrmDb6jS09ldSad1LEyKgHHzTH173GI0uHhw2oR0zBOYxUbukYv0KzTlM7fZpdqKEtKujUREDioOdXvkbaTbPer3mq/TeDlNg9gHH/41iNxZpj9uu4f3n5NfijWrzQm1u9hBRx6BD+D2cn047fO4x2JjB72lHhBsJwsPr1nmwcxxemcPOEETAn8UXf9SKeHa4J/7+GUzRztrrHXrzzk+BW9UvkcIyDem2FPEvEpfjOiPJsEOzyzfz0Z4pePHiPRF3CMVqTu8+87Ru9FhUEeUWJ3oaeSvJ0J5ChcO6ORYqdQbpXG2WItkrY6RdtCW80aD23kOHKhJ+AEu0H8o+JIR6xn6OqV3K6QHgeTqtFbiPXurZWOgDl2CgHDYj9m19UJMfpYFeeq58IirE4TfQ0JsaaCMcBg2ESJjsFA6xnQ3sAvU7iumWH1m4B4GmPslvDhB8PoqCKAhKYTbDIIHmFM0C5pAMlID9DpLg+6TNFGmHHQeOicLHiZbrCLlO1A4+2wEvINTMAQvWoYTH8v8YEwLP/dxzrD0LgUHWt3BawYfI1PsdmgAdFftCvXoAEJcmABZNXgd8XZ6EMEHFIM+CxDc8svik8KMcAFftF0fUht1pTg7MCGbMQ9QaYbpL7RxumMhFRn4HX3GU89ZgtJTkeW6gKiY+7f2OoxW0ywKwA5hXNAivX0fwNwhvGHBxeEeshNoWi6gCQfOm15BWDzezQn98qTSDOFXUv9tJTi0PCCGCkNNyLZFJC06YDom56NsErQNqEq1+Fz1ZA0xLvBb2Mun1uMfEn1PZly0emBZuNfsLZPP+uWrlzHU20AExFWefmLr0UcLAgLVx1Vc4FOfN3ib75aqPmGsjJXOb1H4mH8j0weBxnRjrS22lYtqh3RVjxzZ3V/GvOVQ1u36qtZp07nSF2q5/NPBUOXkiFJXTtuqR7noVPsn2B2sopuVc4g6iWCvKhT+SAhq+DiAbNEcpqm0fAwjNLpKRFWBUWryhEiQRrqHkz6nhMEgeP5hPWXtygno07NujyijnKN20sTK/NV4C+KEqKrP0yhWN1CPIdcWr79CN+SpGOpziHZPmSW55bZcRTH/XvE8eiYla5HplaV9yGNLmUykMc0fxZbDPK0Jx0a5aqsSynsIfOtDFCLkVkU/o2yPSTwaaTfgzXrPBxt/HdV9mnQfilzFvBmpIcFuh2Fsl+KjS046AThLwW2pYhybIGMD/1S9zbSocStHuX4EBfj2yf9a4GDE+rjKsf4qDyNwN3PzTAiKudpMLk2H3bW/Jk1Qgko59oQ+VIJrPm4w1zbaqjnS/Vz3qyLv/Kof6FTPeetf25B0q9Cu/8GoNxb9+wJf1XuN7o+FeDsqdAzF4zR9BrNNdcp4PxQ8wxYUHU5mOqZDMAZsN45PrOIBOx0tK57gW52a9ViEPZu1JpESC2GXj2NTdcyJtTZJqB6Gh1VA6yc+xqdNAOoOFGnrs2j7Gis84lBdW06tYkW5QscBw2T6IFGgK8SaBXyE+COI3CXwK8Egfb5c+DZMGCNcAj2DZXjazXg5ZjAOm94OSTyWvxHwIVg4F0CvhQEcJlUADuO4PsW4DszijdilceHejXgOzNgZUYsIfRusEZnBegyNSyhxt016P1DwxLq3HUG3iE1K6FW0wGg0TcrIdDcXwHe5TYrodZdbmBCyKiEevfxgbrGqISaPRVgaVOTEur2xYD5hiYl1PeJIQbDoIT6/WlA7X8MSojoMQS5f2xOQuCd6vcAen3ZtK8yTtT9DVwXU/UIQ9BGwOon7bh+bYCee6TpUkgqDJtcUK9xI20E/0t5G2L7JgJ6X/KETtcc1Fvco3tfAvqXco/ondu8UL+lQHAoCzmuFEnWw5Ml6nqUogctqI8wu/QJxgI5vKToI/wDekF3QqUX0k3AGNGR5bfvyX5ep0173OKKT9ZX/we8jfD937f4AW+U/IB3Zn7AW0E/4L2nhr3ZRZtR+MO3f3et0+k35u08nX6sSjTk/UOnwrdIm/GGperNGC2+/Tuk51k0vVCDSmfwwrd/D/isUU2+6exWpkVv+fbvcpt8W70ST+YeYWki0tC/16jD3q17MzKXPFz6mrjmzciJ61cViJZ1rlRrV8EDwM8YZLWZDeZkhEknAGNWTzbcYpQXHUCEWVD9NLIgq1OHfiRlVe9Gn9dk5R+R96gea7yL9HpmduAtw7VXleHg7om2hkWXdEPcWe4Kc+aGF+gN6c6llpG7iTENepdx6VHuR+mVzZLvQnpyqcyj5S6asz5vmayEwC9WLpx9bVESmLyYez5GSO57JVHNSmVMZtpCct8tj82dvhsms60D9gOkHWxmE/PmXZWwWLuBsJSqjRg7S+etC8pbtvUwLFZLKYQlH8rJuLSEkMus+CfW5l3CqOgtNjvhCNu/vKouOefy8sK6bwvHTeaLXhGZjByIGOSHaByPjqtsfXrZvpzW2eo4isfRIfx3tl1LS0tLS0tLS0tLS0tLS0tL1fwH0SzB6Je3D6oAAAAASUVORK5CYII="}
-              alt=""
-              style={{ width: 32, height: 32, borderRadius: "50%" }} 
-            />
-            {userID ? userName : 'Sign in'}
-          </button>
-
-          {showLoginSection && (
-            <div className="login-section" onClick={() => setShowLoginSection(false)}>
-              <div className="login-container"  onClick={e => e.stopPropagation()}>
-                <button className='quitLogin' onClick={() => setShowLoginSection(false)}><FontAwesomeIcon icon={faXmark} /></button>
-                <h1>Sign in</h1>
-                <div className="login-options">
-                  <button onClick={loginWithGoogle}><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/800px-Google_%22G%22_logo.svg.png" alt="" />Continue with Google</button>
-                  <button><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Facebook_Logo_%282019%29.png/500px-Facebook_Logo_%282019%29.png" alt="" />Continue with Facebook</button>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
+      
 
       <div className="content">
         <div className="sidebar">
+          <h1>Memo</h1>
+
           <ul>
             <li><FontAwesomeIcon icon={faFolder} className='icon' />Vocabulary</li>
             <li><FontAwesomeIcon icon={faDumbbell} className='icon' />Practice</li>
@@ -653,6 +676,52 @@ function App() {
         </div>
 
         <div className="main-content">
+          <div className="header">
+            <div className="account-section">
+              <button onClick={() => {
+                if (userID == '') {
+                  setShowLoginSection(true)
+                }
+              }}>
+                <img 
+                  src={avatarUrl || 'https://sbcf.fr/wp-content/uploads/2018/03/sbcf-default-avatar.png'}
+                  alt=""
+                  style={{ width: 32, height: 32, borderRadius: "50%" }} 
+                />
+                {userID ? userName : 'Sign in'}
+              </button>
+
+              {userID != '' && 
+                <button className='logoutBtn' onClick={() => setShowLogoutSection(true)}><FontAwesomeIcon icon={faArrowRightFromBracket} /></button>
+              }
+              {showLogoutSection && (
+                <div className="logout-section" onClick={() => setShowLogoutSection(false)}>
+                  <div className="logout-container" onClick={e => e.stopPropagation()}>
+                    <h2>Do you want to log out?</h2>
+                    <div className="logout-options">
+                      <button onClick={() => {
+                        exitAccount()
+                        setShowLogoutSection(false)
+                      }}>Yes, log out</button>
+                      <button onClick={() => setShowLogoutSection(false)} className='goBack'>No, come back</button>
+                    </div>
+                  </div>
+                </div>
+              )}
+              {showLoginSection && (
+                <div className="login-section" onClick={() => setShowLoginSection(false)}>
+                  <div className="login-container"  onClick={e => e.stopPropagation()}>
+                    <button className='quitLogin' onClick={() => setShowLoginSection(false)}><FontAwesomeIcon icon={faXmark} /></button>
+                    <h1>Sign in</h1>
+                    <div className="login-options">
+                      <button onClick={loginWithGoogle}><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/800px-Google_%22G%22_logo.svg.png" alt="" />Continue with Google</button>
+                      <button><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Facebook_Logo_%282019%29.png/500px-Facebook_Logo_%282019%29.png" alt="" />Continue with Facebook</button>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
           <div className="vocabulary-section">
             <button className='add-folder-btn' onClick={createFolder}><FontAwesomeIcon className='icon' icon={faPlus} />  Create folder</button>
             {showCreateFolder && (
@@ -688,7 +757,6 @@ function App() {
                   }}
                 />
               </div>
-              <button className='sort-btn'>Sort</button>
             </div>
             <div className="folder-list">
               {folders.map((folder, index) => (
@@ -765,53 +833,123 @@ function App() {
                 type="text"
                 placeholder='Enter word'
                 value={word}
+                ref={wordInputRef}
                 onChange={e => setWord(e.target.value)} 
                 onClick={() => setShowMeaningList(false)}
+                onKeyDown={e => {
+                  if (e.key === 'Enter' || e.key === 'ArrowDown') {
+                    // Move focus to meaning input
+                    meaningInputRef.current && meaningInputRef.current.focus();
+                  }
+                }}
               />
               <div className="meaning-section">
                 <input 
                   type="text"
                   placeholder='Enter meaning'
                   value={meaning}
+                  ref={meaningInputRef}
                   onChange={e => {
                     setMeaning(e.target.value)
                     setShowMeaningList(false)
+                    setSelectedMeaningIndex(-1);
+                    if (e.target.value === '/') {
+                      suggestMeaning()
+                    }
                   }} 
-                  // onClick={suggestMeaning}
+                  onKeyDown={e => {
+                    if (showMeaningList && meaningList.length > 0) {
+                      if (e.key === 'ArrowDown') {
+                        e.preventDefault();
+                        setSelectedMeaningIndex(prev =>
+                          prev < meaningList.length - 1 ? prev + 1 : 0
+                        );
+                      } else if (e.key === 'ArrowUp') {
+                        e.preventDefault();
+                        setSelectedMeaningIndex(prev =>
+                          prev > 0 ? prev - 1 : meaningList.length - 1
+                        );
+                      } else if (e.key === 'Enter' && selectedMeaningIndex !== -1) {
+                        setMeaning(meaningList[selectedMeaningIndex].vie);
+                        setShowMeaningList(false);
+                      } else if (e.key === 'Enter') {
+                        addWord();
+                        wordInputRef.current && wordInputRef.current.focus();
+                      }
+                    } else if (e.key === 'Enter') {
+                      addWord();
+                      wordInputRef.current && wordInputRef.current.focus();
+                    }
+
+                  }}
                 />
                 {showMeaningList && meaningList && (
                   <div className="meaning-list-section">
                     <div className="meaning-list">
                       {
-                        meaningList.map((meaning, index) => (
+                        meaningList.map((meaning, index) => {
+                          let typeClassName;
+                          if (meaning.type === 'noun') {
+                            typeClassName = 'noun'
+                          }
+                          else if (meaning.type === 'verb') {
+                            typeClassName = 'verb'
+                          }
+                          else if (meaning.type === 'adjective') {
+                            typeClassName = 'adjective'
+                          }
+                          else {
+                            typeClassName = 'other'
+                          }
+                          
+                          const isSelected = index === selectedMeaningIndex;
+
+                          return (
                           <li 
-                            className="meaning" 
+                            ref={el => (meaningRefs.current[index] = el)}
+                            className={`meaning${isSelected ? ' selected' : ''}`}
                             key={index}
                             onClick={() => {
-                              setMeaning(meaning.definition)
+                              setMeaning(meaning.vie)
                               setShowMeaningList(false)
                             }}
-                            title={meaning.definition}
-                          >{meaning.definition}</li>
-                        ))
+                            style={isSelected ? { background: '#f5f5f5' } : {}}
+                          >
+                            <p className={typeClassName}>{meaning.type}</p>
+                            <p>{meaning.vie}</p>
+                            <p>{meaning.eng}</p>
+                          </li>
+                        )})
                       }
                     </div>
-                    
-                    <button className='quit-meaning-list-btn' onClick={() => setShowMeaningList(false)}><FontAwesomeIcon icon={faXmark}/></button>
                   </div>
                 )}
               </div>
 
               <button onClick={addWord}>Add</button>
 
-              <button className='learnBtn' onClick={learnBtn}>Flashcard</button>
+              <div className="learning-modes">
+                <button className='learnBtn' onClick={learnBtn}>
+                  <img src="https://cdn-icons-png.freepik.com/512/9100/9100957.png" alt="" />
+                  Flashcard
+                </button>
 
-              <button onClick={generateMatching} className='openMatchingBtn'>Matching</button>
+                <button onClick={() => generateMatching(words)} className='openMatchingBtn'>
+                  <img src="https://cdn-icons-png.freepik.com/512/282/282100.png" alt="" />
+                  Matching
+                </button>
 
-              <button onClick={generateFilling}>Filling</button>
+                <button onClick={() => generateFilling(words)}>
+                  <img src="https://cdn-icons-png.flaticon.com/512/6559/6559624.png" alt="" />
+                  Filling
+                </button>
 
-              <button onClick={generateListening}>Listening</button>
-              
+                <button onClick={() => generateListening(words)}>
+                  <img src="https://cdn-icons-png.flaticon.com/512/8805/8805242.png" alt="" />
+                  Listening
+                </button>
+              </div>
+
             </div>
 
             <div className={word.length > 0 ? "word-section-right" : "word-section-right empty"}>

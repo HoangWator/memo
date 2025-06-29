@@ -156,3 +156,31 @@ export async function getWordData(word) {
     example: meaning.definitions[0].example || ""
   }
 }
+
+
+export async function meaningSuggestion(word) {
+    const prompt = `
+        Give me definition of ${word} in both Vietnamese and English containing type of the word. No need for example. No word 'json'
+        Take an example of "objective", you should return in JSON like this:
+        [{
+           type: 'noun',
+           vie: 'Điều gì đó mà người ta cố gắng đạt được; một mục đích.',
+           eng: 'A thing aimed at or sought; a goal.'
+        },
+        {
+            type: 'adjective',
+            vie: 'Không bị ảnh hưởng bởi cảm xúc hoặc ý kiến cá nhân; dựa trên sự thật và bằng chứng.'
+            eng: '(of a person or their judgment) not influenced by personal feelings or opinions in considering and representing facts.'
+        }]
+    `;
+    const response = await ai.models.generateContent({
+        model: "gemini-2.0-flash",
+        contents: prompt,
+    });
+    return getJSONdata(response.text);
+}
+
+function getJSONdata(text) {
+    let newText = text.slice(text.indexOf('['), text.indexOf(']') + 1)
+    return JSON.parse(newText)
+}

@@ -6,6 +6,20 @@
   box-sizing: border-box;
   font-family: 'Inter', sans-serif;
 }
+:root {
+  --color-primary: #4F8FF9;  
+  --color-primary-hover: #2563eb;  
+  --color-secondary: #FFD166;    
+  --color-success: #43E477;  
+  --color-pending: orange;
+  --color-wrong: #f00;
+  --color-bg: #F6F8FB;          
+  --color-bg-hover: #E9F0FA;           
+  --color-surface: #FFFFFF;     
+  --color-text: #222B45;        
+  --color-muted: #A0AEC0;   
+  --color-muted-hover: #7B8794;  
+}
 .main 
 {
   height: 100vh;
@@ -25,7 +39,7 @@
 }
 .login-section .login-container 
 {
-  background-color: #fff;
+  background-color: var(--color-surface);
   padding: 60px;
   border-radius: 0.5em;
 
@@ -46,6 +60,8 @@
   border: 2px solid #dadce0;
   color: #333;
   padding: 10px 20px;
+  background-color: #fff !important;
+  color: #333 !important;
 }
 .login-section .login-container .login-options button 
 {
@@ -53,6 +69,7 @@
 }
 .login-section .login-container button.quitLogin 
 {
+  background-color: #fff;
   border: none;
   position: absolute;
   top: 10px;
@@ -61,7 +78,7 @@
 }
 .login-section .login-container button:hover 
 {
-  background-color: #f5f5f5;
+  background-color: #f5f5f5 !important;
 }
 .login-section .login-container button img 
 {
@@ -78,14 +95,18 @@
 .header 
 {
   width: 100%;
-  height: 60px;
-  background-color: #fff;
+  background-color: var(--color-bg);
   color: #000;
   display: flex;
-  border-bottom: 1px solid #dadce0;
   align-items: center;
-  justify-content: space-between;
-  padding: 0 20px;
+  padding: 10px 20px;
+}
+.header .account-section
+{
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 .header .account-section button 
 {
@@ -93,7 +114,63 @@
   display: flex;
   align-items: center;
   gap: 10px;
+  background-color: var(--color-primary);
+  color: #fff;
+  float: right;
 }
+.header .account-section button:hover 
+{
+  background-color: var(--color-primary-hover);
+}
+
+.logout-section 
+{
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.1);
+  z-index: 4;
+}
+.logout-section .logout-container 
+{
+  background-color: var(--color-surface);
+  padding: 20px;
+  border-radius: 0.5em;
+}
+.logout-section .logout-container h2 
+{
+  color: var(--color-text);
+  margin-bottom: 10px;
+}
+.logout-section .logout-container .logout-options 
+{
+  display: flex;
+  justify-content: space-around;
+}
+.logout-section .logout-container .logout-options button 
+{
+  background-color: var(--color-muted);
+  color: var(--color-text);
+}
+.logout-section .logout-container .logout-options button:hover 
+{
+  background-color: var(--color-muted-hover);
+}
+.logout-section .logout-container .logout-options button.goBack
+{
+  background-color: var(--color-primary);
+  color: #fff;
+}
+.logout-section .logout-container .logout-options button.goBack:hover 
+{
+  background-color: var(--color-primary-hover);
+}
+
 
 .content 
 {
@@ -104,7 +181,11 @@
 .content .sidebar 
 {
   width: 20%;
-  border-right: 1px solid #dadce0;
+  background-color: var(--color-surface);
+}
+.content .sidebar h1 
+{
+  text-align: center;
 }
 .content .sidebar ul li 
 {
@@ -115,6 +196,10 @@
   /* border: 1px solid #dadce0; */
   border-radius: 0.5em;
   margin-bottom: 10px;
+}
+.content .sidebar ul li:hover 
+{
+  background-color: var(--color-bg-hover);
 }
 .content .sidebar ul li .icon 
 {
@@ -128,7 +213,7 @@
 .main-content .vocabulary-section
 {
   height: 100%;
-  background-color: #fff;
+  background-color: var(--color-bg);
   padding: 0 20px;
   display: flex;
   flex-direction: column;
@@ -136,10 +221,16 @@
 .main-content .vocabulary-section .add-folder-btn 
 {
   font-size: 20px;
+  background-color: var(--color-primary);
+  color: #fff;
   margin: 20px 0;
   padding: 20px;
   border-radius: 0.5em;
   width: 200px;
+}
+.main-content .vocabulary-section .add-folder-btn:hover 
+{
+  background-color: var(--color-primary-hover);
 }
 .vocabulary-section .search-folder 
 {
@@ -161,7 +252,9 @@
 .vocabulary-section .search-folder .search-field input 
 {
   padding: 10px 10px 10px 40px;
+  background-color: var(--color-surface);
   width: 300px;
+  color: var(--color-text)
 }
 .vocabulary-section .search-folder .sort-btn
 {
@@ -169,7 +262,7 @@
   padding: 10px;
   color: #333;
   border-radius: 0.5em;
-  background-color: #eee;
+  background-color: var(--color-surface);
   cursor: pointer;
 }
 .create-folder-section
@@ -188,7 +281,7 @@
 .create-folder-field
 {
   width: 400px;
-  background-color: #fff; 
+  background-color: var(--color-surface); 
   padding: 20px;
   border-radius: 0.5em;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -211,7 +304,7 @@
   top: 10px;
   right: 10px;
   border: none;
-  background-color: #fff;
+  background-color: var(--color-surface);
   color: #333;
   font-size: 20px;
   cursor: pointer;
@@ -237,6 +330,7 @@
 .folder-list .folder 
 {
   min-width: 300px;
+  background-color: var(--color-surface);
   padding: 20px;
   border-radius: 0.5em;
   border: 1px solid #dadce0;
@@ -251,14 +345,15 @@
 }
 .folder-list .folder h2 
 {
-  color: #222;
   font-size: 24px;
   margin: 10px 0;
+  color: var(--color-text)
 }
 .folder-list .folder p 
 {
   color: #666;
   font-size: 16px;
+  color: var(--color-muted)
 }
 .folder-list .folder .more 
 {
@@ -415,20 +510,24 @@ input, button
 {
   padding: 10px;
   border-radius: 0.5em;
-  background-color: #eee;
+  background-color: #fff;
   outline:none;
   border: none;
   display: block;
 }
 input[type="text"]:hover
 {
-  background-color: #e0e0e0;
+  background-color: #f5f5f5;
 }
 button 
 {
   cursor: pointer;
-  background-color: #333;
+  background-color: var(--color-primary);
   color: #fff;
+}
+button:hover 
+{
+  background-color: var(--color-primary-hover);
 }
 ul 
 {
@@ -438,25 +537,25 @@ ul
 {
   width: 100%;
   list-style-type: none;
-  color: #333;
   font-size: 20px;
   padding: 5px 20px;
   border-radius: 0.5em;
   margin-bottom: 10px;
   border: 1px solid #dadce0;
   position: relative;
-
-
-}
-.word-section li 
-{
+  background-color: #fff;
   white-space: nowrap;
   overflow: hidden;
+  color: var(--color-text);
 }
-li:hover 
+.word-section li p 
 {
-  cursor: pointer;
+  color: var(--color-muted)
+}
+.word-section li:hover 
+{
   background-color: #f5f5f5;
+  cursor: pointer;
 }
 .show 
 {
@@ -485,7 +584,7 @@ li:hover
 .word-section .word-section-right p.noWords 
 {
   font-size: 18px;
-  color: #aaa;
+  color: var(--color-muted);
   text-align: center;
   margin-top: 20px;
 }
@@ -624,12 +723,7 @@ li:hover
 }
 
 
-.learnBtn 
-{
-  margin-top: 10px;
-  background-color: #333;
-  color: #fff;
-}
+
 .empty 
 {
   padding: 30px 0;
@@ -656,16 +750,24 @@ li:hover
 .word-section-header 
 {
   padding: 10px;
-  box-shadow: 0 0 5px #ddd;
+  border-bottom: 1px solid #dadce0;
+  background-color: var(--color-bg);
 }
 .word-section-header button 
 {
   margin: 0;
+  background-color: var(--color-primary);
+  color: #fff;
+}
+.word-section-header button:hover 
+{
+  background-color: var(--color-primary-hover);
 }
 .word-section-body
 {
   width: 100%;
   display: flex;
+  background-color: var(--color-bg);
 }
 .word-section-left, .word-section-right {
   width: 50%;
@@ -676,10 +778,40 @@ li:hover
 {
   border-right: 1px solid #ddd;
 }
+.word-section-left .learning-modes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+.word-section-left .learning-modes button 
+{
+  padding: 30px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background-color: #fff;
+  color: #333;
+  border: 1px solid #dadce0
+}
+.word-section-left .learning-modes button:hover 
+{
+  background-color: #f5f5f5;
+}
+.word-section-left .learning-modes button img  
+{
+  height: 50px;
+}
 .word-section-left input 
 {
   width: 100%;
+  background-color: #fff;
   margin-bottom: 10px;
+}
+.word-section-left input:hover 
+{
+  background-color: #f5f5f5;
 }
 .meaning-section 
 {
@@ -688,12 +820,13 @@ li:hover
 .meaning-list-section 
 {
   position: absolute;
-  top: 42px;
+  top: 47px;
   border-radius: 0.5em;
-  border: 1px solid #dadce0;
+  /* border: 1px solid #dadce0; */
   width: 100%;
   background-color: #fff;
   padding: 5px;
+  box-shadow: 0 0 5px #ccc;
 
   display: flex;
 }
@@ -702,32 +835,39 @@ li:hover
   background-color: #fff;
   width: 100%;
   max-height: 200px;
+  padding: 5px;
   overflow-y: auto;
 }
 .meaning-list-section .meaning-list .meaning
 {
   border: none;
   list-style-type: none;
-  padding: 5px;
+  padding: 10px;
   margin: 0;
   font-size: 18px;
   transition: none;
+  white-space: wrap;
 }
+.meaning-list-section .meaning-list .meaning .noun 
+{
+  color: var(--color-primary)
+}
+.meaning-list-section .meaning-list .meaning .verb 
+{
+  color: var(--color-success)
+} 
+.meaning-list-section .meaning-list .meaning .adjective 
+{
+  color: #7C5FFF
+}
+.meaning-list-section .meaning-list .meaning .other 
+{
+  color: #FF9800
+} 
 .meaning-list-section .meaning-list .meaning:hover 
 {
   cursor: pointer;
   background-color: #f5f5f5;
-}
-.meaning-section .quit-meaning-list-btn
-{
-  background-color: #fff;
-  color: #000;
-  margin: 0 0 0 5px;
-  /* padding: 5px; */
-  display: inline-block;
-  line-height: 30px;
-  width: 30px;
-  text-align: center;
 }
 .meaning-section .quit-meaning-list-btn:hover 
 {
@@ -905,6 +1045,7 @@ li:hover
   justify-content: center;
   align-items: center;
   position: relative;
+  background-color: var(--color-bg);
 }
 .filling-content 
 {
@@ -914,6 +1055,7 @@ li:hover
   justify-content: center;
   align-items: center;
   position: relative;
+  background-color: var(--color-bg);
 }
 .filling-card 
 {
@@ -967,14 +1109,14 @@ li:hover
 }
 .filling-options .filling-option .label:hover 
 {
-  background-color: #ccc;
+  background-color: #f5f5f5;
   cursor: pointer;
 }
 .filling-options .filling-option .label 
 {
   width: 100%;
   padding: 10px 30px;
-  border: 2px solid #ccc;
+  border: 2px solid #dadce0;
   border-radius: 0.5em;
   margin-bottom: 10px;
   user-select: none;
@@ -997,9 +1139,11 @@ input[type='radio']:checked + .label.wrong
   left: 50%;
   transform: translateX(-50%);
   bottom: 40px;
-  border: 2px solid #dadce0;
+  border: 1px solid #dadce0;
   padding: 15px;
   border-radius: 0.5em;
+  background-color: var(--color-surface);
+  color: var(--color-text)
 }
 .filling-answer-explain.right 
 {
@@ -1170,6 +1314,8 @@ input[type='radio']:checked + .label.wrong
 .listening-card input 
 {
   padding: 20px 40px;
+  border: 1px solid #dadce0;
+  background-color: var(--color-surface);
 }
 .listening-card .speak-word-btn
 {
