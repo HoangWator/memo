@@ -4,9 +4,10 @@ import { useRef } from 'react';
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
+import './responsive.css'
 import ReactDOM from 'react-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPlus,faArrowLeft,faTrash,faXmark,faMagnifyingGlass,faVolumeHigh,faFolder,faDumbbell,faTrophy,faChartSimple,faEllipsis,faPenToSquare,faX,faArrowRightFromBracket } from '@fortawesome/free-solid-svg-icons'
+import { faPlus,faArrowLeft,faArrowRight,faArrowDown,faArrowUp,faTrash,faXmark,faMagnifyingGlass,faVolumeHigh,faFolder,faDumbbell,faTrophy,faChartSimple,faEllipsis,faPenToSquare,faX,faArrowRightFromBracket,faArrowsLeftRight } from '@fortawesome/free-solid-svg-icons'
 import { geneAI } from './gemini'
 import useSound from 'use-sound';
 import { getWordData } from './gemini'
@@ -23,33 +24,6 @@ import { meaningSuggestion } from './gemini.js'
 
 
 function App() {
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setUserID(user.uid);
-        setUserName(user.displayName);
-        setAvatarUrl(user.photoURL);
-
-        // Optionally, fetch user data here
-        getUserData(user.uid).then((data) => {
-          if (data) {
-            setFolders(Object.keys(data.folders));
-            setUserData(data);
-          } else {
-            setFolders([]);
-          }
-        });
-      } else {
-        setUserID('');
-        setUserName('');
-        setAvatarUrl('');
-        setFolders([]);
-        setUserData('');
-      }
-    });
-
-    return () => unsubscribe();
-  }, []);
   const [userID, setUserID] = useState('')
   const [userName, setUserName] = useState('')
   const [userData, setUserData] = useState('')
@@ -60,6 +34,7 @@ function App() {
 
   const [folderName, setFolderName] = useState('')
   const [folders, setFolders] = useState([])
+  const [allFolders, setAllFolders] = useState([]);
 
   const [word, setWord] = useState('')
   const [meaning, setMeaning] = useState('')
@@ -93,14 +68,15 @@ function App() {
       // Get user's folders
       getUserData(user.uid).then((data) => {
         if (data) {
-          console.log(Object.keys(data.folders))
-          setFolders(Object.keys(data.folders))
-          setUserData(data)
+          const folderKeys = Object.keys(data.folders);
+          setFolders(folderKeys);
+          setAllFolders(folderKeys); // <-- keep the full list
+          setUserData(data);
+        } else {
+          setFolders([]);
+          setAllFolders([]);
         }
-        else {
-          setFolders([])
-        }
-      })
+      });
       
       setShowLoginSection(false)
     } catch (error) {
@@ -108,6 +84,34 @@ function App() {
     }
 
   }
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUserID(user.uid);
+        setUserName(user.displayName);
+        setAvatarUrl(user.photoURL);
+
+        // Optionally, fetch user data here
+        getUserData(user.uid).then((data) => {
+          if (data) {
+            setFolders(Object.keys(data.folders));
+            setUserData(data);
+          } else {
+            setFolders([]);
+          }
+        });
+      } else {
+        setUserID('');
+        setUserName('');
+        setAvatarUrl('');
+        setFolders([]);
+        setUserData('');
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   const showCurrentUser = () => {
     const user = auth.currentUser;
@@ -132,6 +136,9 @@ function App() {
     }
     return arr;
   }
+
+  // Directing page
+  const [pageIndex, setPageIndex] = useState(0)
   
   const addWord = () => {
     if (word != '' && meaning != '') {
@@ -155,7 +162,7 @@ function App() {
     return (
       <div className="card">
         {showDef ? <p>{word.mean}</p> : <h1>{word.name}</h1>}
-        <button onClick={handleDef}>{showDef ? 'Hide' : 'Show'}</button>
+        <button onClick={handleDef}><FontAwesomeIcon icon={faArrowsLeftRight} /></button>
       </div>
     )
   }
@@ -525,14 +532,13 @@ function App() {
                 setNumberQuestionDone(numberQuestionDone + 1)
               }
               else {
-                // setFillingIndex(0)
+                setFillingIndex(0)
                 if (numberQuestionDone < fillingQuestions.length) {
                   setNumberQuestionDone(numberQuestionDone + 1)
-
                 }
-                // setShowFilling(false)
+                setShowFilling(false)
               }
-            }}>Next</button>
+            }}>Next <FontAwesomeIcon icon={faArrowRight} /></button>
           </div>
         )}
       </div>
@@ -608,6 +614,7 @@ function App() {
 
     const [userInput, setUserInput] = useState('')
     
+    const [listeningInputClassName, setListeningInputClassName] = useState('listeningInput')
     return (
       <div className="listening-card">
         <div className="listening-card-content">
@@ -619,6 +626,13 @@ function App() {
               if (e.key === 'Enter') {
                 setUserInput(e.target.value)
                 console.log(e.target.value === word);
+
+                if (e.target.value.toLowerCase() === word.toLowerCase()) {
+                    setListeningInputClassName('listeningInput right')
+                }
+                else {
+                  setListeningInputClassName('listeningInput wrong')
+                }
               }
               if (e.key === 'ArrowRight') {
                 if (listeningCardIndex < words.length - 1) {
@@ -631,11 +645,12 @@ function App() {
                 setUserInput('');
               }
             }}
+            className={listeningInputClassName}
           />
         </div>
 
         { userInput && (
-          <div className={'listening-explain ' + (userInput.toLowerCase() === word.toLowerCase() ? 'right' : 'wrong')}>
+          <div className={'listening-explain '}>
             <h4>Answer:</h4>
             <p className='listening-answer'onClick={speakWord}>{word}<FontAwesomeIcon icon={faVolumeHigh} className='icon'/></p>
             <button onClick={() => {
@@ -648,7 +663,7 @@ function App() {
               }
               
               setUserInput('');
-            }}>Next</button>
+            }}>Next<FontAwesomeIcon icon={faArrowRight} /></button>
           </div>
         )}
       </div>
@@ -658,6 +673,7 @@ function App() {
   const [name, setName] = useState('')
   const [birthYear, setBirthYear] = useState('2000')
 
+  const [showWordSectionLeft, setShowWordSectionLeft] = useState(false)
   return (
     <div className="main">
       {loader && <Loader />}
@@ -665,13 +681,13 @@ function App() {
 
       <div className="content">
         <div className="sidebar">
-          <h1>Memo</h1>
+          <h1 style={{'userSelect': 'none'}}>Memo</h1>
 
           <ul>
-            <li><FontAwesomeIcon icon={faFolder} className='icon' />Vocabulary</li>
-            <li><FontAwesomeIcon icon={faDumbbell} className='icon' />Practice</li>
-            <li><FontAwesomeIcon icon={faTrophy} className='icon' />Rank</li>
-            <li><FontAwesomeIcon icon={faChartSimple} className='icon' />Progress</li>
+            <li className={pageIndex === 0 ? 'clicked' : ''} onClick={() => setPageIndex(0)}><FontAwesomeIcon icon={faFolder} className='icon' /><span>Vocabulary</span></li>
+            <li className={pageIndex === 1 ? 'clicked' : ''} onClick={() => setPageIndex(1)}><FontAwesomeIcon icon={faDumbbell} className='icon' /><span>Practice</span></li>
+            <li className={pageIndex === 2 ? 'clicked' : ''} onClick={() => setPageIndex(2)}><FontAwesomeIcon icon={faTrophy} className='icon' /><span>Rank</span></li>
+            <li className={pageIndex === 3 ? 'clicked' : ''} onClick={() => setPageIndex(3)}><FontAwesomeIcon icon={faChartSimple} className='icon' /><span>Progress</span></li>
           </ul>
         </div>
 
@@ -722,100 +738,124 @@ function App() {
               )}
             </div>
           </div>
-          <div className="vocabulary-section">
-            <button className='add-folder-btn' onClick={createFolder}><FontAwesomeIcon className='icon' icon={faPlus} />  Create folder</button>
-            {showCreateFolder && (
-              <div className="create-folder-section" onClick={() => setShowCreateFolder(false)}>
-                  <div className="create-folder-field" onClick={e => e.stopPropagation()}>
-                    <button onClick={() => setShowCreateFolder(false)} className='close-create-folder-btn'><FontAwesomeIcon icon={faX} /></button>
-                    <h3>Create a folder</h3>
-                    <input 
-                      type="text" 
-                      placeholder='Enter folder name' 
-                      onChange={e => setFolderName(e.target.value)}
-                      onKeyDown={e => {
-                        if (e.key === 'Enter') {
-                          addFolder();
-                        }
-                      }}
-                      value={folderName}
-                    />
-                    <button onClick={addFolder}>Add folder</button>
-                  </div>
-              </div>
-            )}
-            <div className="search-folder">
-              <div className="search-field">
-                <FontAwesomeIcon icon={faMagnifyingGlass} className='search-icon' />
-                <input 
-                  type="text" 
-                  placeholder='Search folder...'
-                  onChange={e => {
-                    const searchValue = e.target.value.toLowerCase();
-                    const filteredFolders = JSON.parse(localStorage.getItem('folders')).filter(folder => folder.toLowerCase().includes(searchValue));
-                    setFolders(filteredFolders);
-                  }}
-                />
-              </div>
-            </div>
-            <div className="folder-list">
-              {folders.map((folder, index) => (
-                <div className="folder-item" key={index}>
-                  <div className="folder" onClick={() => openWordSection(folder)}>
-                    <FontAwesomeIcon icon={faFolder} className='folder-icon' />
-                    <h2>{folder}</h2>
-                    <p>{userData.folders[folder].length || 0} words</p>
-                    <div className="more" onClick={(e) => {e.stopPropagation()}}>
-                      <FontAwesomeIcon icon={faEllipsis} />
-                      <div className="more-options">
-                        <button className='edit-folder-btn' onClick={() => {
-                          setShowRenameFolderSection(true)
-                          setRenameTarget(folder)
-                        }}><FontAwesomeIcon icon={faPenToSquare} /> Rename</button>
-                        <button className='delete-folder-btn' onClick={() => {
-                          setShowAskToDelete(true)
-                          setRenameTarget(folder)
-                        }}><FontAwesomeIcon icon={faTrash} /> Delete</button>
-                      </div>
+          {pageIndex === 0 && (
+            <div className="vocabulary-section">
+              <button className='add-folder-btn' onClick={createFolder}><FontAwesomeIcon className='icon' icon={faPlus} />  <span>Create folder</span></button>
+              {showCreateFolder && (
+                <div className="create-folder-section" onClick={() => setShowCreateFolder(false)}>
+                    <div className="create-folder-field" onClick={e => e.stopPropagation()}>
+                      <button onClick={() => setShowCreateFolder(false)} className='close-create-folder-btn'><FontAwesomeIcon icon={faX} /></button>
+                      <h3>Create a folder</h3>
+                      <input 
+                        type="text" 
+                        placeholder='Enter folder name' 
+                        onChange={e => setFolderName(e.target.value)}
+                        onKeyDown={e => {
+                          if (e.key === 'Enter') {
+                            addFolder();
+                          }
+                        }}
+                        value={folderName}
+                      />
+                      <button onClick={addFolder}>Add folder</button>
                     </div>
-
-                  </div>
-                  {showRenameFolderSection && renameTarget === folder && (
-                      <div className="rename-folder-section" onClick={() => setShowRenameFolderSection(false)}>
-                        <div className="rename-folder" onClick={e => e.stopPropagation()}>
-                          <h3>Rename folder</h3>
-                          <input type="text" placeholder='New folder name...'
-                            onChange={(e) => setNewFolderName(e.target.value)}
-                          />
-                          <button onClick={() => {
-                            renameFolder(userID, folder, newFolderName)
-                          }}>Rename</button>
-                        </div>
-                      </div>
-                    )
-                  }
-                  
-                  {showAskToDelete && renameTarget === folder  && (
-                    <div className="ask-to-delete-section" onClick={() => setShowAskToDelete(false)}>
-                      <div className="ask-to-delete" onClick={e => e.stopPropagation()}>
-                        <h3>Do you want to delete this folder?</h3>
-                        <div className="options">
-                          <button onClick={() => setShowAskToDelete(false)}>No, keep it</button>
-                          <button onClick={() => deleteFolder(userID, folder)} className='deleteFolderBtn'>Yes, delete it</button>
-                        </div>
-                      </div>
-                    </div>
-                  )}
                 </div>
-              ))}
+              )}
+              <div className="search-folder">
+                <div className="search-field">
+                  <FontAwesomeIcon icon={faMagnifyingGlass} className='search-icon' />
+                  <input 
+                    type="text" 
+                    placeholder='Search folder...'
+                    onChange={e => {
+                      const searchValue = e.target.value.toLowerCase();
+                      if (searchValue.length > 0) {
+                        const filteredFolders = allFolders.filter(folder =>
+                          folder.toLowerCase().includes(searchValue)
+                        );
+                        setFolders(filteredFolders);
+                      } else {
+                        setFolders(allFolders);
+                      }
+                    }}
+                  />
+                </div>
+              </div>
+              <div className="folder-list">
+                {folders.map((folder, index) => (
+                  <div className="folder-item" key={index}>
+                    <div className="folder" onClick={() => openWordSection(folder)}>
+                      <FontAwesomeIcon icon={faFolder} className='folder-icon' />
+                      <h2>{folder}</h2>
+                      <p>{userData.folders[folder].length || 0} words</p>
+                      <div className="more" onClick={(e) => {e.stopPropagation()}}>
+                        <FontAwesomeIcon icon={faEllipsis} />
+                        <div className="more-options">
+                          <button className='edit-folder-btn' onClick={() => {
+                            setShowRenameFolderSection(true)
+                            setRenameTarget(folder)
+                          }}><FontAwesomeIcon icon={faPenToSquare} /> Rename</button>
+                          <button className='delete-folder-btn' onClick={() => {
+                            setShowAskToDelete(true)
+                            setRenameTarget(folder)
+                          }}><FontAwesomeIcon icon={faTrash} /> Delete</button>
+                        </div>
+                      </div>
 
-              
+                    </div>
+                    {showRenameFolderSection && renameTarget === folder && (
+                        <div className="rename-folder-section" onClick={() => setShowRenameFolderSection(false)}>
+                          <div className="rename-folder" onClick={e => e.stopPropagation()}>
+                            <h3>Rename folder</h3>
+                            <input type="text" placeholder='New folder name...'
+                              onChange={(e) => setNewFolderName(e.target.value)}
+                            />
+                            <button onClick={() => {
+                              renameFolder(userID, folder, newFolderName)
+                            }}>Rename</button>
+                          </div>
+                        </div>
+                      )
+                    }
+                    
+                    {showAskToDelete && renameTarget === folder  && (
+                      <div className="ask-to-delete-section" onClick={() => setShowAskToDelete(false)}>
+                        <div className="ask-to-delete" onClick={e => e.stopPropagation()}>
+                          <h3>Do you want to delete this folder?</h3>
+                          <div className="options">
+                            <button onClick={() => setShowAskToDelete(false)}>No, keep it</button>
+                            <button onClick={() => deleteFolder(userID, folder)} className='deleteFolderBtn'>Yes, delete it</button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ))}
+
+                
+
+                
+              </div>
 
               
             </div>
+          )}
 
-            
-          </div>
+          {pageIndex === 1 && (
+            <div className="practice-section developing-page">
+              <h2>This feature is developing</h2>
+            </div>
+          )}
+          {pageIndex === 2 && (
+            <div className="rank-section developing-page">
+              <h2>This feature is developing</h2>
+            </div>
+          )}
+          {pageIndex === 3 && (
+            <div className="progress-section developing-page">
+              <h2>This feature is developing</h2>
+            </div>
+          )}
 
         </div>
       </div>
@@ -828,7 +868,11 @@ function App() {
             <button onClick={quitWordSection}><FontAwesomeIcon icon={faArrowLeft} /></button>
           </div>
           <div className="word-section-body">
-            <div className="word-section-left">
+            <button className='showWordSectionLeftBtn' onClick={() => setShowWordSectionLeft(!showWordSectionLeft)}>
+              {showWordSectionLeft ? <FontAwesomeIcon icon={faArrowDown} /> : <FontAwesomeIcon icon={faArrowUp} />}
+            </button>
+
+            <div className="word-section-left pc">
               <input 
                 type="text"
                 placeholder='Enter word'
@@ -934,10 +978,10 @@ function App() {
                   Flashcard
                 </button>
 
-                <button onClick={() => generateMatching(words)} className='openMatchingBtn'>
+                {/* <button onClick={() => generateMatching(words)} className='openMatchingBtn'>
                   <img src="https://cdn-icons-png.freepik.com/512/282/282100.png" alt="" />
                   Matching
-                </button>
+                </button> */}
 
                 <button onClick={() => generateFilling(words)}>
                   <img src="https://cdn-icons-png.flaticon.com/512/6559/6559624.png" alt="" />
@@ -949,8 +993,147 @@ function App() {
                   Listening
                 </button>
               </div>
-
+              
+              <button className='delete-folder-btn' onClick={() => {
+                setShowAskToDelete(true)
+                setRenameTarget(currentFolder)
+                setShowWordSection(false)
+              }}><FontAwesomeIcon icon={faTrash} /> Delete this folder</button>
             </div>
+            
+            {showWordSectionLeft && (
+              <div className="word-section-left-container mobile" onClick={() => setShowWordSectionLeft(false)}>
+                <div className="word-section-left" onClick={e =>e.stopPropagation()}>
+                  <input 
+                    type="text"
+                    placeholder='Enter word'
+                    value={word}
+                    ref={wordInputRef}
+                    onChange={e => setWord(e.target.value)} 
+                    onClick={() => setShowMeaningList(false)}
+                    onKeyDown={e => {
+                      if (e.key === 'Enter' || e.key === 'ArrowDown') {
+                        // Move focus to meaning input
+                        meaningInputRef.current && meaningInputRef.current.focus();
+                      }
+                    }}
+                  />
+                  <div className="meaning-section">
+                    <input 
+                      type="text"
+                      placeholder='Enter meaning'
+                      value={meaning}
+                      ref={meaningInputRef}
+                      onChange={e => {
+                        setMeaning(e.target.value)
+                        setShowMeaningList(false)
+                        setSelectedMeaningIndex(-1);
+                        if (e.target.value === '/') {
+                          suggestMeaning()
+                        }
+                      }} 
+                      onKeyDown={e => {
+                        if (showMeaningList && meaningList.length > 0) {
+                          if (e.key === 'ArrowDown') {
+                            e.preventDefault();
+                            setSelectedMeaningIndex(prev =>
+                              prev < meaningList.length - 1 ? prev + 1 : 0
+                            );
+                          } else if (e.key === 'ArrowUp') {
+                            e.preventDefault();
+                            setSelectedMeaningIndex(prev =>
+                              prev > 0 ? prev - 1 : meaningList.length - 1
+                            );
+                          } else if (e.key === 'Enter' && selectedMeaningIndex !== -1) {
+                            setMeaning(meaningList[selectedMeaningIndex].vie);
+                            setShowMeaningList(false);
+                          } else if (e.key === 'Enter') {
+                            addWord();
+                            wordInputRef.current && wordInputRef.current.focus();
+                          }
+                        } else if (e.key === 'Enter') {
+                          addWord();
+                          wordInputRef.current && wordInputRef.current.focus();
+                        }
+
+                      }}
+                    />
+                    {showMeaningList && meaningList && (
+                      <div className="meaning-list-section">
+                        <div className="meaning-list">
+                          {
+                            meaningList.map((meaning, index) => {
+                              let typeClassName;
+                              if (meaning.type === 'noun') {
+                                typeClassName = 'noun'
+                              }
+                              else if (meaning.type === 'verb') {
+                                typeClassName = 'verb'
+                              }
+                              else if (meaning.type === 'adjective') {
+                                typeClassName = 'adjective'
+                              }
+                              else {
+                                typeClassName = 'other'
+                              }
+                              
+                              const isSelected = index === selectedMeaningIndex;
+
+                              return (
+                              <li 
+                                ref={el => (meaningRefs.current[index] = el)}
+                                className={`meaning${isSelected ? ' selected' : ''}`}
+                                key={index}
+                                onClick={() => {
+                                  setMeaning(meaning.vie)
+                                  setShowMeaningList(false)
+                                }}
+                                style={isSelected ? { background: '#f5f5f5' } : {}}
+                              >
+                                <p className={typeClassName}>{meaning.type}</p>
+                                <p>{meaning.vie}</p>
+                                <p>{meaning.eng}</p>
+                              </li>
+                            )})
+                          }
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  <button onClick={addWord} className='add-word-btn'>Add</button>
+
+                  <div className="learning-modes">
+                    <button className='learnBtn' onClick={learnBtn}>
+                      <img src="https://cdn-icons-png.freepik.com/512/9100/9100957.png" alt="" />
+                      Flashcard
+                    </button>
+
+                    {/* <button onClick={() => generateMatching(words)} className='openMatchingBtn'>
+                      <img src="https://cdn-icons-png.freepik.com/512/282/282100.png" alt="" />
+                      Matching
+                    </button> */}
+
+                    <button onClick={() => generateFilling(words)}>
+                      <img src="https://cdn-icons-png.flaticon.com/512/6559/6559624.png" alt="" />
+                      Filling
+                    </button>
+
+                    <button onClick={() => generateListening(words)}>
+                      <img src="https://cdn-icons-png.flaticon.com/512/8805/8805242.png" alt="" />
+                      Listening
+                    </button>
+                  </div>
+                  
+                  <button className='delete-folder-btn' onClick={() => {
+                    setShowAskToDelete(true)
+                    setRenameTarget(currentFolder)
+                    setShowWordSection(false)
+                  }}><FontAwesomeIcon icon={faTrash} /> Delete this folder</button>
+                </div>
+              </div>
+            )}
+            
 
             <div className={word.length > 0 ? "word-section-right" : "word-section-right empty"}>
               <div className="searchBox-section">
@@ -1004,9 +1187,9 @@ function App() {
                   if (indexLearn > 0) {
                     setIndexLearn(indexLearn - 1)
                   }
-                }}>Back</button>
+                }}><FontAwesomeIcon icon={faArrowLeft} /></button>
               ) : (
-                <button className="disabled prev-btn">Back</button>
+                <button className="disabled prev-btn"><FontAwesomeIcon icon={faArrowLeft} /></button>
               )
               }
 
@@ -1015,10 +1198,10 @@ function App() {
                   if (indexLearn < data.length - 1) {
                     setIndexLearn(indexLearn + 1)
                   }
-                }}>Next</button>
+                }}><FontAwesomeIcon icon={faArrowRight} /></button>
               )
               : (
-                <button className="disabled next-btn">Next</button>
+                <button className="disabled next-btn"><FontAwesomeIcon icon={faArrowRight} /></button>
               )
               }
             </div>

@@ -1,0 +1,261 @@
+:root {
+  --color-primary: #4F8FF9;  
+  --color-primary-hover: #2563eb;  
+  --color-secondary: #FFD166;    
+  --color-success: #43E477;  
+  --color-pending: orange;
+  --color-wrong: #f00;
+  --color-bg: #F6F8FB;          
+  --color-bg-hover: #E9F0FA;           
+  --color-surface: #FFFFFF;     
+  --color-text: #333741;        
+  --color-muted: #A0AEC0;   
+  --color-muted-hover: #7B8794;  
+}
+/* PC */
+@media (min-width: 1024px) {
+  .content .sidebar {
+    height: 100%;
+    position: fixed;
+  }
+  .showWordSectionLeftBtn {
+    display: none;
+  }
+}
+
+/* Tablet */
+@media (min-width: 740px) and (max-width: 1023px) {
+  .showWordSectionLeftBtn {
+    display: none;
+  }
+  .content .sidebar {
+    z-index: 3;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+  }
+  .content .sidebar ul li span {
+    display: none;
+  }
+  .content .sidebar ul li {
+    text-align: center;
+    margin: 0;
+  }
+  .word-section-left .learning-modes button {
+    flex-direction: column;
+  }
+  .word-section-left input {
+    padding: 14px 20px;
+  }
+  .word-section-left button {
+    padding: 14px 20px;
+  }
+  .word-section-header button {
+    padding: 14px 20px;
+  }
+  .learn-section .quitLearnSectionBtn {
+    padding: 14px 20px;
+  }
+  .card button {
+    padding: 14px 20px;
+  }
+  .quitFillingBtn {
+    padding: 14px 20px;
+  }
+  .filling-options .filling-option .label {
+    padding: 14px 20px;
+  }
+  .filling-answer-explain button {
+    padding: 14px 20px;
+  }
+  .listening-explain button {
+    padding: 14px 20px;
+
+  }
+  .listening-card .listening-card-content {
+    flex-direction: column;
+  }
+  .listening-explain p {
+    padding: 14px 20px;
+  }
+  .deleteBtn {
+    padding:13px;
+  }
+  .logout-section .logout-container .logout-options button {
+    padding: 14px 20px;
+  }
+  .ask-to-delete-section .ask-to-delete .options button {
+    padding: 14px 20px;
+  }
+  .create-folder-field button {
+    padding: 14px 20px;
+  }
+
+}
+
+/* Mobile */
+@media (max-width: 739px) {
+  .word-section-header {
+    border: none;
+  }
+  .main-content {
+    width: 100%;
+  }
+  .content .sidebar ul li span {
+    display: none;
+  }
+  .content .sidebar ul li {
+    text-align: center;
+    margin: 0;
+    padding: 10px 20px;
+  }
+  .word-section-left.pc {
+    display: none;
+  }
+  .word-section-left-container.mobile {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left:  0;
+    right: 0;
+    background-color: rgba(0,0,0,0.1);
+    z-index: 4;
+    /* display: none; */
+  }
+  .word-section-left-container.mobile .word-section-left{
+    position: fixed;
+    top: 45%;
+    bottom: 0;
+    background-color: var(--color-surface);
+    border-radius: 0.5em;
+    z-index: 5;
+    max-height: 55%;
+    overflow-y: scroll;
+  }
+  .word-section-left input {
+    padding: 14px 20px;
+    background-color: #f5f5f5;
+  }
+  .word-section-left, .word-section-right {
+    width: 100%;
+  }
+  .word-section-left .learning-modes button {
+    padding: 10px 20px;
+  }
+  .word-section-left button {
+    padding: 14px 20px;
+  }
+  .word-section-left button.add-word-btn {
+    width: 100%;
+
+  }
+  .word-section-header button {
+    padding: 14px 20px;
+  }
+  .learn-section .quitLearnSectionBtn {
+    padding: 14px 20px;
+  }
+  .card button {
+    padding: 14px 20px;
+  }
+  .quitFillingBtn {
+    padding: 14px 20px;
+  }
+  .filling-options .filling-option .label {
+    padding: 14px 20px;
+  }
+  .filling-answer-explain button {
+    padding: 14px 20px;
+  }
+  .listening-explain button {
+    padding: 14px 20px;
+
+  }
+  .listening-card .listening-card-content {
+    flex-direction: column;
+  }
+  .listening-explain p {
+    padding: 14px 20px;
+  }
+  .deleteBtn {
+    padding:13px;
+  }
+  .logout-section .logout-container .logout-options button {
+    padding: 14px 20px;
+  }
+  .ask-to-delete-section .ask-to-delete .options button {
+    padding: 14px 20px;
+  }
+  .content .sidebar {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    width: 100%;
+    background-color: var(--color-surface);
+    z-index: 2;
+    box-shadow: 0 0 5px #ccc;
+  }
+  .sidebar h1 {
+    display: none;
+  }
+  .sidebar ul {
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+  }
+  .folder-list .folder-item {
+    width: 100%;
+  }
+  .vocabulary-section .search-folder {
+    width: 100%;
+  }
+  .vocabulary-section .search-folder .search-field {
+    width: 100%;
+  }
+  .vocabulary-section .search-folder .search-field input {
+    width: 100%;
+    padding: 14px 10px 14px 40px;
+  }
+  .vocabulary-section .search-folder .search-field .search-icon {
+    top: 14px;
+  }
+  .word-section {
+    z-index: 3
+  }
+  .word-section-body {
+    flex-direction: column;
+    position: relative;
+    height: calc(100% - 70px)
+  }
+  .word-section-body .showWordSectionLeftBtn {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    z-index: 5;
+    padding: 20px;
+  }
+  
+  .main-content .vocabulary-section .add-folder-btn {
+    position: fixed;
+    bottom: 90px;
+    right: 10px;
+    z-index: 2;
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    padding: 0;
+  }
+  .main-content .vocabulary-section .add-folder-btn span {
+    display: none;
+  }
+  .create-folder-section {
+    z-index: 6
+  }
+  
+  .create-folder-section .create-folder-field button,
+  .create-folder-section .create-folder-field input {
+    padding: 14px 20px;
+  }
+}
