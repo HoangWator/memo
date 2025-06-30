@@ -6,7 +6,7 @@ import { getFirestore } from "https://www.gstatic.com/firebasejs/11.9.1/firebase
 
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCmMNZAR3TwwYN47FCg4SM2h_70BTXoB6o",
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
   authDomain: "memo-4f335.firebaseapp.com",
   projectId: "memo-4f335",
   storageBucket: "memo-4f335.firebasestorage.app",
