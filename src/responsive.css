@@ -27,14 +27,14 @@
   .mobile-sidebar-toggle {
     display: none;
   }
-  .word-section-left-container.mobile {
+  .word-section-left-modal.mobile {
     display: none;
   }
 }
 
 /* Tablet */
 @media (min-width: 740px) and (max-width: 1023px) {
-  .word-section-left-container.mobile {
+  .word-section-left-modal.mobile {
     display: none;
   }
   .content .sidebar.pc {
@@ -133,7 +133,7 @@
   .word-section-left.pc {
     display: none;
   }
-  .word-section-left-container.mobile {
+  .word-section-left-modal.mobile {
     position: fixed;
     top: 0;
     bottom: 0;
@@ -143,14 +143,17 @@
     z-index: 4;
     /* display: none; */
   }
-  .word-section-left-container.mobile .word-section-left{
+  .word-section-left-modal.mobile .word-section-container {
     position: fixed;
     top: 40%;
     bottom: 0;
     background-color: var(--color-surface);
     border-radius: 0.5em;
     z-index: 5;
-    max-height: 60%;
+    padding-top: 20px;
+  }
+  .word-section-left-modal.mobile .word-section-left{
+    max-height: 100%;
     overflow-y: scroll;
   }
   .word-section-left input {
@@ -177,6 +180,12 @@
   .learn-section .quitLearnSectionBtn {
     padding: 14px 20px;
   }
+  .card-list {
+    width: calc(100% - 20px)
+  }
+  .card {
+    width: 100%;
+  }
   .card button {
     padding: 14px 20px;
   }
@@ -196,8 +205,7 @@
   }
   .filling-answer-explain {
     bottom: 40px;
-    right: 10px;
-    left: 10px;
+    width: calc(100% - 20px)
   }
   .filling-answer-explain button {
     padding: 14px 20px;

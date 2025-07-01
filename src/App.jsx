@@ -1023,134 +1023,136 @@ function App() {
             </div>
             
             {showWordSectionLeft && (
-              <div className="word-section-left-container mobile" onClick={() => setShowWordSectionLeft(false)}>
-                <div className="word-section-left" onClick={e =>e.stopPropagation()}>
-                  <input 
-                    type="text"
-                    placeholder='Enter word'
-                    value={word}
-                    ref={wordInputRef}
-                    onChange={e => setWord(e.target.value)} 
-                    onClick={() => setShowMeaningList(false)}
-                    onKeyDown={e => {
-                      if (e.key === 'Enter' || e.key === 'ArrowDown') {
-                        // Move focus to meaning input
-                        meaningInputRef.current && meaningInputRef.current.focus();
-                      }
-                    }}
-                  />
-                  <div className="meaning-section">
+              <div className="word-section-left-modal mobile" onClick={() => setShowWordSectionLeft(false)}>
+                <div className="word-section-container">
+                  <div className="word-section-left" onClick={e =>e.stopPropagation()}>
                     <input 
                       type="text"
-                      placeholder='Enter meaning'
-                      value={meaning}
-                      ref={meaningInputRef}
-                      onChange={e => {
-                        setMeaning(e.target.value)
-                        setShowMeaningList(false)
-                        setSelectedMeaningIndex(-1);
-                        if (e.target.value === '/') {
-                          suggestMeaning()
-                        }
-                      }} 
+                      placeholder='Enter word'
+                      value={word}
+                      ref={wordInputRef}
+                      onChange={e => setWord(e.target.value)} 
+                      onClick={() => setShowMeaningList(false)}
                       onKeyDown={e => {
-                        if (showMeaningList && meaningList.length > 0) {
-                          if (e.key === 'ArrowDown') {
-                            e.preventDefault();
-                            setSelectedMeaningIndex(prev =>
-                              prev < meaningList.length - 1 ? prev + 1 : 0
-                            );
-                          } else if (e.key === 'ArrowUp') {
-                            e.preventDefault();
-                            setSelectedMeaningIndex(prev =>
-                              prev > 0 ? prev - 1 : meaningList.length - 1
-                            );
-                          } else if (e.key === 'Enter' && selectedMeaningIndex !== -1) {
-                            setMeaning(meaningList[selectedMeaningIndex].vie);
-                            setShowMeaningList(false);
+                        if (e.key === 'Enter' || e.key === 'ArrowDown') {
+                          // Move focus to meaning input
+                          meaningInputRef.current && meaningInputRef.current.focus();
+                        }
+                      }}
+                    />
+                    <div className="meaning-section">
+                      <input 
+                        type="text"
+                        placeholder='Enter meaning'
+                        value={meaning}
+                        ref={meaningInputRef}
+                        onChange={e => {
+                          setMeaning(e.target.value)
+                          setShowMeaningList(false)
+                          setSelectedMeaningIndex(-1);
+                          if (e.target.value === '/') {
+                            suggestMeaning()
+                          }
+                        }} 
+                        onKeyDown={e => {
+                          if (showMeaningList && meaningList.length > 0) {
+                            if (e.key === 'ArrowDown') {
+                              e.preventDefault();
+                              setSelectedMeaningIndex(prev =>
+                                prev < meaningList.length - 1 ? prev + 1 : 0
+                              );
+                            } else if (e.key === 'ArrowUp') {
+                              e.preventDefault();
+                              setSelectedMeaningIndex(prev =>
+                                prev > 0 ? prev - 1 : meaningList.length - 1
+                              );
+                            } else if (e.key === 'Enter' && selectedMeaningIndex !== -1) {
+                              setMeaning(meaningList[selectedMeaningIndex].vie);
+                              setShowMeaningList(false);
+                            } else if (e.key === 'Enter') {
+                              addWord();
+                              wordInputRef.current && wordInputRef.current.focus();
+                            }
                           } else if (e.key === 'Enter') {
                             addWord();
                             wordInputRef.current && wordInputRef.current.focus();
                           }
-                        } else if (e.key === 'Enter') {
-                          addWord();
-                          wordInputRef.current && wordInputRef.current.focus();
-                        }
 
-                      }}
-                    />
-                    {showMeaningList && meaningList && (
-                      <div className="meaning-list-section">
-                        <div className="meaning-list">
-                          {
-                            meaningList.map((meaning, index) => {
-                              let typeClassName;
-                              if (meaning.type === 'noun') {
-                                typeClassName = 'noun'
-                              }
-                              else if (meaning.type === 'verb') {
-                                typeClassName = 'verb'
-                              }
-                              else if (meaning.type === 'adjective') {
-                                typeClassName = 'adjective'
-                              }
-                              else {
-                                typeClassName = 'other'
-                              }
-                              
-                              const isSelected = index === selectedMeaningIndex;
+                        }}
+                      />
+                      {showMeaningList && meaningList && (
+                        <div className="meaning-list-section">
+                          <div className="meaning-list">
+                            {
+                              meaningList.map((meaning, index) => {
+                                let typeClassName;
+                                if (meaning.type === 'noun') {
+                                  typeClassName = 'noun'
+                                }
+                                else if (meaning.type === 'verb') {
+                                  typeClassName = 'verb'
+                                }
+                                else if (meaning.type === 'adjective') {
+                                  typeClassName = 'adjective'
+                                }
+                                else {
+                                  typeClassName = 'other'
+                                }
+                                
+                                const isSelected = index === selectedMeaningIndex;
 
-                              return (
-                              <li 
-                                ref={el => (meaningRefs.current[index] = el)}
-                                className={`meaning${isSelected ? ' selected' : ''}`}
-                                key={index}
-                                onClick={() => {
-                                  setMeaning(meaning.vie)
-                                  setShowMeaningList(false)
-                                }}
-                                style={isSelected ? { background: '#f5f5f5' } : {}}
-                              >
-                                <p className={typeClassName}>{meaning.type}</p>
-                                <p>{meaning.vie}</p>
-                                <p>{meaning.eng}</p>
-                              </li>
-                            )})
-                          }
+                                return (
+                                <li 
+                                  ref={el => (meaningRefs.current[index] = el)}
+                                  className={`meaning${isSelected ? ' selected' : ''}`}
+                                  key={index}
+                                  onClick={() => {
+                                    setMeaning(meaning.vie)
+                                    setShowMeaningList(false)
+                                  }}
+                                  style={isSelected ? { background: '#f5f5f5' } : {}}
+                                >
+                                  <p className={typeClassName}>{meaning.type}</p>
+                                  <p>{meaning.vie}</p>
+                                  <p>{meaning.eng}</p>
+                                </li>
+                              )})
+                            }
+                          </div>
                         </div>
-                      </div>
-                    )}
+                      )}
+                    </div>
+
+                    <button onClick={addWord} className='add-word-btn'>Add</button>
+
+                    <div className="learning-modes">
+                      <button className='learnBtn' onClick={learnBtn}>
+                        <img src="https://cdn-icons-png.freepik.com/512/9100/9100957.png" alt="" />
+                        Flashcard
+                      </button>
+
+                      {/* <button onClick={() => generateMatching(words)} className='openMatchingBtn'>
+                        <img src="https://cdn-icons-png.freepik.com/512/282/282100.png" alt="" />
+                        Matching
+                      </button> */}
+
+                      <button onClick={() => generateFilling(words)}>
+                        <img src="https://cdn-icons-png.flaticon.com/512/6559/6559624.png" alt="" />
+                        Filling
+                      </button>
+
+                      <button onClick={() => generateListening(words)}>
+                        <img src="https://cdn-icons-png.flaticon.com/512/8805/8805242.png" alt="" />
+                        Listening
+                      </button>
+                    </div>
+                    
+                    <button className='delete-folder-btn' onClick={() => {
+                      setShowAskToDelete(true)
+                      setRenameTarget(currentFolder)
+                      setShowWordSection(false)
+                    }}><FontAwesomeIcon icon={faTrash} /> Delete this folder</button>
                   </div>
-
-                  <button onClick={addWord} className='add-word-btn'>Add</button>
-
-                  <div className="learning-modes">
-                    <button className='learnBtn' onClick={learnBtn}>
-                      <img src="https://cdn-icons-png.freepik.com/512/9100/9100957.png" alt="" />
-                      Flashcard
-                    </button>
-
-                    {/* <button onClick={() => generateMatching(words)} className='openMatchingBtn'>
-                      <img src="https://cdn-icons-png.freepik.com/512/282/282100.png" alt="" />
-                      Matching
-                    </button> */}
-
-                    <button onClick={() => generateFilling(words)}>
-                      <img src="https://cdn-icons-png.flaticon.com/512/6559/6559624.png" alt="" />
-                      Filling
-                    </button>
-
-                    <button onClick={() => generateListening(words)}>
-                      <img src="https://cdn-icons-png.flaticon.com/512/8805/8805242.png" alt="" />
-                      Listening
-                    </button>
-                  </div>
-                  
-                  <button className='delete-folder-btn' onClick={() => {
-                    setShowAskToDelete(true)
-                    setRenameTarget(currentFolder)
-                    setShowWordSection(false)
-                  }}><FontAwesomeIcon icon={faTrash} /> Delete this folder</button>
                 </div>
               </div>
             )}
