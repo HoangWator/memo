@@ -112,6 +112,12 @@
   .word-section-header {
     border: none;
   }
+  .create-folder-field,
+  .ask-to-delete-section .ask-to-delete,
+  .login-section .login-container {
+    width: calc(100% - 20px)
+  }
+
   .main-content {
     width: 100%;
   }
