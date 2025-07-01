@@ -24,6 +24,13 @@
 {
   height: 100vh;
 }
+.quitSectionBtn 
+{
+  background-color: var(--color-bg) !important;
+  color: var(--color-primary) !important;
+  font-size: 25px !important;
+  padding: 10px !important;
+}
 .login-section 
 {
   position: fixed;
@@ -35,7 +42,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 3;
+  z-index: 2;
 }
 .login-section .login-container 
 {
@@ -56,9 +63,7 @@
 .login-section .login-container  button 
 {
   display: block;
-  background-color: #fff;
-  border: 2px solid #dadce0;
-  color: #333;
+  box-shadow: 0 2px 5px #ddd;
   padding: 10px 20px;
   background-color: #fff !important;
   color: #333 !important;
@@ -66,6 +71,9 @@
 .login-section .login-container .login-options button 
 {
   width: 280px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 .login-section .login-container button.quitLogin 
 {
@@ -99,7 +107,31 @@
   color: #000;
   display: flex;
   align-items: center;
-  padding: 10px 10px 20px 10px;
+  padding: 10px;
+  position: fixed;
+  top: 0;
+  right: 0;
+  /* z-index: 1; */
+}
+.sidebar-mobile .logo, .header .logo  
+{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.sidebar-mobile .logo
+{
+  padding: 10px;
+}
+.mobile-sidebar-toggle 
+{
+  background-color: transparent;
+  color: var(--color-primary);
+  font-size: 25px;
+}
+.mobile-sidebar-toggle:hover  
+{
+  background-color: transparent;
 }
 .header .account-section
 {
@@ -107,6 +139,20 @@
   display: flex;
   align-items: center;
   gap: 10px;
+  position: relative;
+}
+.header .account-section .logoutBtn 
+{
+  position: absolute;
+  top: 60px;
+  right: 0;
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: 0 0 5px #ccc;
+}
+.header .account-section .logoutBtn:hover 
+{
+  background-color: #f5f5f5;
 }
 .header .account-section button 
 {
@@ -134,7 +180,7 @@
   align-items: center;
   justify-content: center;
   background-color: rgba(0, 0, 0, 0.1);
-  z-index: 4;
+  z-index: 1;
 }
 .logout-section .logout-container 
 {
@@ -154,12 +200,12 @@
 }
 .logout-section .logout-container .logout-options button 
 {
-  background-color: var(--color-muted);
-  color: var(--color-text);
+  background-color: var(--color-bg);
+  color: var(--color-primary)
 }
 .logout-section .logout-container .logout-options button:hover 
 {
-  background-color: var(--color-muted-hover);
+  background-color: var(--color-bg-hover);
 }
 .logout-section .logout-container .logout-options button.goBack
 {
@@ -181,7 +227,20 @@
 .content .sidebar 
 {
   width: 20%;
+  height: 100%;
   background-color: var(--color-surface);
+  position: fixed;
+  z-index: 1;
+}
+.content .sidebar-mobile 
+{
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left:  0;
+  right: 0;
+  background-color: rgba(0, 0, 0, 0.1);
+  z-index: 2;
 }
 .content .sidebar h1 
 {
@@ -193,19 +252,19 @@
   cursor: pointer;
   color: #333;
   font-size: 23px;
-  /* border: 1px solid #dadce0; */
   border-radius: 0.5em;
   margin-bottom: 10px;
   list-style-type: none;
+  margin-bottom: 10px;
 }
 .content .sidebar ul li.clicked 
 {
-  background-color: var(--color-primary);
-  color: #fff;
+  background-color: var(--color-bg);
+  color: var(--color-primary)
 }
 .content .sidebar ul li.clicked:hover 
 {
-  background-color: var(--color-primary-hover);
+  background-color: var(--color-bg);
 }
 .content .sidebar ul li:hover 
 {
@@ -227,6 +286,7 @@
   padding: 0 20px;
   display: flex;
   flex-direction: column;
+  margin-top: 72px;
 }
 .main-content .vocabulary-section .add-folder-btn 
 {
@@ -344,11 +404,11 @@
   background-color: var(--color-surface);
   padding: 20px;
   border-radius: 0.5em;
-  border: 1px solid #dadce0;
   transition: 0.2s;
   user-select: none;
   cursor: pointer;
   position: relative;
+  box-shadow: 0 5px 5px #ccc;
 }
 .folder-list .folder .folder-icon 
 {
@@ -551,16 +611,18 @@ ul
   padding: 10px 20px;
   border-radius: 0.5em;
   margin-bottom: 10px;
-  border: 1px solid #dadce0;
   position: relative;
   background-color: #fff;
   white-space: nowrap;
   overflow: hidden;
   color: var(--color-text);
+  box-shadow: 0 3px 5px #ddd;
 }
 .word-section li p 
 {
-  color: var(--color-muted)
+  color: var(--color-muted);
+  overflow: hidden;
+  max-width:90%;
 }
 .word-section li:hover 
 {
@@ -593,7 +655,7 @@ ul
 }
 .word-section .word-section-right ul h3 
 {
-  color: var(--color-text)
+  color: var(--color-text);
 }
 .word-section .word-section-right p.noWords 
 {
@@ -634,13 +696,14 @@ ul
   position: fixed;
   top: 0;
   width: 100%;
-  background-color: #fff;
+  background-color: var(--color-bg);
   padding: 20px;
   height: 100vh;
   position: fixed;
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 4;
 }
 
 .learn-section .quitLearnSectionBtn 
@@ -718,7 +781,7 @@ ul
   height: 400px;
   background-color: #fff;
   border-radius: 0.5em;
-  border: 1px solid #dadce0;
+  box-shadow: 0 2px 5px #ddd;
   margin: 0 20px;
   padding: 20px;
 
@@ -749,13 +812,12 @@ ul
 }
 .deleteBtn 
 {
-  font-size: 16px;
+  font-size: 20px;
   color: red;
-  background-color: #fff;
-  border: 1px solid #dadce0;
+  background-color: transparent;
   position: absolute;
   right: 10px;
-  top: 10px;
+  top: 11px;
 }
 .deleteBtn:hover 
 {
@@ -824,7 +886,7 @@ ul
   gap: 10px;
   background-color: #fff;
   color: #333;
-  border: 1px solid #dadce0
+  box-shadow: 0 2px 5px #ddd;
 }
 .word-section-left .learning-modes button:hover 
 {
@@ -853,7 +915,6 @@ ul
   position: absolute;
   top: 47px;
   border-radius: 0.5em;
-  /* border: 1px solid #dadce0; */
   width: 100%;
   background-color: #fff;
   padding: 5px;
@@ -953,8 +1014,8 @@ ul
   background-color: #fff; 
   padding: 60px 50px;
   border-radius: 0.5em;
-  border: 1px solid #dadce0;
   text-align: center;
+  box-shadow: 0 2px 5px #ddd;
   margin: 0 10px 10px 10px;
   display: flex;
   justify-content: center;
@@ -1058,13 +1119,13 @@ ul
   left: 0;
   right: 0;
   bottom: 0;
+  z-index: 4
 }
 
 .quitFillingBtn 
 {
   margin: 0;
   position: absolute;
-  top: 10px;
   left: 10px;
 }
 
@@ -1080,7 +1141,7 @@ ul
 }
 .filling-content 
 {
-  overflow-y: scroll;
+  /* overflow-y: scroll; */
   height: calc(100vh - 61px);
   display: flex;
   justify-content: center;
@@ -1145,9 +1206,10 @@ ul
 }
 .filling-options .filling-option .label 
 {
+  display: block;
   width: 100%;
   padding: 10px 30px;
-  border: 2px solid #dadce0;
+  box-shadow: 0 2px 5px #ddd;
   border-radius: 0.5em;
   margin-bottom: 10px;
   user-select: none;
@@ -1170,7 +1232,7 @@ input[type='radio']:checked + .label.wrong
   left: 50%;
   transform: translateX(-50%);
   bottom: 40px;
-  border: 1px solid #dadce0;
+  box-shadow: 0 2px 5px #ddd;
   padding: 15px;
   border-radius: 0.5em;
   background-color: var(--color-surface);
@@ -1286,6 +1348,7 @@ input[type='radio']:checked + .label.wrong
   right: 0;
   bottom: 0;
   background-color: #fff;
+  z-index: 4;
 }
 .listening-section .listening-header 
 {
@@ -1361,6 +1424,7 @@ input[type='radio']:checked + .label.wrong
 {
   margin: 20px 0;
   background-color: var(--color-surface);
+  box-shadow: 0 2px 10px #ddd;
   border: 0;
 }
 .listening-card .speak-word-btn:hover 
@@ -1373,6 +1437,7 @@ input[type='radio']:checked + .label.wrong
   bottom: 20px;
   min-width: 300px;
   padding: 20px;
+  box-shadow: 0 2px 5px #ddd;
   border-radius: 0.5em;
   background-color: var(--color-surface);
 }
@@ -1415,6 +1480,7 @@ input[type='radio']:checked + .label.wrong
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-top: 72px;
 }
 .developing-page h2
 {

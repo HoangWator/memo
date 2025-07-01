@@ -7,7 +7,7 @@ import './App.css'
 import './responsive.css'
 import ReactDOM from 'react-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPlus,faArrowLeft,faArrowRight,faArrowDown,faArrowUp,faTrash,faXmark,faMagnifyingGlass,faVolumeHigh,faFolder,faDumbbell,faTrophy,faChartSimple,faEllipsis,faPenToSquare,faX,faArrowRightFromBracket,faArrowsLeftRight } from '@fortawesome/free-solid-svg-icons'
+import { faPlus,faBars,faArrowLeft,faArrowRight,faArrowDown,faArrowUp,faTrash,faXmark,faMagnifyingGlass,faVolumeHigh,faFolder,faDumbbell,faTrophy,faChartSimple,faEllipsis,faPenToSquare,faX,faArrowRightFromBracket,faArrowsLeftRight } from '@fortawesome/free-solid-svg-icons'
 import { geneAI } from './gemini'
 import useSound from 'use-sound';
 import { getWordData } from './gemini'
@@ -533,9 +533,7 @@ function App() {
               }
               else {
                 setFillingIndex(0)
-                if (numberQuestionDone < fillingQuestions.length) {
-                  setNumberQuestionDone(numberQuestionDone + 1)
-                }
+                setNumberQuestionDone(0)
                 setShowFilling(false)
               }
             }}>Next <FontAwesomeIcon icon={faArrowRight} /></button>
@@ -564,6 +562,9 @@ function App() {
     }
   }
 
+  
+  const [numberQuestionDone, setNumberQuestionDone] = useState(0)
+  
   const quitFilling = () => {
     setShowFilling(false)
     setFillingQuestions([])
@@ -571,7 +572,6 @@ function App() {
     setNumberQuestionDone(0)
   }
 
-  const [numberQuestionDone, setNumberQuestionDone] = useState(0)
 
   function ProgressBar() {
     const progress = Math.floor(numberQuestionDone / fillingQuestions.length * 100);
@@ -663,7 +663,7 @@ function App() {
               }
               
               setUserInput('');
-            }}>Next<FontAwesomeIcon icon={faArrowRight} /></button>
+            }}><FontAwesomeIcon icon={faArrowRight} /></button>
           </div>
         )}
       </div>
@@ -674,13 +674,17 @@ function App() {
   const [birthYear, setBirthYear] = useState('2000')
 
   const [showWordSectionLeft, setShowWordSectionLeft] = useState(false)
+
+  const [showLogoutBtn, setShowLogoutBtn] = useState(false)
+
+  const [showMobileSidebar, setShowMobileSidebar] = useState(false)
   return (
     <div className="main">
       {loader && <Loader />}
       
-
+      
       <div className="content">
-        <div className="sidebar">
+        <div className="sidebar pc">
           <h1 style={{'userSelect': 'none'}}>Memo</h1>
 
           <ul>
@@ -690,13 +694,51 @@ function App() {
             <li className={pageIndex === 3 ? 'clicked' : ''} onClick={() => setPageIndex(3)}><FontAwesomeIcon icon={faChartSimple} className='icon' /><span>Progress</span></li>
           </ul>
         </div>
+        {
+          showMobileSidebar && (
+            <div className="sidebar-mobile" onClick={() => setShowMobileSidebar(false)}>
+              <div className="sidebar" onClick={e => e.stopPropagation()}>
+                <div className="logo">
+                  <button className='mobile-sidebar-toggle'onClick={() => setShowMobileSidebar(false)}><FontAwesomeIcon icon={faBars} /></button>
+                  <h1>Memo</h1>
+                </div>
+
+                <ul>
+                  <li className={pageIndex === 0 ? 'clicked' : ''} onClick={() => {
+                    setShowMobileSidebar(false)
+                    setPageIndex(0)
+                  }}><FontAwesomeIcon icon={faFolder} className='icon' /><span>Vocabulary</span></li>
+                  <li className={pageIndex === 1 ? 'clicked' : ''} onClick={() => {
+                    setShowMobileSidebar(false)
+                    setPageIndex(1)
+                  }}><FontAwesomeIcon icon={faDumbbell} className='icon' /><span>Practice</span></li>
+                  <li className={pageIndex === 2 ? 'clicked' : ''} onClick={() => {
+                    setShowMobileSidebar(false)
+                    setPageIndex(2)
+                  }}><FontAwesomeIcon icon={faTrophy} className='icon' /><span>Rank</span></li>
+                  <li className={pageIndex === 3 ? 'clicked' : ''} onClick={() => {
+                    setShowMobileSidebar(false)
+                    setPageIndex(3)
+                  }}><FontAwesomeIcon icon={faChartSimple} className='icon' /><span>Progress</span></li>
+                </ul>
+              </div>
+            </div>
+          )
+        }
 
         <div className="main-content">
           <div className="header">
+            <div className="logo">
+              <button className='mobile-sidebar-toggle'onClick={() => setShowMobileSidebar(true)}><FontAwesomeIcon icon={faBars} /></button>
+              <h1>Memo</h1>
+            </div>
             <div className="account-section">
               <button onClick={() => {
                 if (userID == '') {
                   setShowLoginSection(true)
+                }
+                else {
+                  setShowLogoutBtn(!showLogoutBtn)
                 }
               }}>
                 <img 
@@ -707,35 +749,14 @@ function App() {
                 {userID ? userName : 'Sign in'}
               </button>
 
-              {userID != '' && 
-                <button className='logoutBtn' onClick={() => setShowLogoutSection(true)}><FontAwesomeIcon icon={faArrowRightFromBracket} /></button>
+              {showLogoutBtn && 
+                <button className='logoutBtn' onClick={() => {
+                  setShowLogoutSection(true)
+                  setShowLogoutBtn(false)
+                }}>Log out<FontAwesomeIcon icon={faArrowRightFromBracket} /></button>
               }
-              {showLogoutSection && (
-                <div className="logout-section" onClick={() => setShowLogoutSection(false)}>
-                  <div className="logout-container" onClick={e => e.stopPropagation()}>
-                    <h2>Do you want to log out?</h2>
-                    <div className="logout-options">
-                      <button onClick={() => {
-                        exitAccount()
-                        setShowLogoutSection(false)
-                      }}>Yes, log out</button>
-                      <button onClick={() => setShowLogoutSection(false)} className='goBack'>No, come back</button>
-                    </div>
-                  </div>
-                </div>
-              )}
-              {showLoginSection && (
-                <div className="login-section" onClick={() => setShowLoginSection(false)}>
-                  <div className="login-container"  onClick={e => e.stopPropagation()}>
-                    <button className='quitLogin' onClick={() => setShowLoginSection(false)}><FontAwesomeIcon icon={faXmark} /></button>
-                    <h1>Sign in</h1>
-                    <div className="login-options">
-                      <button onClick={loginWithGoogle}><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/800px-Google_%22G%22_logo.svg.png" alt="" />Continue with Google</button>
-                      <button><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Facebook_Logo_%282019%29.png/500px-Facebook_Logo_%282019%29.png" alt="" />Continue with Facebook</button>
-                    </div>
-                  </div>
-                </div>
-              )}
+              
+              
             </div>
           </div>
           {pageIndex === 0 && (
@@ -865,11 +886,11 @@ function App() {
       {showWordSection && (
         <div className="word-section">
           <div className="word-section-header">
-            <button onClick={quitWordSection}><FontAwesomeIcon icon={faArrowLeft} /></button>
+            <button onClick={quitWordSection} className='quitSectionBtn'><FontAwesomeIcon icon={faArrowLeft} /></button>
           </div>
           <div className="word-section-body">
             <button className='showWordSectionLeftBtn' onClick={() => setShowWordSectionLeft(!showWordSectionLeft)}>
-              {showWordSectionLeft ? <FontAwesomeIcon icon={faArrowDown} /> : <FontAwesomeIcon icon={faArrowUp} />}
+              Add & Learn
             </button>
 
             <div className="word-section-left pc">
@@ -1147,7 +1168,7 @@ function App() {
               <ul>
                 {
                   words.length > 0 ? (
-                      words.map((word, index) => 
+                      words.reverse().map((word, index) => 
                         <li key={index}>
                           <h3>{word.name.toLowerCase()}</h3>
                           <p>{word.mean.toLowerCase()}</p>
@@ -1171,50 +1192,13 @@ function App() {
         </div>
       )}
 
-      {showLearn && 
-        <div className="learn-section">
-          <div className="card-list">
-            
-            <p className="card-number">
-              {indexLearn + 1} / {data.length}
-            </p>
-
-            <Card word={data[indexLearn]} />
-
-            <div className="nav-btns">
-              {indexLearn > 0 ? (
-                <button className="prev-btn" onClick={() => {
-                  if (indexLearn > 0) {
-                    setIndexLearn(indexLearn - 1)
-                  }
-                }}><FontAwesomeIcon icon={faArrowLeft} /></button>
-              ) : (
-                <button className="disabled prev-btn"><FontAwesomeIcon icon={faArrowLeft} /></button>
-              )
-              }
-
-              {indexLearn < data.length - 1 ? (
-                <button className="next-btn" onClick={() => {
-                  if (indexLearn < data.length - 1) {
-                    setIndexLearn(indexLearn + 1)
-                  }
-                }}><FontAwesomeIcon icon={faArrowRight} /></button>
-              )
-              : (
-                <button className="disabled next-btn"><FontAwesomeIcon icon={faArrowRight} /></button>
-              )
-              }
-            </div>
-          </div>
-          <button onClick={() => setShowLearn(false)} className='quitLearnSectionBtn'><FontAwesomeIcon icon={faArrowLeft} /></button>
-
-        </div>
-      }
+      
 
       {showMatching &&
         <div className="matching-section">
           <div className="matching-header">
-            <button onClick={() => {
+            <button 
+            onClick={() => {
               setShowMatching(false)
               setClickedNameIndex(-1)
               setClickedMeanIndex(-1)
@@ -1222,7 +1206,9 @@ function App() {
               setClickedMean('')
               setMatchedList([])
               setNoMatchedList([])
-            }}><FontAwesomeIcon icon={faArrowLeft} /></button>
+            }}
+            className='quitSectionBtn'
+            ><FontAwesomeIcon icon={faArrowLeft} /></button>
             <h1>Matching</h1>
           </div>
 
@@ -1417,7 +1403,7 @@ function App() {
       {showFilling && (
         <div className="filling-section">
           <div className="filling-header">
-            <button className='quitFillingBtn' onClick={quitFilling}><FontAwesomeIcon icon={faArrowLeft} /> Back</button>
+            <button className='quitFillingBtn quitSectionBtn' onClick={quitFilling}><FontAwesomeIcon icon={faArrowLeft} /></button>
             <div className="progess-bar">
               <ProgressBar />
             </div>
@@ -1426,20 +1412,87 @@ function App() {
             <FillingCard data={fillingQuestions[fillingIndex]} order={fillingIndex}/>
           </div>
         </div>
-        )}
+      )}
       
       {showListening && (
         <div className="listening-section">
           <div className="listening-header">
-            <button onClick={() => setShowListening(false)}><FontAwesomeIcon icon={faArrowLeft} /></button>
+            <button className='quitSectionBtn' onClick={() => setShowListening(false)}><FontAwesomeIcon icon={faArrowLeft} /></button>
           </div>
           <div className="listening-content">
             <ListeningCard key={listeningCardIndex} word={words[listeningCardIndex].name} order={listeningCardIndex}/>
           </div>
         </div>
       )}
+
+      {showLoginSection && (
+        <div className="login-section" onClick={() => setShowLoginSection(false)}>
+          <div className="login-container"  onClick={e => e.stopPropagation()}>
+            <button className='quitLogin' onClick={() => setShowLoginSection(false)}><FontAwesomeIcon icon={faXmark} /></button>
+            <h1>Sign in</h1>
+            <div className="login-options">
+              <button onClick={loginWithGoogle}><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/800px-Google_%22G%22_logo.svg.png" alt="" />Continue with Google</button>
+              <button><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Facebook_Logo_%282019%29.png/500px-Facebook_Logo_%282019%29.png" alt="" />Continue with Facebook</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showLogoutSection && (
+        <div className="logout-section" onClick={() => setShowLogoutSection(false)}>
+          <div className="logout-container" onClick={e => e.stopPropagation()}>
+            <h2>Do you want to log out?</h2>
+            <div className="logout-options">
+              <button onClick={() => {
+                exitAccount()
+                setShowLogoutSection(false)
+              }}>Yes, log out</button>
+              <button onClick={() => setShowLogoutSection(false)} className='goBack'>No, come back</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showLearn && 
+        <div className="learn-section">
+          <div className="card-list">
+            
+            <p className="card-number">
+              {indexLearn + 1} / {data.length}
+            </p>
+
+            <Card word={data[indexLearn]} />
+
+            <div className="nav-btns">
+              {indexLearn > 0 ? (
+                <button className="prev-btn" onClick={() => {
+                  if (indexLearn > 0) {
+                    setIndexLearn(indexLearn - 1)
+                  }
+                }}><FontAwesomeIcon icon={faArrowLeft} /></button>
+              ) : (
+                <button className="disabled prev-btn"><FontAwesomeIcon icon={faArrowLeft} /></button>
+              )
+              }
+
+              {indexLearn < data.length - 1 ? (
+                <button className="next-btn" onClick={() => {
+                  if (indexLearn < data.length - 1) {
+                    setIndexLearn(indexLearn + 1)
+                  }
+                }}><FontAwesomeIcon icon={faArrowRight} /></button>
+              )
+              : (
+                <button className="disabled next-btn"><FontAwesomeIcon icon={faArrowRight} /></button>
+              )
+              }
+            </div>
+          </div>
+          <button onClick={() => setShowLearn(false)} className='quitLearnSectionBtn quitSectionBtn'><FontAwesomeIcon icon={faArrowLeft} /></button>
+
+        </div>
+      }
     </div>
-    
   )
 }
 
