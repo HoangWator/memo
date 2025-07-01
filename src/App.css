@@ -616,7 +616,7 @@ ul
   white-space: nowrap;
   overflow: hidden;
   color: var(--color-text);
-  box-shadow: 0 3px 5px #ddd;
+  box-shadow: 0 2px 5px #ddd;
 }
 .word-section li p 
 {
@@ -1153,6 +1153,7 @@ ul
 {
   padding: 40px 0;
   width: 80%;
+  position: relative;
 }
 .filling-card p 
 {
@@ -1228,7 +1229,7 @@ input[type='radio']:checked + .label.wrong
 }
 .filling-answer-explain 
 {
-  position: absolute;
+  position: fixed;
   left: 50%;
   transform: translateX(-50%);
   bottom: 40px;

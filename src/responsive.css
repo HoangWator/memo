@@ -27,10 +27,16 @@
   .mobile-sidebar-toggle {
     display: none;
   }
+  .word-section-left-container.mobile {
+    display: none;
+  }
 }
 
 /* Tablet */
 @media (min-width: 740px) and (max-width: 1023px) {
+  .word-section-left-container.mobile {
+    display: none;
+  }
   .content .sidebar.pc {
     display: block;
   }
@@ -116,7 +122,7 @@
     display: block;
   }
   .content .sidebar {
-    width: 50%;
+    width: 70%;
   }
   .word-section-left.pc {
     display: none;
@@ -150,6 +156,7 @@
   }
   .word-section-left .learning-modes button {
     padding: 10px 20px;
+    width: 100%;
   }
   .word-section-left button {
     padding: 14px 20px;
@@ -167,6 +174,10 @@
   .card button {
     padding: 14px 20px;
   }
+  .filling-card {
+    width: 100%;
+    margin: 0 10px;
+  }
   .quitFillingBtn {
     padding: 14px 20px;
   }
@@ -178,8 +189,9 @@
     width: 100%;
   }
   .filling-answer-explain {
-    width: 100%;
-
+    bottom: 40px;
+    right: 10px;
+    left: 10px;
   }
   .filling-answer-explain button {
     padding: 14px 20px;
