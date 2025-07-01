@@ -323,7 +323,8 @@
   padding: 10px 10px 10px 40px;
   background-color: var(--color-surface);
   width: 300px;
-  color: var(--color-text)
+  color: var(--color-text);
+  font-size: 18px;
 }
 .vocabulary-section .search-folder .sort-btn
 {
@@ -675,6 +676,7 @@ ul
   padding: 10px 10px 10px 40px;
   border-radius: 0.5em;
   margin-bottom: 10px;
+  font-size: 18px;
 }
 .word-section .word-section-right .searchBox-section .searchIcon
 {
@@ -901,6 +903,7 @@ ul
   width: 100%;
   background-color: #fff;
   margin-bottom: 10px;
+  font-size: 18px;
 }
 .word-section-left input:hover 
 {
@@ -1412,6 +1415,7 @@ input[type='radio']:checked + .label.wrong
   padding: 20px 40px;
   border: 1px solid #dadce0;
   background-color: var(--color-surface);
+  font-size: 16px;
 }
 .listening-card .listeningInput.right
 {

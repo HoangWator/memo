@@ -39,6 +39,7 @@ function App() {
   const [word, setWord] = useState('')
   const [meaning, setMeaning] = useState('')
   const [words, setWords] = useState([])
+  const [allWords, setAllWords] = useState([])
   const [currentFolder, setCurrentFolder] = useState('')
 
   const [showMoreOptions, setShowMoreOptions] = useState(false)
@@ -96,6 +97,7 @@ function App() {
         getUserData(user.uid).then((data) => {
           if (data) {
             setFolders(Object.keys(data.folders));
+            setAllFolders(Object.keys(data.folders))
             setUserData(data);
           } else {
             setFolders([]);
@@ -106,6 +108,7 @@ function App() {
         setUserName('');
         setAvatarUrl('');
         setFolders([]);
+        setAllFolders([])
         setUserData('');
       }
     });
@@ -188,10 +191,12 @@ function App() {
       getUserData(userID).then((data) => {
         if (data) {
           setFolders(Object.keys(data.folders))
+          setAllFolders(Object.keys(data.folders))
           setUserData(data)
         }
         else {
           setFolders([])
+          setAllFolders([])
           // setUserData(data)
         }
       })
@@ -206,6 +211,7 @@ function App() {
   const deleteFolder = (uid, folderName) => {
     deleteFolderDB(uid, folderName)
     setFolders(folders.filter(folder => folder != folderName))
+    setAllFolders(folders.filter(folder => folder != folderName))
     setShowAskToDelete(false)
   }
 
@@ -223,6 +229,7 @@ function App() {
     const data = await getUserData(userID);
     setUserData(data);
     setFolders(Object.keys(data.folders));
+    setAllFolders(Object.keys(data.folders))
     setRenameTarget('')
   }
 
@@ -241,6 +248,7 @@ function App() {
       if (data) {
         console.log(data)
         setWords(data);
+        setAllWords(data);
         setLoader(false);
       }
     }).catch((error) => {
@@ -294,10 +302,8 @@ function App() {
   //search word
   const searchWord = (e) => {
     const searchValue = e.target.value.toLowerCase()
-    const words = JSON.parse(localStorage.getItem('words'));
-
     if (searchValue.length > 0) {
-      const filteredWords = words.filter(word => {
+      const filteredWords = allWords.filter(word => {
         const name = word.name.toLowerCase()
         const mean = word.mean.toLowerCase()
 
@@ -306,7 +312,7 @@ function App() {
       setWords(filteredWords);
     }
     else {
-      setWords(words);
+      setWords(allWords);
     }
   }
 
@@ -1170,7 +1176,7 @@ function App() {
               <ul>
                 {
                   words.length > 0 ? (
-                      words.reverse().map((word, index) => 
+                      words.map((word, index) => 
                         <li key={index}>
                           <h3>{word.name.toLowerCase()}</h3>
                           <p>{word.mean.toLowerCase()}</p>
@@ -1178,7 +1184,7 @@ function App() {
                           className='deleteBtn'
                           onClick={() => {
                             const newWords = words.filter((words, i) => i !== index)
-                            localStorage.setItem('words', JSON.stringify(newWords))
+                            setAllWords(newWords)
                             setWords(newWords)
                             deleteWordDB(userID, currentFolder, word)
                           }}><FontAwesomeIcon icon={faTrash} /></button>
