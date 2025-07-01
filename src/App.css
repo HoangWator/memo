@@ -73,6 +73,7 @@
   width: 280px;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 10px;
 }
 .login-section .login-container button.quitLogin 
@@ -369,6 +370,7 @@
 {
   margin-bottom: 10px;
   background-color: #f5f5f5;
+  font-size: 18px;
 }
 .create-folder-field .close-create-folder-btn 
 {

@@ -129,6 +129,7 @@ function App() {
   const [showLogoutSection, setShowLogoutSection] = useState(false)
   const exitAccount = () => {
     signOut(auth)
+    setUserID('')
   }
 
   function shuffleArray(array) {
@@ -180,7 +181,12 @@ function App() {
   // Create a folder
   const [showCreateFolder, setShowCreateFolder] = useState(false)
   const createFolder = () => {
-    setShowCreateFolder(!showCreateFolder)
+    if (userID == '') {
+      setShowLoginSection(true)
+    }
+    else {
+      setShowCreateFolder(!showCreateFolder)
+    }
   }
 
   // Add folder to Firestore
@@ -615,6 +621,7 @@ function App() {
   function ListeningCard({word, order}) {
     const speakWord = () =>  {
       const utterance = new SpeechSynthesisUtterance(word);
+      utterance.lang = 'en-US'
       speechSynthesis.speak(utterance);
     }
 
