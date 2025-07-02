@@ -1063,7 +1063,10 @@ function App() {
             </div>
             
             {showWordSectionLeft && (
-              <div className="word-section-left-modal mobile" onClick={() => setShowWordSectionLeft(false)}>
+              <div className="word-section-left-modal mobile" onClick={() => {
+                setShowRemindSuggestion(false)
+                setShowWordSectionLeft(false)
+              }}>
                 <div className="word-section-container">
                   <div className="word-section-left" onClick={e =>e.stopPropagation()}>
                     <input 
@@ -1072,7 +1075,10 @@ function App() {
                       value={word}
                       ref={wordInputRef}
                       onChange={e => setWord(e.target.value)} 
-                      onClick={() => setShowMeaningList(false)}
+                      onClick={() => {
+                        setShowRemindSuggestion(false)
+                        setShowMeaningList(false)
+                      }}
                       onKeyDown={e => {
                         if (e.key === 'Enter' || e.key === 'ArrowDown') {
                           // Move focus to meaning input
@@ -1092,6 +1098,12 @@ function App() {
                           setSelectedMeaningIndex(-1);
                           if (e.target.value === '/') {
                             suggestMeaning()
+                          }
+                          if (e.target.value.length > 0) {
+                            setShowRemindSuggestion(false)
+                          }
+                          else {
+                            setShowRemindSuggestion(true)
                           }
                         }} 
                         onKeyDown={e => {
@@ -1119,7 +1131,18 @@ function App() {
                           }
 
                         }}
+
+                        onClick={() => {
+                          if (word) {
+                            setShowRemindSuggestion(true)
+                          }
+                        }}
                       />
+                      {showRemindSuggestion && (
+                        <div className="remind-suggestion">
+                          <p><img src="./src/assets/icon/upscalemedia-transformed.png" alt="" />Type "/" to suggest meaning</p>
+                        </div>
+                      )}
                       {showMeaningList && meaningList && (
                         <div className="meaning-list-section">
                           <div className="meaning-list">
@@ -1162,7 +1185,7 @@ function App() {
                         </div>
                       )}
                     </div>
-
+                    
                     <button onClick={addWord} className='add-word-btn'>Add</button>
 
                     <div className="learning-modes">
