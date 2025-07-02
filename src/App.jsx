@@ -149,7 +149,6 @@ function App() {
       setWords([...words, {name: word.toLowerCase(), mean: meaning}])
       addWordDB(userID, currentFolder, {name: word.toLowerCase(), mean: meaning})
     }
-
     setWord('')
     setMeaning('')
   }
@@ -280,16 +279,14 @@ function App() {
   const [selectedMeaningIndex, setSelectedMeaningIndex] = useState(-1);
   const [meaningListLoader, setMeaningListLoader] = useState(false)
   const suggestMeaning = () => {
-    if (word) {
-      setShowMeaningList(true);
-      setMeaningListLoader(true)
-      
-      meaningSuggestion(word).then(data => {
-        console.log(data)
-        setMeaningList(data)
-        setMeaningListLoader(false)
-      })
-    }    
+    if (word && word.trim() !== '' && word !== '/') {
+    setShowMeaningList(true);
+    setMeaningListLoader(true);
+    meaningSuggestion(word).then(data => {
+      setMeaningList(data)
+      setMeaningListLoader(false)
+    })
+  } 
   }
 
   useEffect(() => {
@@ -961,7 +958,7 @@ function App() {
 
                   }}
                 />
-                {showMeaningList && meaningList && (
+                {showMeaningList && meaningList.length > 0 && (
                   <div className="meaning-list-section">
                     <div className="meaning-list">
                       {
@@ -1447,7 +1444,7 @@ function App() {
             <h1>Sign in</h1>
             <div className="login-options">
               <button onClick={loginWithGoogle}><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/800px-Google_%22G%22_logo.svg.png" alt="" />Continue with Google</button>
-              <button><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Facebook_Logo_%282019%29.png/500px-Facebook_Logo_%282019%29.png" alt="" />Continue with Facebook</button>
+              {/* <button><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Facebook_Logo_%282019%29.png/500px-Facebook_Logo_%282019%29.png" alt="" />Continue with Facebook</button> */}
             </div>
           </div>
         </div>
