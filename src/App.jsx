@@ -993,7 +993,7 @@ function App() {
                 />
                 {showRemindSuggestion && (
                   <div className="remind-suggestion">
-                    <p><img src="./src/assets/icon/upscalemedia-transformed.png" alt="" />Type "/" to suggest meaning</p>
+                    <p>Type "/" to suggest meaning</p>
                   </div>
                 )}
                 {showMeaningList && meaningList.length > 0 && (
