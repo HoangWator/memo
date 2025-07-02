@@ -277,16 +277,17 @@ function App() {
   const [meaningList, setMeaningList] = useState([])
   const [showMeaningList, setShowMeaningList] = useState(false)
   const [selectedMeaningIndex, setSelectedMeaningIndex] = useState(-1);
+  const [showRemindSuggestion, setShowRemindSuggestion] = useState(false)
   const [meaningListLoader, setMeaningListLoader] = useState(false)
   const suggestMeaning = () => {
     if (word && word.trim() !== '' && word !== '/') {
-    setShowMeaningList(true);
-    setMeaningListLoader(true);
-    meaningSuggestion(word).then(data => {
-      setMeaningList(data)
-      setMeaningListLoader(false)
-    })
-  } 
+      setShowMeaningList(true);
+      setMeaningListLoader(true);
+      meaningSuggestion(word).then(data => {
+        setMeaningList(data)
+        setMeaningListLoader(false)
+      })
+    } 
   }
 
   useEffect(() => {
@@ -813,6 +814,11 @@ function App() {
                 </div>
               </div>
               <div className="folder-list">
+                {folders.length === 0 && (
+                  <div className="folder-list-empty">
+                    <p>No folders yet.</p>
+                  </div>
+                )}
                 {folders.map((folder, index) => (
                   <div className="folder-item" key={index}>
                     <div className="folder" onClick={() => openWordSection(folder)}>
@@ -894,7 +900,11 @@ function App() {
 
 
       {showWordSection && (
-        <div className="word-section">
+        <div className="word-section" onClick={() => {
+          if (showRemindSuggestion) {
+            setShowRemindSuggestion(false)
+          }
+        }}>
           <div className="word-section-header">
             <button onClick={quitWordSection} className='quitSectionBtn'><FontAwesomeIcon icon={faArrowLeft} /></button>
           </div>
@@ -910,11 +920,15 @@ function App() {
                 value={word}
                 ref={wordInputRef}
                 onChange={e => setWord(e.target.value)} 
-                onClick={() => setShowMeaningList(false)}
+                onClick={() => {
+                  setShowRemindSuggestion(false)
+                  setShowMeaningList(false)
+                }}
                 onKeyDown={e => {
                   if (e.key === 'Enter' || e.key === 'ArrowDown') {
                     // Move focus to meaning input
                     meaningInputRef.current && meaningInputRef.current.focus();
+                    setShowRemindSuggestion(true)
                   }
                 }}
               />
@@ -930,6 +944,12 @@ function App() {
                     setSelectedMeaningIndex(-1);
                     if (e.target.value === '/') {
                       suggestMeaning()
+                    }
+                    if (e.target.value === '') {
+                      setShowRemindSuggestion(true)
+                    }
+                    else {
+                      setShowRemindSuggestion(false)
                     }
                   }} 
                   onKeyDown={e => {
@@ -957,7 +977,17 @@ function App() {
                     }
 
                   }}
+                  onClick={() => {
+                    if (word) {
+                      setShowRemindSuggestion(true)
+                    }
+                  }}
                 />
+                {showRemindSuggestion && (
+                  <div className="remind-suggestion">
+                    <p><img src="./src/assets/icon/upscalemedia-transformed.png" alt="" />Type "/" to suggest meaning</p>
+                  </div>
+                )}
                 {showMeaningList && meaningList.length > 0 && (
                   <div className="meaning-list-section">
                     <div className="meaning-list">

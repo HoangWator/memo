@@ -12,7 +12,7 @@
   --color-secondary: #FFD166;    
   --color-success: #43E477;  
   --color-pending: orange;
-  --color-wrong: #f00;
+  --color-wrong: #FF4D4F;
   --color-bg: #F6F8FB;          
   --color-bg-hover: #E9F0FA;           
   --color-surface: #FFFFFF;     
@@ -394,11 +394,22 @@
   width: 100%;
   max-height: 100%;
   /* overflow-y: scroll; */
-
+  
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
   padding-bottom: 10px;
+}
+.folder-list .folder-list-empty 
+{
+  width: 100%;
+  height: 100%;
+} 
+.folder-list .folder-list-empty p 
+{
+  text-align: center;
+  padding-top: 50px;
+  color: var(--color-muted)
 }
 
 .folder-list .folder 
@@ -489,7 +500,7 @@
 }
 .folder-list .folder .more .more-options button.delete-folder-btn
 {
-  color: #ff0000;
+  color: var(--color-wrong);
 }
 .folder-list .folder .more .more-options button:hover 
 {
@@ -532,22 +543,21 @@
 }
 .ask-to-delete-section .ask-to-delete .options button 
 {
-  background-color: var(--color-muted);
-  color: var(--color-text)
+  background-color: var(--color-bg);
+  color: var(--color-primary);
 }
 .ask-to-delete-section .ask-to-delete .options button:hover 
 {
-  background-color: #f5f5f5;
+  background-color: var(--color-bg-hover);
 }
 .ask-to-delete-section .ask-to-delete .options .deleteFolderBtn
 {
-  background-color: #ff0000;
+  background-color: var(--color-wrong);
   color: #fff;
 }
 .ask-to-delete-section .ask-to-delete .options .deleteFolderBtn:hover 
 {
   background-color: #cc0000;
-  border: 1px solid #cc0000;
 }
 
 .rename-folder-section 
@@ -817,7 +827,7 @@ ul
 .deleteBtn 
 {
   font-size: 20px;
-  color: red;
+  color: var(--color-wrong);
   background-color: transparent;
   position: absolute;
   right: 10px;
@@ -915,6 +925,28 @@ ul
 {
   position: relative;
 }
+.meaning-section .remind-suggestion 
+{
+  position: absolute;
+  top: 50px;
+  background-color: var(--color-bg-hover);
+  color: var(--color-primary);
+  padding: 10px;
+  width: 100%;
+  border-radius: 0.5em;
+}
+.meaning-section .remind-suggestion p 
+{
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.meaning-section .remind-suggestion img 
+{
+  width: 30px;
+  height: 30px;
+}
 .meaning-list-section 
 {
   position: absolute;
@@ -944,6 +976,7 @@ ul
   font-size: 18px;
   transition: none;
   white-space: wrap;
+  box-shadow: none;
 }
 .meaning-list-section .meaning-list .meaning .noun 
 {
@@ -1041,7 +1074,7 @@ ul
 .matching-word.notMatched
 {
   background-color: #ffcbcb;
-  border: 1px solid #ff0000;
+  border: 1px solid var(--color-wrong);
   color: #000;
 }
 .matching-word.notMatched:hover 
