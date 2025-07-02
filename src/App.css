@@ -674,8 +674,11 @@ ul
 {
   font-size: 18px;
   color: var(--color-muted);
-  text-align: center;
   margin-top: 20px;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 .word-section .word-section-right .searchBox-section
 {

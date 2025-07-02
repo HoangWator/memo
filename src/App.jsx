@@ -153,8 +153,21 @@ function App() {
     setMeaning('')
   }
   
+  // flashcard
   const [data, setData] = useState([])
   const [indexLearn, setIndexLearn] = useState(0)
+
+  const [showLearn, setShowLearn] = useState(false)
+  const learnBtn = () => {
+    if (words.length >= 4) {
+      setShowLearn(true)
+      setData(words ?? [])
+      setIndexLearn(0)
+    }
+    else {
+      alert('Please enter at least 4 words.')
+    }
+  }
   
   function Card({word}) {
     const [showDef, setShowDef] = useState(false)
@@ -170,12 +183,7 @@ function App() {
     )
   }
 
-  const [showLearn, setShowLearn] = useState(false)
-  const learnBtn = () => {
-    setShowLearn(true)
-    setData(words ?? [])
-    setIndexLearn(0)
-  }
+  
 
   // Create a folder
   const [showCreateFolder, setShowCreateFolder] = useState(false)
@@ -557,7 +565,7 @@ function App() {
     let words = []
     wordList.forEach(item => words.push(item.name))
     
-    if (words.length > 0) {
+    if (words.length >= 4) {
       setLoader(true)
       geneAI(words).then((value) => {
         console.log(value)
@@ -568,7 +576,7 @@ function App() {
       })
     }
     else {
-      alert("Your word list is empty. Please enter your words!")
+      alert("Please enter at least 4 words!")
     }
   }
 
@@ -612,7 +620,7 @@ function App() {
       setShowListening(true)
     }
     else {
-      alert("Your word list is empty. Please enter your words!")
+      alert("Please enter at least 4 words!")
     }
   }
 
@@ -880,17 +888,17 @@ function App() {
 
           {pageIndex === 1 && (
             <div className="practice-section developing-page">
-              <h2>This feature is developing</h2>
+              <h2>Comming soon!</h2>
             </div>
           )}
           {pageIndex === 2 && (
             <div className="rank-section developing-page">
-              <h2>This feature is developing</h2>
+              <h2>Comming soon!</h2>
             </div>
           )}
           {pageIndex === 3 && (
             <div className="progress-section developing-page">
-              <h2>This feature is developing</h2>
+              <h2>Comming soon!</h2>
             </div>
           )}
 
@@ -910,7 +918,7 @@ function App() {
           </div>
           <div className="word-section-body">
             <button className='showWordSectionLeftBtn' onClick={() => setShowWordSectionLeft(!showWordSectionLeft)}>
-              Add & Learn
+              Add word
             </button>
 
             <div className="word-section-left pc">
@@ -1064,7 +1072,6 @@ function App() {
             
             {showWordSectionLeft && (
               <div className="word-section-left-modal mobile" onClick={() => {
-                setShowRemindSuggestion(false)
                 setShowWordSectionLeft(false)
               }}>
                 <div className="word-section-container">
@@ -1083,6 +1090,7 @@ function App() {
                         if (e.key === 'Enter' || e.key === 'ArrowDown') {
                           // Move focus to meaning input
                           meaningInputRef.current && meaningInputRef.current.focus();
+                          setShowRemindSuggestion(true)
                         }
                       }}
                     />
@@ -1188,27 +1196,7 @@ function App() {
                     
                     <button onClick={addWord} className='add-word-btn'>Add</button>
 
-                    <div className="learning-modes">
-                      <button className='learnBtn' onClick={learnBtn}>
-                        <img src="https://cdn-icons-png.freepik.com/512/9100/9100957.png" alt="" />
-                        Flashcard
-                      </button>
-
-                      {/* <button onClick={() => generateMatching(words)} className='openMatchingBtn'>
-                        <img src="https://cdn-icons-png.freepik.com/512/282/282100.png" alt="" />
-                        Matching
-                      </button> */}
-
-                      <button onClick={() => generateFilling(words)}>
-                        <img src="https://cdn-icons-png.flaticon.com/512/6559/6559624.png" alt="" />
-                        Filling
-                      </button>
-
-                      <button onClick={() => generateListening(words)}>
-                        <img src="https://cdn-icons-png.flaticon.com/512/8805/8805242.png" alt="" />
-                        Listening
-                      </button>
-                    </div>
+                    
                     
                     <button className='delete-folder-btn' onClick={() => {
                       setShowAskToDelete(true)
@@ -1222,6 +1210,27 @@ function App() {
             
 
             <div className={word.length > 0 ? "word-section-right" : "word-section-right empty"}>
+              <div className="learning-modes mobile">
+                <button className='learnBtn' onClick={learnBtn}>
+                  <img src="https://cdn-icons-png.freepik.com/512/9100/9100957.png" alt="" />
+                  Flashcard
+                </button>
+
+                {/* <button onClick={() => generateMatching(words)} className='openMatchingBtn'>
+                  <img src="https://cdn-icons-png.freepik.com/512/282/282100.png" alt="" />
+                  Matching
+                </button> */}
+
+                <button onClick={() => generateFilling(words)}>
+                  <img src="https://cdn-icons-png.flaticon.com/512/6559/6559624.png" alt="" />
+                  Filling
+                </button>
+
+                <button onClick={() => generateListening(words)}>
+                  <img src="https://cdn-icons-png.flaticon.com/512/8805/8805242.png" alt="" />
+                  Listening
+                </button>
+              </div>
               <div className="searchBox-section">
                 <input 
                   type="text" 
