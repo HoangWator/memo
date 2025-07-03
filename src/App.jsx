@@ -483,13 +483,14 @@ function App() {
   function FillingCard({data, order}) {
     let question = data.question
     let options = data.options
-    let ans = data.word
+    let ans
     let startQuestion,endQuestion
     let gapClassName, labelClassName, explainClassName;
 
     if (question.indexOf('[') != -1 && question.indexOf(']') != -1) {
       startQuestion = question.slice(0, question.indexOf('['))
       endQuestion = question.slice(question.indexOf(']') + 1)
+      ans = question.slice(question.indexOf('[') + 1, question.indexOf(']'))
     }
     if (question.indexOf('_') != -1) {
       startQuestion = question.slice(0, question.indexOf('_'))
