@@ -53,15 +53,14 @@ function App() {
       setUserID(user.uid)
       setUserName(user.displayName);
       setAvatarUrl(user.photoURL);
-      console.log("User signed in:", user.uid);
 
       // Check if user has logged in before
       isAlreadyLogin(user.uid).then(data => {
         if (data) {
-          console.log('This user has logged in before')
+
         }
         else {
-          console.log('This user is new')
+
           addUser(user.uid)
         }
       })
@@ -120,9 +119,7 @@ function App() {
     const user = auth.currentUser;
     if (user) {
       const uid = user.uid;
-      console.log("Current User UID:", uid);
     } else {
-      console.log("No user currently signed in.");
     }
   }
 
@@ -235,7 +232,6 @@ function App() {
 
   const renameFolder = async (uid, clickedFolder, newFolderName) => {
     setShowRenameFolderSection(false)
-    console.log(clickedFolder)
 
     await renameFolderDB(uid, clickedFolder, newFolderName)
 
@@ -251,7 +247,6 @@ function App() {
   const [showWordSection, setShowWordSection] = useState(false)
 
   const openWordSection = (folderName) => {
-    console.log(folderName)
     setShowWordSection(true)
     setShowCreateFolder(false)
     setLoader(true)
@@ -259,7 +254,6 @@ function App() {
 
     getFolderDataDB(userID, folderName).then((data) =>  {
       if (data) {
-        console.log(data)
         setWords(data);
         setAllWords(data);
         setLoader(false);
@@ -289,10 +283,11 @@ function App() {
   const [meaningListLoader, setMeaningListLoader] = useState(false)
   const suggestMeaning = () => {
     if (word && word.trim() !== '' && word !== '/') {
-      setShowMeaningList(true);
+      setMeaningList([])
       setMeaningListLoader(true);
       meaningSuggestion(word).then(data => {
         setMeaningList(data)
+        setShowMeaningList(true);
         setMeaningListLoader(false)
       })
     } 
@@ -568,7 +563,6 @@ function App() {
     if (words.length >= 4) {
       setLoader(true)
       geneAI(words).then((value) => {
-        console.log(value)
         
         setFillingQuestions(value)
         setShowFilling(true)
@@ -614,10 +608,12 @@ function App() {
   // Listening 
   const [showListening, setShowListening] = useState(false)
   const [listeningCardIndex, setListeningCardIndex] = useState(0)
+  const [listeningWords, setListeningWords] = useState('')
 
   const generateListening = (words) => {
     if (words.length > 0) {
       setShowListening(true)
+      setListeningWords(shuffleArray(words))
     }
     else {
       alert("Please enter at least 4 words!")
@@ -644,7 +640,6 @@ function App() {
             onKeyDown={e => {
               if (e.key === 'Enter') {
                 setUserInput(e.target.value)
-                console.log(e.target.value === word);
 
                 if (e.target.value.toLowerCase() === word.toLowerCase()) {
                     setListeningInputClassName('listeningInput right')
@@ -708,7 +703,7 @@ function App() {
 
           <ul>
             <li className={pageIndex === 0 ? 'clicked' : ''} onClick={() => setPageIndex(0)}><FontAwesomeIcon icon={faFolder} className='icon' /><span>Vocabulary</span></li>
-            <li className={pageIndex === 1 ? 'clicked' : ''} onClick={() => setPageIndex(1)}><FontAwesomeIcon icon={faDumbbell} className='icon' /><span>Practice</span></li>
+            <li className={pageIndex === 1 ? 'clicked' : ''} onClick={() => setPageIndex(1)}><FontAwesomeIcon icon={faDumbbell} className='icon' /><span>Review</span></li>
             <li className={pageIndex === 2 ? 'clicked' : ''} onClick={() => setPageIndex(2)}><FontAwesomeIcon icon={faTrophy} className='icon' /><span>Rank</span></li>
             <li className={pageIndex === 3 ? 'clicked' : ''} onClick={() => setPageIndex(3)}><FontAwesomeIcon icon={faChartSimple} className='icon' /><span>Progress</span></li>
           </ul>
@@ -931,6 +926,9 @@ function App() {
                 onClick={() => {
                   setShowRemindSuggestion(false)
                   setShowMeaningList(false)
+                  if (meaningList.length > 0) {
+                    setMeaningList([])
+                  }
                 }}
                 onKeyDown={e => {
                   if (e.key === 'Enter' || e.key === 'ArrowDown') {
@@ -994,6 +992,11 @@ function App() {
                 {showRemindSuggestion && (
                   <div className="remind-suggestion">
                     <p>Type "/" to suggest meaning</p>
+                  </div>
+                )}
+                {meaningListLoader && (
+                  <div className="meaning-suggest-loader-section">
+                    <div className="meaning-suggest-loader"></div>
                   </div>
                 )}
                 {showMeaningList && meaningList.length > 0 && (
@@ -1074,136 +1077,142 @@ function App() {
               <div className="word-section-left-modal mobile" onClick={() => {
                 setShowWordSectionLeft(false)
               }}>
-                <div className="word-section-container">
-                  <div className="word-section-left" onClick={e =>e.stopPropagation()}>
+                <div className="word-section-left" onClick={e => e.stopPropagation()}>
+                  <input 
+                    type="text"
+                    placeholder='Enter word'
+                    value={word}
+                    ref={wordInputRef}
+                    onChange={e => setWord(e.target.value)} 
+                    onClick={() => {
+                      setShowRemindSuggestion(false)
+                      setShowMeaningList(false)
+                      if (meaningList.length > 0) {
+                        setMeaningList([])
+                      }
+                    }}
+                    onKeyDown={e => {
+                      if (e.key === 'Enter' || e.key === 'ArrowDown') {
+                        // Move focus to meaning input
+                        meaningInputRef.current && meaningInputRef.current.focus();
+                        setShowRemindSuggestion(true)
+                      }
+                    }}
+                  />
+                  <div className="meaning-section">
                     <input 
                       type="text"
-                      placeholder='Enter word'
-                      value={word}
-                      ref={wordInputRef}
-                      onChange={e => setWord(e.target.value)} 
-                      onClick={() => {
-                        setShowRemindSuggestion(false)
+                      placeholder='Enter meaning'
+                      value={meaning}
+                      ref={meaningInputRef}
+                      onChange={e => {
+                        setMeaning(e.target.value)
                         setShowMeaningList(false)
-                      }}
-                      onKeyDown={e => {
-                        if (e.key === 'Enter' || e.key === 'ArrowDown') {
-                          // Move focus to meaning input
-                          meaningInputRef.current && meaningInputRef.current.focus();
+                        setSelectedMeaningIndex(-1);
+                        if (e.target.value === '/') {
+                          suggestMeaning()
+                        }
+                        if (e.target.value.length > 0) {
+                          setShowRemindSuggestion(false)
+                        }
+                        else {
                           setShowRemindSuggestion(true)
                         }
-                      }}
-                    />
-                    <div className="meaning-section">
-                      <input 
-                        type="text"
-                        placeholder='Enter meaning'
-                        value={meaning}
-                        ref={meaningInputRef}
-                        onChange={e => {
-                          setMeaning(e.target.value)
-                          setShowMeaningList(false)
-                          setSelectedMeaningIndex(-1);
-                          if (e.target.value === '/') {
-                            suggestMeaning()
-                          }
-                          if (e.target.value.length > 0) {
-                            setShowRemindSuggestion(false)
-                          }
-                          else {
-                            setShowRemindSuggestion(true)
-                          }
-                        }} 
-                        onKeyDown={e => {
-                          if (showMeaningList && meaningList.length > 0) {
-                            if (e.key === 'ArrowDown') {
-                              e.preventDefault();
-                              setSelectedMeaningIndex(prev =>
-                                prev < meaningList.length - 1 ? prev + 1 : 0
-                              );
-                            } else if (e.key === 'ArrowUp') {
-                              e.preventDefault();
-                              setSelectedMeaningIndex(prev =>
-                                prev > 0 ? prev - 1 : meaningList.length - 1
-                              );
-                            } else if (e.key === 'Enter' && selectedMeaningIndex !== -1) {
-                              setMeaning(meaningList[selectedMeaningIndex].vie);
-                              setShowMeaningList(false);
-                            } else if (e.key === 'Enter') {
-                              addWord();
-                              wordInputRef.current && wordInputRef.current.focus();
-                            }
+                      }} 
+                      onKeyDown={e => {
+                        if (showMeaningList && meaningList.length > 0) {
+                          if (e.key === 'ArrowDown') {
+                            e.preventDefault();
+                            setSelectedMeaningIndex(prev =>
+                              prev < meaningList.length - 1 ? prev + 1 : 0
+                            );
+                          } else if (e.key === 'ArrowUp') {
+                            e.preventDefault();
+                            setSelectedMeaningIndex(prev =>
+                              prev > 0 ? prev - 1 : meaningList.length - 1
+                            );
+                          } else if (e.key === 'Enter' && selectedMeaningIndex !== -1) {
+                            setMeaning(meaningList[selectedMeaningIndex].vie);
+                            setShowMeaningList(false);
                           } else if (e.key === 'Enter') {
                             addWord();
                             wordInputRef.current && wordInputRef.current.focus();
                           }
+                        } else if (e.key === 'Enter') {
+                          addWord();
+                          wordInputRef.current && wordInputRef.current.focus();
+                        }
 
-                        }}
+                      }}
 
-                        onClick={() => {
-                          if (word) {
-                            setShowRemindSuggestion(true)
+                      onClick={() => {
+                        if (word) {
+                          setShowRemindSuggestion(true)
+                        }
+                      }}
+                    />
+                    {showRemindSuggestion && (
+                      <div className="remind-suggestion">
+                        <p>Type "/" to suggest meaning</p>
+                      </div>
+                    )}
+                    {meaningListLoader && (
+                      <div className="meaning-suggest-loader-section">
+                        <div className="meaning-suggest-loader"></div>
+                      </div>
+                    )}
+                    {showMeaningList && meaningList && (
+                      <div className="meaning-list-section">
+                        <div className="meaning-list">
+                          {
+                            meaningList.map((meaning, index) => {
+                              let typeClassName;
+                              if (meaning.type === 'noun') {
+                                typeClassName = 'noun'
+                              }
+                              else if (meaning.type === 'verb') {
+                                typeClassName = 'verb'
+                              }
+                              else if (meaning.type === 'adjective') {
+                                typeClassName = 'adjective'
+                              }
+                              else {
+                                typeClassName = 'other'
+                              }
+                              
+                              const isSelected = index === selectedMeaningIndex;
+
+                              return (
+                              <li 
+                                ref={el => (meaningRefs.current[index] = el)}
+                                className={`meaning${isSelected ? ' selected' : ''}`}
+                                key={index}
+                                onClick={() => {
+                                  setMeaning(meaning.vie)
+                                  setShowMeaningList(false)
+                                }}
+                                style={isSelected ? { background: '#f5f5f5' } : {}}
+                              >
+                                <p className={typeClassName}>{meaning.type}</p>
+                                <p>{meaning.vie}</p>
+                                <p>{meaning.eng}</p>
+                              </li>
+                            )})
                           }
-                        }}
-                      />
-                      {showRemindSuggestion && (
-                        <div className="remind-suggestion">
-                          <p>Type "/" to suggest meaning</p>
                         </div>
-                      )}
-                      {showMeaningList && meaningList && (
-                        <div className="meaning-list-section">
-                          <div className="meaning-list">
-                            {
-                              meaningList.map((meaning, index) => {
-                                let typeClassName;
-                                if (meaning.type === 'noun') {
-                                  typeClassName = 'noun'
-                                }
-                                else if (meaning.type === 'verb') {
-                                  typeClassName = 'verb'
-                                }
-                                else if (meaning.type === 'adjective') {
-                                  typeClassName = 'adjective'
-                                }
-                                else {
-                                  typeClassName = 'other'
-                                }
-                                
-                                const isSelected = index === selectedMeaningIndex;
-
-                                return (
-                                <li 
-                                  ref={el => (meaningRefs.current[index] = el)}
-                                  className={`meaning${isSelected ? ' selected' : ''}`}
-                                  key={index}
-                                  onClick={() => {
-                                    setMeaning(meaning.vie)
-                                    setShowMeaningList(false)
-                                  }}
-                                  style={isSelected ? { background: '#f5f5f5' } : {}}
-                                >
-                                  <p className={typeClassName}>{meaning.type}</p>
-                                  <p>{meaning.vie}</p>
-                                  <p>{meaning.eng}</p>
-                                </li>
-                              )})
-                            }
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                    
-                    <button onClick={addWord} className='add-word-btn'>Add</button>
-
-                    
-                    
-                    <button className='delete-folder-btn' onClick={() => {
-                      setShowAskToDelete(true)
-                      setRenameTarget(currentFolder)
-                      setShowWordSection(false)
-                    }}><FontAwesomeIcon icon={faTrash} /> Delete this folder</button>
+                      </div>
+                    )}
                   </div>
+                  
+                  <button onClick={addWord} className='add-word-btn'>Add</button>
+
+                  
+                  
+                  <button className='delete-folder-btn' onClick={() => {
+                    setShowAskToDelete(true)
+                    setRenameTarget(currentFolder)
+                    setShowWordSection(false)
+                  }}><FontAwesomeIcon icon={faTrash} /> Delete this folder</button>
                 </div>
               </div>
             )}
@@ -1494,7 +1503,7 @@ function App() {
             <button className='quitSectionBtn' onClick={() => setShowListening(false)}><FontAwesomeIcon icon={faArrowLeft} /></button>
           </div>
           <div className="listening-content">
-            <ListeningCard key={listeningCardIndex} word={words[listeningCardIndex].name} order={listeningCardIndex}/>
+            <ListeningCard key={listeningCardIndex} word={listeningWords[listeningCardIndex].name} order={listeningCardIndex}/>
           </div>
         </div>
       )}

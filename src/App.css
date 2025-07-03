@@ -928,10 +928,48 @@ ul
 {
   position: relative;
 }
+@keyframes meaning-loader-spin {
+  0% {
+    transform: rotate(0);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+@-webkit-keyframes meaning-loader-spin {
+  0% {
+    transform: rotate(0);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+.meaning-section .meaning-suggest-loader-section 
+{
+  position: absolute;
+  top: 47px;
+  background-color: var(--color-surface);
+  box-shadow: 0 2px 5px #ddd;
+  width: 100%;
+  border-radius: 0.5em;
+  padding: 20px;
+}
+.meaning-section .meaning-suggest-loader-section .meaning-suggest-loader 
+{
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 3px solid #ddd;
+  border-top: 3px solid var(--color-primary);
+  margin: 0 auto;
+  animation: meaning-loader-spin 0.75s linear infinite;
+  -webkit-animation: meaning-loader-spin 0.75s linear infinite;
+}
+
 .meaning-section .remind-suggestion 
 {
   position: absolute;
-  top: 50px;
+  top: 47px;
   background-color: var(--color-bg-hover);
   color: var(--color-primary);
   padding: 10px;
@@ -1330,12 +1368,12 @@ input[type='radio']:checked + .label.wrong
 }
 .loader-section .loader-container .loader 
 {
-  border: 8px solid #e3e3e3;
+  border: 8px solid #ddd;
   border-radius: 50%;
-  border-top: 8px solid #888;
+  border-top: 8px solid var(--color-primary);
   width: 60px;
   height: 60px;
-  animation: spin 1s linear infinite;
+  animation: spin 0.75s linear infinite;
   -webkit-animation: spin 0.75s linear infinite;
 }
 /* Safari */
