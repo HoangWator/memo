@@ -40,7 +40,6 @@ function App() {
   const [meaning, setMeaning] = useState('')
   const [words, setWords] = useState([])
   const [allWords, setAllWords] = useState([])
-  let shuffleListeningWords = shuffleArray(words)
   const [currentFolder, setCurrentFolder] = useState('')
 
   const [showMoreOptions, setShowMoreOptions] = useState(false)
@@ -1495,7 +1494,7 @@ function App() {
             <button className='quitSectionBtn' onClick={() => setShowListening(false)}><FontAwesomeIcon icon={faArrowLeft} /></button>
           </div>
           <div className="listening-content">
-            <ListeningCard key={listeningCardIndex} word={shuffleListeningWords[listeningCardIndex].name} order={listeningCardIndex}/>
+            <ListeningCard key={listeningCardIndex} word={words[listeningCardIndex].name} order={listeningCardIndex}/>
           </div>
         </div>
       )}
