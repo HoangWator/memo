@@ -39,6 +39,7 @@ export async function geneAI(words) {
         contents: prompt,
     });
     return getContents(response.text, words);
+    // return 
 }
 
 function getContents(texts, words) {
@@ -68,8 +69,8 @@ function getContents(texts, words) {
 
     // Return an array of options (containing the word to learn and 3 other options)
     function getOptions(key, words) {
-        let otherOptions = words.filter(word => word.toLowerCase() !== key.toLowerCase());
-        otherOptions = shuffleArray(otherOptions.slice(0, 3)); // Get only 3 other
+        let otherOptions = shuffleArray(words.filter(word => word.toLowerCase() !== key.toLowerCase()));
+        otherOptions = otherOptions.slice(0, 3); // Get only 3 other
         let options = [key, ...otherOptions];
         return shuffleArray(options);
     }

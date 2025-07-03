@@ -494,7 +494,6 @@ function App() {
     if (question.indexOf('_') != -1) {
       startQuestion = question.slice(0, question.indexOf('_'))
       endQuestion = question.slice(question.indexOf('_'), question.length).replace(/_/g, '') 
-
     }
 
     const [clicked, setClicked] = useState(-1)
@@ -1494,7 +1493,7 @@ function App() {
             <button className='quitSectionBtn' onClick={() => setShowListening(false)}><FontAwesomeIcon icon={faArrowLeft} /></button>
           </div>
           <div className="listening-content">
-            <ListeningCard key={listeningCardIndex} word={words[listeningCardIndex].name} order={listeningCardIndex}/>
+            <ListeningCard key={listeningCardIndex} word={shuffleArray(words)[listeningCardIndex].name} order={listeningCardIndex}/>
           </div>
         </div>
       )}
