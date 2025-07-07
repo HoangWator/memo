@@ -1029,7 +1029,7 @@ function App() {
                               setMeaning(meaning.vie)
                               setShowMeaningList(false)
                             }}
-                            style={isSelected ? { background: '#f5f5f5' } : {}}
+                            // style={isSelected ? { background: '' } : {}}
                           >
                             <p className={typeClassName}>{meaning.type}</p>
                             <p>{meaning.vie}</p>
@@ -1191,7 +1191,6 @@ function App() {
                                   setMeaning(meaning.vie)
                                   setShowMeaningList(false)
                                 }}
-                                style={isSelected ? { background: '#f5f5f5' } : {}}
                               >
                                 <p className={typeClassName}>{meaning.type}</p>
                                 <p>{meaning.vie}</p>

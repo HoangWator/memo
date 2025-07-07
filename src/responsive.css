@@ -1,4 +1,4 @@
-:root {
+/* :root {
   --color-primary: #4F8FF9;  
   --color-primary-hover: #2563eb;  
   --color-secondary: #FFD166;    
@@ -11,10 +11,13 @@
   --color-text: #333741;        
   --color-muted: #A0AEC0;   
   --color-muted-hover: #7B8794;  
-}
+} */
 /* PC */
 @media (min-width: 1024px) {
-  
+  .content .sidebar h1 {
+    padding: 10px 0;
+
+  }
   .showWordSectionLeftBtn {
     display: none;
   }
@@ -57,13 +60,14 @@
   }
   .content .sidebar ul li {
     text-align: center;
-    margin: 0;
+    margin-bottom: 10px;
   }
   .word-section-left .learning-modes button {
     flex-direction: column;
   }
   .word-section-left input {
     padding: 14px 20px;
+
   }
   .word-section-left button {
     padding: 14px 20px;
@@ -145,7 +149,7 @@
     bottom: 0;
     left:  0;
     right: 0;
-    background-color: rgba(0,0,0,0.1);
+    background-color: rgba(0,0,0,0.5);
     z-index: 4;
     /* display: none; */
   }
@@ -161,9 +165,15 @@
     padding-top: 40px;
     max-height: 100%;
   }
+  .meaning-list-section {
+    background-color: var(--color-bg);
+  }
+  .meaning-list-section .meaning-list {
+
+  }
   .word-section-left input {
     padding: 14px 20px;
-    background-color: #f5f5f5;
+    background-color: var(--color-bg);
   }
   .word-section-left, .word-section-right {
     width: 100%;
@@ -311,7 +321,6 @@
     margin-bottom: 10px;
     background-color: var(--color-surface);
     color: var(--color-text);
-    box-shadow: 0 2px 5px #ddd;
     display: flex;
     align-items: center;
     justify-content: center;
