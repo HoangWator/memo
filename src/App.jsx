@@ -22,6 +22,10 @@ import { addWordDB,deleteWordDB } from './handleData.js'
 import { getFolderDataDB } from './handleData.js'
 import { meaningSuggestion } from './gemini.js'
 
+import Flashcard from './components/Flashcard.jsx'
+import FillingSection from './components/FillingSection.jsx'
+import ListeningSection from './components/ListeningSection.jsx'
+
 
 function App() {
   const [userID, setUserID] = useState('')
@@ -142,46 +146,39 @@ function App() {
   const [pageIndex, setPageIndex] = useState(0)
   
   const addWord = () => {
+    const d = new Date()
     if (word != '' && meaning != '') {
-      setWords([...words, {name: word.toLowerCase(), mean: meaning}])
-      addWordDB(userID, currentFolder, {name: word.toLowerCase(), mean: meaning})
+      let typeWord = meaning.slice(meaning.indexOf('(') + 1, meaning.indexOf(')'))
+      setWords([...words, {name: word.toLowerCase(), mean: meaning, type: typeWord}])
+      addWordDB(userID, currentFolder, {
+        name: word.toLowerCase(), 
+        mean: meaning,
+        dateReview: d
+      })
     }
     setWord('')
     setMeaning('')
   }
+
+  const Loader = () => (
+    <div className="loader-section">
+        <div className="loader-container">
+          <div className="loader"></div>
+        </div>
+    </div>
+  )
   
   // flashcard
-  const [data, setData] = useState([])
-  const [indexLearn, setIndexLearn] = useState(0)
-
   const [showLearn, setShowLearn] = useState(false)
   const learnBtn = () => {
     if (words.length >= 4) {
       setShowLearn(true)
-      setData(words ?? [])
-      setIndexLearn(0)
     }
     else {
       alert('Please enter at least 4 words.')
     }
   }
   
-  function Card({word}) {
-    const [showDef, setShowDef] = useState(false)
-
-    const handleDef = () => {
-      setShowDef(!showDef)
-    }
-    return (
-      <div className="card">
-        {showDef ? <p>{word.mean}</p> : <h1>{word.name}</h1>}
-        <button onClick={handleDef}><FontAwesomeIcon icon={faArrowsLeftRight} /></button>
-      </div>
-    )
-  }
-
-  
-
   // Create a folder
   const [showCreateFolder, setShowCreateFolder] = useState(false)
   const createFolder = () => {
@@ -465,96 +462,10 @@ function App() {
   const [showFilling, setShowFilling] = useState(false)
   const [loader, setLoader] = useState(false)
   const [fillingQuestions, setFillingQuestions] = useState([])
-  const [fillingIndex, setFillingIndex] = useState(0)
 
-  const Loader = () => (
-    <div className="loader-section">
-        <div className="loader-container">
-          <div className="loader"></div>
-        </div>
-    </div>
-  )
+  
 
-  function FillingCard({data, order}) {
-    let question = data.question
-    let options = data.options
-    let ans
-    let startQuestion,endQuestion
-    let gapClassName, labelClassName, explainClassName;
-
-    if (question.indexOf('[') != -1 && question.indexOf(']') != -1) {
-      startQuestion = question.slice(0, question.indexOf('['))
-      endQuestion = question.slice(question.indexOf(']') + 1)
-      ans = question.slice(question.indexOf('[') + 1, question.indexOf(']'))
-    }
-    if (question.indexOf('_') != -1) {
-      startQuestion = question.slice(0, question.indexOf('_'))
-      endQuestion = question.slice(question.indexOf('_'), question.length).replace(/_/g, '') 
-    }
-
-    const [clicked, setClicked] = useState(-1)
-    const [userInput, setUserInput] = useState('')
-
-    if (userInput != '' && userInput === ans) {
-      gapClassName = 'gap right'
-      labelClassName = 'label right'
-      explainClassName = 'filling-answer-explain right'
-
-    }
-    else if (userInput != '' && userInput !== ans) {
-      gapClassName = 'gap wrong'
-      labelClassName = 'label wrong'
-      explainClassName = 'filling-answer-explain wrong'
-    }
-    else {
-      gapClassName = 'gap'
-      labelClassName = 'label'
-      explainClassName = 'filling-answer-explain'
-    }
-
-    return (
-      <div className="filling-card">
-        <p>{startQuestion}<span className={gapClassName}>{userInput}</span>{endQuestion}</p>
-
-        <div className="filling-options">
-          {options.map((item, index) => (
-            <div className="filling-option" key={index}>
-              <input 
-                type='radio' 
-                id={'q'+order+'option'+index} 
-                onChange={() => {
-                  if (clicked === -1) {
-                    setClicked(index)
-                    setUserInput(item)
-                  }
-                }}
-                checked={clicked === index}  
-              />
-              <label htmlFor={'q'+order+'option'+index} className={labelClassName}>{item}</label>
-            </div>
-          ))}
-        </div>
-        
-        { clicked !== -1 && (
-          <div className={'filling-answer-explain'}>
-            <h3>Answer:</h3>
-            <p>{startQuestion}<span className='mark-ans'>{ans}</span>{endQuestion}</p>
-            <button onClick={() => {
-              if (fillingIndex < fillingQuestions.length - 1) {
-                setFillingIndex(fillingIndex + 1)
-                setNumberQuestionDone(numberQuestionDone + 1)
-              }
-              else {
-                setFillingIndex(0)
-                setNumberQuestionDone(0)
-                setShowFilling(false)
-              }
-            }}>Next <FontAwesomeIcon icon={faArrowRight} /></button>
-          </div>
-        )}
-      </div>
-    )
-  }
+  
 
   const generateFilling = (wordList) => {
     let words = []
@@ -563,7 +474,6 @@ function App() {
     if (words.length >= 4) {
       setLoader(true)
       geneAI(words).then((value) => {
-        
         setFillingQuestions(value)
         setShowFilling(true)
         setLoader(false)
@@ -573,41 +483,14 @@ function App() {
       alert("Please enter at least 4 words!")
     }
   }
-
-  
-  const [numberQuestionDone, setNumberQuestionDone] = useState(0)
   
   const quitFilling = () => {
     setShowFilling(false)
     setFillingQuestions([])
-    setFillingIndex(0)
-    setNumberQuestionDone(0)
-  }
-
-
-  function ProgressBar() {
-    const progress = Math.floor(numberQuestionDone / fillingQuestions.length * 100);
-    let progressCln
-    if (progress > 0 && progress <= 25) {
-      progressCln = 'progress low';
-    }
-    else if (progress > 25 && progress <= 75) {
-      progressCln = 'progress medium';
-    }
-    else if (progress > 75 && progress <= 100) {
-      progressCln = 'progress high';
-    }
-    else {
-      progressCln = 'progress empty';
-    }
-    return (
-      <div className={progressCln} style={{width: `${progress}%`}}></div>
-    )
   }
 
   // Listening 
   const [showListening, setShowListening] = useState(false)
-  const [listeningCardIndex, setListeningCardIndex] = useState(0)
   const [listeningWords, setListeningWords] = useState('')
 
   const generateListening = (words) => {
@@ -620,69 +503,7 @@ function App() {
     }
   }
 
-  function ListeningCard({word, order}) {
-    const speakWord = () =>  {
-      const utterance = new SpeechSynthesisUtterance(word);
-      utterance.lang = 'en-US'
-      speechSynthesis.speak(utterance);
-    }
-
-    const [userInput, setUserInput] = useState('')
-    
-    const [listeningInputClassName, setListeningInputClassName] = useState('listeningInput')
-    return (
-      <div className="listening-card">
-        <div className="listening-card-content">
-          <div className="speak-word-btn" onClick={speakWord}><FontAwesomeIcon icon={faVolumeHigh} className='icon'/></div>
-          <input 
-            type="text" 
-            placeholder='Type what you hear...'
-            onKeyDown={e => {
-              if (e.key === 'Enter') {
-                setUserInput(e.target.value)
-
-                if (e.target.value.toLowerCase() === word.toLowerCase()) {
-                    setListeningInputClassName('listeningInput right')
-                }
-                else {
-                  setListeningInputClassName('listeningInput wrong')
-                }
-              }
-              if (e.key === 'ArrowRight') {
-                if (listeningCardIndex < words.length - 1) {
-                  setListeningCardIndex(listeningCardIndex + 1);
-                }
-                else {
-                  setListeningCardIndex(0);
-                  setShowListening(false);
-                }
-                setUserInput('');
-              }
-            }}
-            className={listeningInputClassName}
-          />
-        </div>
-
-        { userInput && (
-          <div className={'listening-explain '}>
-            <h4>Answer:</h4>
-            <p className='listening-answer'onClick={speakWord}>{word}<FontAwesomeIcon icon={faVolumeHigh} className='icon'/></p>
-            <button onClick={() => {
-              if (listeningCardIndex < words.length - 1) {
-                setListeningCardIndex(listeningCardIndex + 1);
-              }
-              else {
-                setListeningCardIndex(0);
-                setShowListening(false);
-              }
-              
-              setUserInput('');
-            }}><FontAwesomeIcon icon={faArrowRight} /></button>
-          </div>
-        )}
-      </div>
-    )
-  }
+  
 
   const [name, setName] = useState('')
   const [birthYear, setBirthYear] = useState('2000')
@@ -692,6 +513,8 @@ function App() {
   const [showLogoutBtn, setShowLogoutBtn] = useState(false)
 
   const [showMobileSidebar, setShowMobileSidebar] = useState(false)
+
+  // 
   return (
     <div className="main">
       {loader && <Loader />}
@@ -971,7 +794,7 @@ function App() {
                           prev > 0 ? prev - 1 : meaningList.length - 1
                         );
                       } else if (e.key === 'Enter' && selectedMeaningIndex !== -1) {
-                        setMeaning(meaningList[selectedMeaningIndex].vie);
+                        setMeaning(`(${meaningList[selectedMeaningIndex].type}) ${meaningList[selectedMeaningIndex].vie}`);
                         setShowMeaningList(false);
                       } else if (e.key === 'Enter') {
                         addWord();
@@ -1026,7 +849,7 @@ function App() {
                             className={`meaning${isSelected ? ' selected' : ''}`}
                             key={index}
                             onClick={() => {
-                              setMeaning(meaning.vie)
+                              setMeaning(`(${meaning.type}) ${meaning.vie}`)
                               setShowMeaningList(false)
                             }}
                             // style={isSelected ? { background: '' } : {}}
@@ -1065,6 +888,8 @@ function App() {
                   Listening
                 </button>
               </div>
+
+              <button onClick={() => generateFilling(words)} className='reviewBtn'>Review</button>
               
               <button className='delete-folder-btn' onClick={() => {
                 setShowAskToDelete(true)
@@ -1252,7 +1077,7 @@ function App() {
                   words.length > 0 ? (
                       words.map((word, index) => 
                         <li key={index}>
-                          <h3>{word.name.toLowerCase()}</h3>
+                          <h3>{word.name.toLowerCase()} <span>{word.type}</span></h3>
                           <p>{word.mean.toLowerCase()}</p>
                           <button 
                           className='deleteBtn'
@@ -1482,29 +1307,15 @@ function App() {
         </div>
       }
 
-      {showFilling && (
-        <div className="filling-section">
-          <div className="filling-header">
-            <button className='quitFillingBtn quitSectionBtn' onClick={quitFilling}><FontAwesomeIcon icon={faArrowLeft} /></button>
-            <div className="progess-bar">
-              <ProgressBar />
-            </div>
-          </div>
-          <div className="filling-content">
-            <FillingCard data={fillingQuestions[fillingIndex]} order={fillingIndex}/>
-          </div>
-        </div>
-      )}
+      {showFilling && 
+        <FillingSection 
+          onClose={quitFilling} 
+          fillingQuestions={fillingQuestions}
+        />
+      }
       
       {showListening && (
-        <div className="listening-section">
-          <div className="listening-header">
-            <button className='quitSectionBtn' onClick={() => setShowListening(false)}><FontAwesomeIcon icon={faArrowLeft} /></button>
-          </div>
-          <div className="listening-content">
-            <ListeningCard key={listeningCardIndex} word={listeningWords[listeningCardIndex].name} order={listeningCardIndex}/>
-          </div>
-        </div>
+        <ListeningSection listeningWords={listeningWords} onClose={() => setShowListening(false)}/>
       )}
 
       {showLoginSection && (
@@ -1536,43 +1347,7 @@ function App() {
       )}
 
       {showLearn && 
-        <div className="learn-section">
-          <div className="card-list">
-            
-            <p className="card-number">
-              {indexLearn + 1} / {data.length}
-            </p>
-
-            <Card word={data[indexLearn]} />
-
-            <div className="nav-btns">
-              {indexLearn > 0 ? (
-                <button className="prev-btn" onClick={() => {
-                  if (indexLearn > 0) {
-                    setIndexLearn(indexLearn - 1)
-                  }
-                }}><FontAwesomeIcon icon={faArrowLeft} /></button>
-              ) : (
-                <button className="disabled prev-btn"><FontAwesomeIcon icon={faArrowLeft} /></button>
-              )
-              }
-
-              {indexLearn < data.length - 1 ? (
-                <button className="next-btn" onClick={() => {
-                  if (indexLearn < data.length - 1) {
-                    setIndexLearn(indexLearn + 1)
-                  }
-                }}><FontAwesomeIcon icon={faArrowRight} /></button>
-              )
-              : (
-                <button className="disabled next-btn"><FontAwesomeIcon icon={faArrowRight} /></button>
-              )
-              }
-            </div>
-          </div>
-          <button onClick={() => setShowLearn(false)} className='quitLearnSectionBtn quitSectionBtn'><FontAwesomeIcon icon={faArrowLeft} /></button>
-
-        </div>
+        <Flashcard data={allWords} onClose={() => setShowLearn(false)}/>
       }
     </div>
   )

@@ -7,15 +7,15 @@
   font-family: 'Inter', sans-serif;
 }
 :root {
-  --color-primary: #7f00ff;  
-  --color-primary-hover: #6000e0;  
+  --color-primary: #4F8FF9;  
+  --color-primary-hover: #2563eb;  
   --color-secondary: #FFD166;    
-  --color-success: #228B22;  
-  --color-pending: orange;
-  --color-wrong: #E0115F;
-  --color-bg: #222;          
-  --color-bg-hover: #444;           
-  --color-surface: #333;     
+  --color-success: #00ab41;  
+  --color-pending: #ff7b00;
+  --color-wrong: #d1001f;
+  --color-bg: #151a1f;          
+  --color-bg-hover: #394142;           
+  --color-surface: #272c2f;     
   --color-text: #ddd;        
   --color-muted: #A0AEC0;   
   --color-muted-hover: #7B8794;  
@@ -291,7 +291,7 @@
 {
   font-size: 20px;
   background-color: var(--color-primary);
-  color: #fff;
+  color: var(--color-text);
   margin: 20px 0;
   padding: 20px;
   border-radius: 0.5em;
@@ -450,7 +450,7 @@
   justify-content: center;
   align-items: center;
 
-  color: #333;
+  color: var(--color-text);
 
   display: none;
 }
@@ -468,7 +468,7 @@
 } */
 .folder-list .folder:hover .more:hover 
 {
-  background-color: #f5f5f5;
+  background-color: var(--color-bg-hover);
   cursor: pointer;
 }
 .folder-list .folder .more .more-options
@@ -476,7 +476,7 @@
   position: absolute;
   top: 20px;
   right: -10px;
-  background-color: #fff;
+  background-color: var(--color-surface);
   border-radius: 0.5em;
   padding: 10px;
   display: none;
@@ -491,8 +491,8 @@
   padding: 10px 20px;
   border: none;
   border-radius: 0.5em;
-  background-color: #fff;
-  color: #333;
+  background-color: transparent;
+  color: var(--color-text);
   text-align: left;
 }
 .folder-list .folder .more .more-options button.delete-folder-btn
@@ -501,7 +501,7 @@
 }
 .folder-list .folder .more .more-options button:hover 
 {
-  background-color: #f5f5f5;
+  background-color: var(--color-bg-hover);
   cursor: pointer;
 }
 .folder-list .folder .more:hover .more-options
@@ -524,7 +524,7 @@
 }
 .ask-to-delete-section .ask-to-delete 
 {
-  background-color: #fff;
+  background-color: var(--color-surface);
   padding: 20px;
   border-radius: 0.5em;
 }
@@ -602,7 +602,7 @@ button
 {
   cursor: pointer;
   background-color: var(--color-primary);
-  color: #fff;
+  color: var(--color-text);
 }
 button:hover 
 {
@@ -844,7 +844,7 @@ ul
 .deleteBtn:hover 
 {
   cursor: pointer;
-  background-color: #f5f5f5;
+  background-color: transparent;
 }
 
 
@@ -1360,15 +1360,14 @@ input[type='radio']:checked + .label.wrong
 }
 .loader-section .loader-container 
 {
-  background-color: var(--color-surface);
-  padding: 40px;
+  padding: 30px;
   border-radius: 0.5em;
 }
 .loader-section .loader-container .loader 
 {
-  border: 8px solid #ddd;
+  border: 5px solid #ddd;
   border-radius: 50%;
-  border-top: 8px solid var(--color-primary);
+  border-top: 5px solid var(--color-primary);
   width: 60px;
   height: 60px;
   animation: spin 0.75s linear infinite;
@@ -1556,4 +1555,11 @@ input[type='radio']:checked + .label.wrong
 .developing-page h2
 {
   color: var(--color-muted)
+}
+
+
+/* review section */
+.reviewBtn 
+{
+  margin-top: 10px;
 }

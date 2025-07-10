@@ -94,9 +94,6 @@
     padding: 14px 20px;
 
   }
-  .listening-card .listening-card-content {
-    flex-direction: column;
-  }
   .listening-explain p {
     padding: 14px 20px;
   }
