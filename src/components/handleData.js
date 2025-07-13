@@ -1,5 +1,5 @@
 import { collection, addDoc, doc, setDoc, updateDoc, arrayUnion, arrayRemove, getDoc, getDocs, deleteField  } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js"; 
-import { db } from "./firebase-config.js";
+import { db } from "../firebase-config.js";
 // Function to add a new document to the "users" collection
 // This function can be called to add a new user document to the Firestore database
 export async function isAlreadyLogin(uid) {
@@ -93,6 +93,7 @@ export async function addWordDB(uid, folderName, word) {
 }
 
 export async function deleteWordDB(uid, folderName, word) {
+  console.log('Delete works!')
   try {
     await updateDoc(doc(db, "users", uid), {
       [`folders.${folderName}`]: arrayRemove(word)

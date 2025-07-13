@@ -36,7 +36,7 @@ export default function ListeningSection({listeningWords, onClose}) {
                 }
               }
               if (e.key === 'ArrowRight') {
-                if (listeningCardIndex < words.length - 1) {
+                if (listeningCardIndex < listeningWords.length - 1) {
                   setListeningCardIndex(listeningCardIndex + 1);
                 }
                 else {
