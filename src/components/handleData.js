@@ -82,6 +82,8 @@ export async function renameFolderDB(uid, clickedFolder, newFolderName) {
   }
 }
 
+// Generate review schedule
+
 export async function addWordDB(uid, folderName, word) {
   try {
     await updateDoc(doc(db, "users", uid), {

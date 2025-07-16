@@ -34,6 +34,8 @@ function App() {
   const [allFolders, setAllFolders] = useState([]);
   const [currentFolder, setCurrentFolder] = useState('')
 
+  const [wordsToReview, setWordsToReview] = useState('')
+
   const [showLoginSection, setShowLoginSection] = useState(false)
   // Sign in with Google
   const loginWithGoogle = async () => {
@@ -191,7 +193,52 @@ function App() {
     setCurrentFolder('')
     getUserData(userID).then((data) => {
       setUserData(data)
+
     })
+  }
+
+  function ReviewWordsNums({folder}) {
+    // Input: words in a folder
+    // Output: an array of words to review
+    function getWordsToReview(words) {
+      const currentDay = new Date()
+      let wordsToReview = []
+      words.forEach(word => {
+        let schedule = word.scheduleReview
+        let currentYear = currentDay.getFullYear()
+        let currentMonth = currentDay.getMonth()
+        let currentDate = currentDay.getDate()
+
+        if (schedule) {
+          let isReviewDay = schedule.some(date => {
+            const dateReview = new Date(date.seconds * 1000)
+            return (
+              dateReview.getFullYear() === currentYear &&
+              dateReview.getMonth() === currentMonth && 
+              dateReview.getDate() === currentDate
+            )
+          }
+          )
+          if (isReviewDay) {
+            wordsToReview.push(word)
+          }
+        }
+      })
+
+      return wordsToReview
+    }
+
+    let wordsInFolder = userData.folders[folder]
+    let wordsToReview = getWordsToReview(wordsInFolder)
+
+    if (wordsToReview.length > 0) {
+      return (
+        <span>{wordsToReview.length}</span>
+      )
+    }
+    else {
+      return null
+    }
   }
 
   const [showLogoutBtn, setShowLogoutBtn] = useState(false)
@@ -333,6 +380,7 @@ function App() {
                 {folders.map((folder, index) => (
                   <div className="folder-item" key={index}>
                     <div className="folder" onClick={() => openWordSection(folder)}>
+                      {/* <ReviewWordsNums folder={folder}/> */}
                       <FontAwesomeIcon icon={faFolder} className='folder-icon' />
                       <h2>{folder}</h2>
                       <p>{userData.folders[folder].length || 0} words</p>

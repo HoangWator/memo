@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useEffect } from 'react';
 import { useRef } from 'react';
-import { faPlus,faBars,faArrowLeft,faArrowRight,faArrowDown,faArrowUp,faTrash,faXmark,faMagnifyingGlass,faVolumeHigh,faFolder,faDumbbell,faTrophy,faChartSimple,faEllipsis,faPenToSquare,faX,faArrowRightFromBracket,faArrowsLeftRight } from '@fortawesome/free-solid-svg-icons'
+import { faPlus,faBars,faArrowLeft,faArrowRight,faArrowDown,faArrowUp,faTrash,faXmark,faMagnifyingGlass,faVolumeHigh,faFolder,faDumbbell,faTrophy,faChartSimple,faEllipsis,faPenToSquare,faX,faArrowRightFromBracket,faArrowsLeftRight,faChevronRight } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import ProgressBar from './ProgressBar';
 import Loader from './Loader'
@@ -19,6 +19,7 @@ export default function WordSection({onClose, currentFolder, userID}) {
   const [meaning, setMeaning] = useState('')
   const [words, setWords] = useState([])
   const [allWords, setAllWords] = useState([])
+  const [wordsToReview, setWordsToReview] = useState('')
 
   const meaningInputRef = useRef(null);
   const wordInputRef = useRef(null);
@@ -26,10 +27,39 @@ export default function WordSection({onClose, currentFolder, userID}) {
   const [showMoreOptions, setShowMoreOptions] = useState(false)
   const [showWordSectionLeft, setShowWordSectionLeft] = useState(false)
 
+  function getWordsToReview(words) {
+    const currentDay = new Date()
+    let wordsToReview = []
+    words.forEach(word => {
+      let schedule = word.scheduleReview
+      let currentYear = currentDay.getFullYear()
+      let currentMonth = currentDay.getMonth()
+      let currentDate = currentDay.getDate()
+
+      if (schedule) {
+        let isReviewDay = schedule.some(date => {
+          const dateReview = new Date(date.seconds * 1000)
+          return (
+            dateReview.getFullYear() === currentYear &&
+            dateReview.getMonth() === currentMonth && 
+            dateReview.getDate() === currentDate
+          )
+        }
+        )
+        if (isReviewDay) {
+          wordsToReview.push(word)
+        }
+      }
+    })
+
+    return wordsToReview
+  }
+  
   useEffect(() => {
     setLoader(true)
     getFolderDataDB(userID, currentFolder).then((data) =>  {
         if (data) {
+          setWordsToReview(getWordsToReview(data))
           setWords(data);
           setAllWords(data);
           setLoader(false);
@@ -39,6 +69,42 @@ export default function WordSection({onClose, currentFolder, userID}) {
       });
   }, [])
 
+  useEffect(() => {
+    getFolderDataDB(userID, currentFolder).then((data) =>  {
+        if (data) {
+          setWordsToReview(getWordsToReview(data))
+        }
+    }).catch((error) => {
+        console.error("Error fetching folder data:", error);
+      });
+  }, [words])
+
+  //Generate review schedule
+  function createReviewDates(startDate) {
+    // Date distance between review times
+    let nums = [0, 1, 2]
+    let i = 1
+    while (nums.length < 10) {
+      nums.push(nums[i] + nums[i + 1])
+      i++
+    }
+    function dateAdd(nums, i) {
+      let add = 0
+      for (let j = 0; j <= i; j++) {
+        add += nums[j]
+      }
+      return add
+    }
+    // Add dates to review
+    const dates = [];
+    for (let i = 0; i < nums.length; i++) {
+      const d = new Date(startDate);
+      d.setDate(d.getDate() + dateAdd(nums, i));
+      dates.push(d);
+    }
+    
+    return dates;
+  }
   const addWord = () => {
     const d = new Date()
     if (word != '' && meaning != '') {
@@ -53,7 +119,8 @@ export default function WordSection({onClose, currentFolder, userID}) {
         name: word.toLowerCase(), 
         mean: newMeaning,
         type: typeWord,
-        dateReview: d
+        dateAdded: d,
+        scheduleReview: createReviewDates(d)
       })
     }
     setWord('')
@@ -75,6 +142,9 @@ export default function WordSection({onClose, currentFolder, userID}) {
         setMeaningList(data)
         setShowMeaningList(true);
         setMeaningListLoader(false)
+      }).catch(error => {
+        alert('Error fetching meaning suggestions. Please try again later.');
+        setMeaningListLoader(false);
       })
     } 
   }
@@ -110,9 +180,11 @@ export default function WordSection({onClose, currentFolder, userID}) {
 
   // flashcard
   const [showLearn, setShowLearn] = useState(false)
-  const learnBtn = () => {
+  const [flashcardWords, setFlashcardWords] = useState([])
+  const learnBtn = (words) => {
     if (words.length >= 4) {
       setShowLearn(true)
+      setFlashcardWords(words)
     }
     else {
       alert('Please enter at least 4 words.')
@@ -191,6 +263,8 @@ export default function WordSection({onClose, currentFolder, userID}) {
       <h3>{word.name.toLowerCase()}<span className={meaningCln}>{word.type}</span></h3>
     )
   }
+
+  const [showWordList, setShowWordList] = useState(false)
   return (
     <div className="word-section" onClick={() => {
       if (showRemindSuggestion) {
@@ -200,14 +274,14 @@ export default function WordSection({onClose, currentFolder, userID}) {
       {loader && <Loader />}
       <div className="word-section-header">
         <button onClick={onClose} className='quitSectionBtn'><FontAwesomeIcon icon={faArrowLeft} /></button>
+        <h2>{currentFolder}</h2>
       </div>
       <div className="word-section-body">
-        <button className='showWordSectionLeftBtn' onClick={() => setShowWordSectionLeft(!showWordSectionLeft)}>
-          Add word
-        </button>
 
-        <div className="word-section-left pc">
+        <div className="word-section-left">
+          <button className='word-list-btn' onClick={() => setShowWordList(true)}>My words <FontAwesomeIcon icon={faChevronRight}/></button>
           <input 
+            className='pc'
             type="text"
             placeholder='Enter word'
             value={word}
@@ -230,6 +304,7 @@ export default function WordSection({onClose, currentFolder, userID}) {
           />
           <div className="meaning-section">
             <input 
+              className='pc'
               type="text"
               placeholder='Enter meaning'
               value={meaning}
@@ -335,10 +410,10 @@ export default function WordSection({onClose, currentFolder, userID}) {
             )}
           </div>
 
-          <button onClick={addWord}>Add</button>
+          <button className='add-word-btn pc' onClick={addWord}>Add</button>
 
           <div className="learning-modes">
-            <button className='learnBtn' onClick={learnBtn}>
+            <button className='learnBtn' onClick={() => learnBtn(words)}>
               <img src="https://cdn-icons-png.freepik.com/512/9100/9100957.png" alt="" />
               Flashcard
             </button>
@@ -358,8 +433,8 @@ export default function WordSection({onClose, currentFolder, userID}) {
               Listening
             </button>
           </div>
-
-          <button onClick={() => generateFilling(words)} className='reviewBtn'>Review</button>
+          
+         
           
           <button className='delete-folder-btn' onClick={() => {
             setShowAskToDelete(true)
@@ -374,6 +449,7 @@ export default function WordSection({onClose, currentFolder, userID}) {
           }}>
             <div className="word-section-left" onClick={e => e.stopPropagation()}>
               <input 
+                className='mobile'
                 type="text"
                 placeholder='Enter word'
                 value={word}
@@ -394,7 +470,7 @@ export default function WordSection({onClose, currentFolder, userID}) {
                   }
                 }}
               />
-              <div className="meaning-section">
+              <div className="meaning-section mobile">
                 <input 
                   type="text"
                   placeholder='Enter meaning'
@@ -483,7 +559,7 @@ export default function WordSection({onClose, currentFolder, userID}) {
                             className={`meaning${isSelected ? ' selected' : ''}`}
                             key={index}
                             onClick={() => {
-                              setMeaning(meaning.vie)
+                              setMeaning(`(${meaning.type}) ${meaning.vie}`)
                               setShowMeaningList(false)
                             }}
                           >
@@ -511,29 +587,55 @@ export default function WordSection({onClose, currentFolder, userID}) {
           </div>
         )}
         
+        {showWordList && (
+          <div className="word-list">
+            <div className="word-list-header">
+              <button onClick={() => setShowWordList(false)} className='quitSectionBtn'><FontAwesomeIcon icon={faArrowLeft}/></button>
+              <h2>My words</h2>
+            </div>
+            <div className="word-list-body">
+              <button className='add-word-btn mobile' onClick={() => setShowWordSectionLeft(true)}><FontAwesomeIcon icon={faPlus}/> Add word</button>
+              <div className="word-list-content">
+                <div className="searchBox-section">
+                  <input 
+                    type="text" 
+                    className="searchBox" 
+                    placeholder='Find your word...'
+                    onChange={searchWord}/>
+                  <FontAwesomeIcon icon={faMagnifyingGlass} className='searchIcon'/>
+                </div>
+                <ul>
+                  {
+                    words.length > 0 ? (
+                        words.map((word, index) => 
+                          <li key={index}>
+                            <MeaningDisplay word={word}/>
+                            <p>{word.mean.toLowerCase()}</p>
 
-        <div className={word.length > 0 ? "word-section-right" : "word-section-right empty"}>
-          <div className="learning-modes mobile">
-            <button className='learnBtn' onClick={learnBtn}>
-              <img src="https://cdn-icons-png.freepik.com/512/9100/9100957.png" alt="" />
-              Flashcard
-            </button>
-
-            {/* <button onClick={() => generateMatching(words)} className='openMatchingBtn'>
-              <img src="https://cdn-icons-png.freepik.com/512/282/282100.png" alt="" />
-              Matching
-            </button> */}
-
-            <button onClick={() => generateFilling(words)}>
-              <img src="https://cdn-icons-png.flaticon.com/512/6559/6559624.png" alt="" />
-              Filling
-            </button>
-
-            <button onClick={() => generateListening(words)}>
-              <img src="https://cdn-icons-png.flaticon.com/512/8805/8805242.png" alt="" />
-              Listening
-            </button>
+                            <button 
+                              className='deleteBtn'
+                              onClick={() => {
+                                const newWords = words.filter((words, i) => i !== index)
+                                setAllWords(newWords)
+                                setWords(newWords)
+                                deleteWordDB(userID, currentFolder, word)
+                              }}>
+                                <FontAwesomeIcon icon={faTrash} />
+                              </button>
+                          </li>
+                        )
+                    ) : (
+                      <p className='noWords'>Nothing here!</p>
+                    )
+                  }
+                </ul>
+              </div>
+            </div>
           </div>
+        )}
+        
+        <div className={word.length > 0 ? "word-section-right" : "word-section-right empty"}>
+          
           <div className="searchBox-section">
             <input 
               type="text" 
@@ -569,9 +671,11 @@ export default function WordSection({onClose, currentFolder, userID}) {
           </ul>
         </div>
       </div>
+
+      
       
       {showLearn && 
-        <Flashcard data={allWords} onClose={() => setShowLearn(false)}/>
+        <Flashcard data={flashcardWords} onClose={() => setShowLearn(false)}/>
       }
 
       {showFilling && 

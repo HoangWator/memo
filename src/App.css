@@ -123,6 +123,10 @@
   gap: 10px;
   color: var(--color-primary)
 }
+.sidebar-mobile ul 
+{
+  padding: 0 10px;
+}
 .sidebar-mobile .logo
 {
   padding: 10px;
@@ -224,9 +228,10 @@
 .content 
 {
   display: flex;
-  height: calc(100vh - 60px);
+  height: 100%;
   width: 100%;
 }
+
 .content .sidebar 
 {
   width: 25%;
@@ -234,6 +239,10 @@
   background-color: var(--color-surface);
   position: fixed;
   z-index: 1;
+}
+.content .sidebar.pc ul 
+{
+  padding: 0 10px;
 }
 .content .sidebar-mobile 
 {
@@ -288,7 +297,7 @@
   height: 100%;
   background-color: var(--color-bg);
   padding: 0 20px;
-  margin-top: 72px;
+  margin-top: 82px;
 }
 .main-content .vocabulary-section .add-folder-btn 
 {
@@ -411,6 +420,20 @@
   cursor: pointer;
   position: relative;
 }
+.folder-list .folder span 
+{
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  color: var(--color-text);
+  background-color: var(--color-wrong);
+  width: 30px;
+  line-height: 30px;
+  font-size: 16px;
+  text-align: center;
+  border-radius: 50%;
+
+}
 .folder-list .folder .folder-icon 
 {
   font-size: 30px;
@@ -424,7 +447,6 @@
 }
 .folder-list .folder p 
 {
-  color: #666;
   font-size: 16px;
   color: var(--color-muted)
 }
@@ -600,10 +622,6 @@ button:hover
 {
   background-color: var(--color-primary-hover);
 }
-ul 
-{
-  padding: 10px;
-}
 .word-section li 
 {
   width: 100%;
@@ -676,24 +694,25 @@ ul
   top: 0;
   background-color: var(--color-bg);
 }
-.word-section .word-section-right 
+.word-section-body .word-section-right 
 .word-section .word-section-right.empty 
 {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100%;
+  background-color: var(--color-bg);
 }
-.word-section .word-section-right ul 
+.word-section-body .word-section-right ul 
 {
   padding: 0;
   background-color: var(--color-bg);
 }
-.word-section .word-section-right ul h3 
+.word-section-body .word-section-right ul h3 
 {
   color: var(--color-text);
 }
-.word-section .word-section-right p.noWords 
+.word-section-body .word-section-right p.noWords 
 {
   font-size: 18px;
   color: var(--color-muted);
@@ -703,12 +722,14 @@ ul
   justify-content: center;
   align-items: center;
 }
-.word-section .word-section-right .searchBox-section
+.word-section-body .word-section-right .searchBox-section,
+.word-section-body .word-list .searchBox-section
 {
   position: relative;
   width: 100%;
 }
-.word-section .word-section-right .searchBox-section input 
+.word-section-body .word-section-right .searchBox-section input, 
+.word-section-body .word-list .searchBox-section input 
 {
   width: 100%;
   padding: 10px 10px 10px 40px;
@@ -718,7 +739,8 @@ ul
   background-color: var(--color-surface);
   color: var(--color-text);
 }
-.word-section .word-section-right .searchBox-section .searchIcon
+.word-section-body .word-section-right .searchBox-section .searchIcon,
+.word-section-body .word-list .searchBox-section .searchIcon
 {
   position: absolute;
   top: 10px;
@@ -728,11 +750,16 @@ ul
   color: var(--color-text)
 }
 
-
-.word-section ul
+.word-section .word-section-right
 {
-  max-height: 480px;
+  display: flex;
+  flex-direction: column;
+}
+.word-section .word-section-right ul
+{
+  flex: 1 1 auto;
   overflow-y: auto;
+  background-color: var(--color-bg);
 }
 .learn-section 
 {
@@ -883,6 +910,13 @@ ul
 {
   padding: 10px;
   background-color: var(--color-bg);
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.word-section-header h2 
+{
+  color: var(--color-text)
 }
 .word-section-header button 
 {
@@ -902,8 +936,9 @@ ul
 }
 .word-section-left, .word-section-right {
   width: 50%;
-  height: 100vh;
+  height: calc(100vh - 60px);
   padding: 20px;
+  background-color: var(--color-bg);
 }
 .word-section-left .delete-folder-btn 
 {
@@ -949,7 +984,7 @@ ul
 }
 .word-section-left input:hover 
 {
-  border: 0 0 5px var(--color-primary)
+  background-color: var(--color-bg-hover);
 }
 .meaning-section 
 {
@@ -1456,7 +1491,87 @@ input[type='radio']:checked + .label.wrong
 
 
 /* review section */
-.reviewBtn 
+.reviewBtn
 {
   margin-top: 10px;
+  position: relative;
+  display: inline-block;
+}
+.reviewBtn span 
+{
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  color: var(--color-text);
+  background-color: var(--color-wrong);
+  width: 30px;
+  line-height: 30px;
+  font-size: 16px;
+  text-align: center;
+  border-radius: 50%;
+}
+
+/* Mobile */
+.word-section-body .word-list 
+{
+  position: fixed;
+  top: 0;
+  left: 0;  
+  right: 0;
+  bottom: 0;
+  background-color: var(--color-bg);
+}
+.word-section-body .word-list-header 
+{
+  padding: 10px;
+  background-color: var(--color-bg);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+} 
+.word-section-body .word-list-header h2 
+{
+  color: var(--color-text)
+}
+
+.word-section-body .word-list-body 
+{
+  padding: 0 20px;
+  height: calc(100vh - 70px);
+  margin-top: 70px;
+  background-color: var(--color-bg);
+  display: flex;
+  flex-direction: column;
+}
+.word-section-body .word-list-body .word-list-content 
+{
+  margin-top: 20px;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0; 
+} 
+.word-section-body .word-list-body .word-list-content ul 
+{
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  background-color: var(--color-bg);
+}
+.word-section-body .word-list-body .word-list-content .noWords
+{
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: var(--color-muted);
+}
+.word-section-body .word-list-body .add-word-btn.mobile
+{
+  padding: 14px 20px;
 }
