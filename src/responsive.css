@@ -42,10 +42,21 @@
   .word-section-right .learning-modes.mobile {
     display: none;
   }
+  .folder-list .folder:hover
+  {
+    background-color: var(--color-bg-hover);
+  }
 }
 
 /* Tablet */
 @media (min-width: 740px) and (max-width: 1023px) {
+  .folder-list .folder:hover
+  {
+    background-color: var(--color-bg-hover);
+  }
+  .content .sidebar h1 {
+    padding: 10px 0;
+  }
   .word-section-body .word-list {
     display: none;
   }
@@ -135,10 +146,15 @@
     display: none;
   }
   .word-section-body .word-section-left .word-list-btn {
-    display: block;
     width: 100%;
     display: flex;
     justify-content: space-between;
+  }
+  .word-section-body .word-section-left .word-list-btn .word-count {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
   }
   .create-folder-field,
   .ask-to-delete-section .ask-to-delete,
@@ -175,18 +191,17 @@
     bottom: 0;
     right: 0;
     left: 0;
-    background-color: var(--color-surface);
+    background-color: var(--color-bg);
     border-radius: 0.5em;
     z-index: 5;
-    padding-top: 40px;
     max-height: 100%;
   }
   .meaning-list-section {
-    background-color: var(--color-bg);
+    background-color: var(--color-surface);
   }
   .word-section-left input {
     padding: 14px 20px;
-    background-color: var(--color-bg);
+    background-color: var(--color-surface);
   }
   .word-section-left, .word-section-right {
     width: 100%;
@@ -234,6 +249,12 @@
   .filling-card {
     width: 100%;
     margin: 0 10px;
+  }
+  .filling-card .meaning-suggestion {
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+    width: calc(100% - 20px);
   }
   .quitFillingBtn {
     padding: 14px 20px;
@@ -316,6 +337,13 @@
   .create-folder-section {
     z-index: 6
   }
+  .folder-list .folder .more {
+    display: none;
+  }
+  .folder-list .folder:hover .more {
+    display: none;
+  }
+
   
   .create-folder-section .create-folder-field button,
   .create-folder-section .create-folder-field input {
@@ -333,7 +361,7 @@
     padding: 14px 20px;
     font-size: 18px;
   }
-  .progess-bar {
+  .progress-bar {
     width: 70%;
   }
   .folder-list .folder-list-empty p {

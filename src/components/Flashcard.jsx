@@ -15,15 +15,15 @@ export default function Flashcard({data, onClose}) {
       setShowDef(!showDef)
     }
     return (
-      <div className="card">
-        {showDef ? <p>{word.mean}</p> : <h1>{word.name}</h1>}
-        <button onClick={handleDef}><FontAwesomeIcon icon={faArrowsLeftRight} /></button>
+      <div className="card" onClick={handleDef}>
+        {showDef ? <p>{word.mean}</p> : <h1>{`${word.name} (${word.type})`}</h1>}
+        <span><FontAwesomeIcon icon={faArrowsLeftRight} /></span>
       </div>
     )
   }
 
   return (
-    <div className="learn-section">
+    <div className="flashcard-section">
       <button onClick={onClose} className='quitLearnSectionBtn quitSectionBtn'><FontAwesomeIcon icon={faArrowLeft} /></button>
 
       <div className="card-list">

@@ -1,37 +1,41 @@
 import { useState } from 'react'
 import { useEffect } from 'react';
 import { useRef } from 'react';
-import { faPlus,faBars,faArrowLeft,faArrowRight,faArrowDown,faArrowUp,faTrash,faXmark,faMagnifyingGlass,faVolumeHigh,faFolder,faDumbbell,faTrophy,faChartSimple,faEllipsis,faPenToSquare,faX,faArrowRightFromBracket,faArrowsLeftRight,faChevronRight } from '@fortawesome/free-solid-svg-icons'
+import { faPlus,faPen,faBars,faArrowLeft,faArrowRight,faArrowDown,faArrowUp,faTrash,faXmark,faMagnifyingGlass,faVolumeHigh,faFolder,faDumbbell,faTrophy,faChartSimple,faEllipsis,faPenToSquare,faX,faArrowRightFromBracket,faArrowsLeftRight,faChevronRight } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import ProgressBar from './ProgressBar';
+import ProgressBar from './ProgressBar'
 import Loader from './Loader'
 import Flashcard from './Flashcard.jsx'
 import FillingSection from './FillingSection.jsx'
 import ListeningSection from './ListeningSection.jsx'
+import ReviewSection from './ReviewSection.jsx'
+import DeleteValid from './modals/DeleteValid.jsx'
+import RenameFolder from './modals/RenameFolder.jsx'
 
 import { addWordDB,deleteWordDB } from './handleData.js'
 import { getFolderDataDB } from './handleData.js'
 import meaningSuggestion from './gemini.js'
-import { geneAI } from './gemini.js'
 
 export default function WordSection({onClose, currentFolder, userID}) {
   const [word, setWord] = useState('')
   const [meaning, setMeaning] = useState('')
   const [words, setWords] = useState([])
   const [allWords, setAllWords] = useState([])
-  const [wordsToReview, setWordsToReview] = useState('')
-
+  
   const meaningInputRef = useRef(null);
   const wordInputRef = useRef(null);
-
+  
   const [showMoreOptions, setShowMoreOptions] = useState(false)
   const [showWordSectionLeft, setShowWordSectionLeft] = useState(false)
-
+  
+  const [wordsToReview, setWordsToReview] = useState('')
+  
   function getWordsToReview(words) {
     const currentDay = new Date()
     let wordsToReview = []
     words.forEach(word => {
       let schedule = word.scheduleReview
+      let lastReview = word.lastReview
       let currentYear = currentDay.getFullYear()
       let currentMonth = currentDay.getMonth()
       let currentDate = currentDay.getDate()
@@ -44,41 +48,17 @@ export default function WordSection({onClose, currentFolder, userID}) {
             dateReview.getMonth() === currentMonth && 
             dateReview.getDate() === currentDate
           )
-        }
-        )
+        })
         if (isReviewDay) {
           wordsToReview.push(word)
+
+
         }
       }
     })
 
     return wordsToReview
   }
-  
-  useEffect(() => {
-    setLoader(true)
-    getFolderDataDB(userID, currentFolder).then((data) =>  {
-        if (data) {
-          setWordsToReview(getWordsToReview(data))
-          setWords(data);
-          setAllWords(data);
-          setLoader(false);
-        }
-    }).catch((error) => {
-        console.error("Error fetching folder data:", error);
-      });
-  }, [])
-
-  useEffect(() => {
-    getFolderDataDB(userID, currentFolder).then((data) =>  {
-        if (data) {
-          setWordsToReview(getWordsToReview(data))
-        }
-    }).catch((error) => {
-        console.error("Error fetching folder data:", error);
-      });
-  }, [words])
-
   //Generate review schedule
   function createReviewDates(startDate) {
     // Date distance between review times
@@ -105,6 +85,32 @@ export default function WordSection({onClose, currentFolder, userID}) {
     
     return dates;
   }
+  
+  useEffect(() => {
+    setLoader(true)
+    getFolderDataDB(userID, currentFolder).then((data) =>  {
+        if (data) {
+          setWordsToReview(getWordsToReview(data))
+          setWords(data);
+          setAllWords(data);
+          setLoader(false);
+        }
+    }).catch((error) => {
+        console.error("Error fetching folder data:", error);
+      });
+  }, [])
+
+  useEffect(() => {
+    getFolderDataDB(userID, currentFolder).then((data) =>  {
+        if (data) {
+          setWordsToReview(getWordsToReview(data))
+        }
+    }).catch((error) => {
+        console.error("Error fetching folder data:", error);
+      });
+  }, [words])
+
+  
   const addWord = () => {
     const d = new Date()
     if (word != '' && meaning != '') {
@@ -120,6 +126,8 @@ export default function WordSection({onClose, currentFolder, userID}) {
         mean: newMeaning,
         type: typeWord,
         dateAdded: d,
+        lastReview: null,
+        reviewCount: 0,
         scheduleReview: createReviewDates(d)
       })
     }
@@ -194,19 +202,10 @@ export default function WordSection({onClose, currentFolder, userID}) {
   // Filling
   const [showFilling, setShowFilling] = useState(false)
   const [loader, setLoader] = useState(false)
-  const [fillingQuestions, setFillingQuestions] = useState([])
 
-  const generateFilling = (wordList) => {
-    let words = []
-    wordList.forEach(item => words.push(item.name))
-    
+  const generateFilling = () => {
     if (words.length >= 4) {
-      setLoader(true)
-      geneAI(words).then((value) => {
-        setFillingQuestions(value)
-        setShowFilling(true)
-        setLoader(false)
-      })
+      setShowFilling(true)
     }
     else {
       alert("Please enter at least 4 words!")
@@ -215,7 +214,6 @@ export default function WordSection({onClose, currentFolder, userID}) {
   
   const quitFilling = () => {
     setShowFilling(false)
-    setFillingQuestions([])
   }
 
 
@@ -242,6 +240,12 @@ export default function WordSection({onClose, currentFolder, userID}) {
     }
   }
 
+  // Review Section
+  const [showReview, setShowReview] = useState(false)
+  const generateReview = (words) => {
+    setShowReview(true)
+  }
+
   function MeaningDisplay({word}) {
     let meaningCln;
     if (word.type === 'noun') {
@@ -265,6 +269,11 @@ export default function WordSection({onClose, currentFolder, userID}) {
   }
 
   const [showWordList, setShowWordList] = useState(false)
+
+  const [showDeleteValid, setShowDeleteValid] = useState(false)
+  const [showRenameFolderSection, setShowRenameFolderSection] = useState(false)
+
+
   return (
     <div className="word-section" onClick={() => {
       if (showRemindSuggestion) {
@@ -272,6 +281,24 @@ export default function WordSection({onClose, currentFolder, userID}) {
       }
     }}>
       {loader && <Loader />}
+
+      {showDeleteValid && (
+        <DeleteValid 
+          onCloseDeleteValidSection={() => setShowDeleteValid(false)}
+          onCloseWordSection={() => onClose()}
+          currentFolder={currentFolder}
+          userID={userID}
+        />
+      )}
+
+      {showRenameFolderSection && (
+        <RenameFolder 
+          onCloseRenameFolderSection={() => setShowRenameFolderSection(false)}
+          onCloseWordSection={() => onClose()}
+          currentFolder={currentFolder}
+          userID={userID}
+        />
+      )}
       <div className="word-section-header">
         <button onClick={onClose} className='quitSectionBtn'><FontAwesomeIcon icon={faArrowLeft} /></button>
         <h2>{currentFolder}</h2>
@@ -279,7 +306,14 @@ export default function WordSection({onClose, currentFolder, userID}) {
       <div className="word-section-body">
 
         <div className="word-section-left">
-          <button className='word-list-btn' onClick={() => setShowWordList(true)}>My words <FontAwesomeIcon icon={faChevronRight}/></button>
+          <button className='word-list-btn' onClick={() => setShowWordList(true)}>
+            My words 
+
+            <div className="word-count">
+              {words.length}
+              <FontAwesomeIcon icon={faChevronRight}/>
+            </div>
+          </button>
           <input 
             className='pc'
             type="text"
@@ -434,13 +468,21 @@ export default function WordSection({onClose, currentFolder, userID}) {
             </button>
           </div>
           
-         
+          <button 
+            className='reviewBtn'
+            onClick={() => generateReview(wordsToReview)}
+          >
+            Review
+            <span className='review-count'>{wordsToReview.length > 0 && wordsToReview.length}</span>
+          </button>
+          
+          <button className='rename-folder-btn' onClick={() => {
+            setShowRenameFolderSection(true)
+          }}><FontAwesomeIcon icon={faPen} className='icon'/> Rename folder</button>
           
           <button className='delete-folder-btn' onClick={() => {
-            setShowAskToDelete(true)
-            setRenameTarget(currentFolder)
-            setShowWordSection(false)
-          }}><FontAwesomeIcon icon={faTrash} /> Delete this folder</button>
+            setShowDeleteValid(true)
+          }}><FontAwesomeIcon icon={faTrash} className='icon'/> Delete folder</button>
         </div>
         
         {showWordSectionLeft && (
@@ -503,7 +545,7 @@ export default function WordSection({onClose, currentFolder, userID}) {
                           prev > 0 ? prev - 1 : meaningList.length - 1
                         );
                       } else if (e.key === 'Enter' && selectedMeaningIndex !== -1) {
-                        setMeaning(meaningList[selectedMeaningIndex].vie);
+                        setMeaning(`(${meaningList[selectedMeaningIndex].type}) ${meaningList[selectedMeaningIndex].vie}`);
                         setShowMeaningList(false);
                       } else if (e.key === 'Enter') {
                         addWord();
@@ -578,11 +620,7 @@ export default function WordSection({onClose, currentFolder, userID}) {
 
               
               
-              <button className='delete-folder-btn' onClick={() => {
-                setShowAskToDelete(true)
-                setRenameTarget(currentFolder)
-                setShowWordSection(false)
-              }}><FontAwesomeIcon icon={faTrash} /> Delete this folder</button>
+              
             </div>
           </div>
         )}
@@ -681,12 +719,16 @@ export default function WordSection({onClose, currentFolder, userID}) {
       {showFilling && 
         <FillingSection 
           onClose={quitFilling} 
-          fillingQuestions={fillingQuestions}
+          data={words}
         />
       }
 
       {showListening && (
         <ListeningSection listeningWords={listeningWords} onClose={() => setShowListening(false)}/>
+      )}
+
+      {showReview && (
+        <ReviewSection data={wordsToReview} onClose={() => setShowReview(false)}/>
       )}
     </div>
   )

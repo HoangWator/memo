@@ -23,6 +23,7 @@ import WordSection from './components/WordSection.jsx'
 import Loader from './components/Loader.jsx'
 
 
+
 function App() {
   const [userID, setUserID] = useState('')
   const [userName, setUserName] = useState('')
@@ -50,10 +51,9 @@ function App() {
       // Check if user has logged in before
       isAlreadyLogin(user.uid).then(data => {
         if (data) {
-
+          
         }
         else {
-
           addUser(user.uid)
         }
       })
@@ -69,6 +69,8 @@ function App() {
           setFolders([]);
           setAllFolders([]);
         }
+      }).catch(error => {
+        alert("Please try again later.")
       });
       
       setShowLoginSection(false)
@@ -109,14 +111,22 @@ function App() {
     return () => unsubscribe();
   }, []);
 
+
+  
+  // Logout section
   const [showLogoutSection, setShowLogoutSection] = useState(false)
   const exitAccount = () => {
-    signOut(auth)
-    setUserID('')
+    signOut(auth).then(() => {
+      setUserID('');
+      setUserName('');
+      setAvatarUrl('');
+      setShowLoginSection(true); // Show login popup for new account
+    });
   }
 
   // Directing page
   const [pageIndex, setPageIndex] = useState(0)
+  
   
   // Create a folder
   const [showCreateFolder, setShowCreateFolder] = useState(false)
@@ -153,30 +163,14 @@ function App() {
     setShowCreateFolder(false)
   }
 
-  // Delete folder
-  const deleteFolder = (uid, folderName) => {
-    deleteFolderDB(uid, folderName)
-    setFolders(folders.filter(folder => folder != folderName))
-    setAllFolders(folders.filter(folder => folder != folderName))
-    setShowAskToDelete(false)
-  }
+  
 
   // Rename folder
   const [showRenameFolderSection, setShowRenameFolderSection] = useState(false)
   const [newFolderName, setNewFolderName] = useState('')
   const [renameTarget, setRenameTarget] = useState(null);
 
-  const renameFolder = async (uid, clickedFolder, newFolderName) => {
-    setShowRenameFolderSection(false)
-
-    await renameFolderDB(uid, clickedFolder, newFolderName)
-
-    const data = await getUserData(userID);
-    setUserData(data);
-    setFolders(Object.keys(data.folders));
-    setAllFolders(Object.keys(data.folders))
-    setRenameTarget('')
-  }
+  
 
   const [showAskToDelete, setShowAskToDelete] = useState(false)
 
@@ -192,10 +186,30 @@ function App() {
     setShowWordSection(false)
     setCurrentFolder('')
     getUserData(userID).then((data) => {
+      // console.log(data)
       setUserData(data)
-
+      setFolders(Object.keys(data.folders));
+      setAllFolders(Object.keys(data.folders));
     })
+    console.log('Quit word section')
   }
+
+  // useEffect(() => {
+  //   if (userID !== '') {
+  //     getUserData(userID).then((data) => {
+  //       if (data) {
+  //         console.log(data)
+  //         setFolders(Object.keys(data.folders));
+  //         setAllFolders(Object.keys(data.folders));
+  //         setUserData(data);
+  //       } else {
+  //         setFolders([]);
+  //         setAllFolders([]);
+  //       }
+  //     });
+  //     console.log('User data fetched successfully');
+  //   }
+  // }, [showWordSection]);
 
   function ReviewWordsNums({folder}) {
     // Input: words in a folder
@@ -380,11 +394,11 @@ function App() {
                 {folders.map((folder, index) => (
                   <div className="folder-item" key={index}>
                     <div className="folder" onClick={() => openWordSection(folder)}>
-                      {/* <ReviewWordsNums folder={folder}/> */}
+                      <ReviewWordsNums folder={folder}/>
                       <FontAwesomeIcon icon={faFolder} className='folder-icon' />
                       <h2>{folder}</h2>
                       <p>{userData.folders[folder].length || 0} words</p>
-                      <div className="more" onClick={(e) => {e.stopPropagation()}}>
+                      {/* <div className="more" onClick={(e) => {e.stopPropagation()}}>
                         <FontAwesomeIcon icon={faEllipsis} />
                         <div className="more-options">
                           <button className='edit-folder-btn' onClick={() => {
@@ -396,35 +410,11 @@ function App() {
                             setRenameTarget(folder)
                           }}><FontAwesomeIcon icon={faTrash} /> Delete</button>
                         </div>
-                      </div>
-
+                      </div> */}
                     </div>
-                    {showRenameFolderSection && renameTarget === folder && (
-                        <div className="rename-folder-section" onClick={() => setShowRenameFolderSection(false)}>
-                          <div className="rename-folder" onClick={e => e.stopPropagation()}>
-                            <h3>Rename folder</h3>
-                            <input type="text" placeholder='New folder name...'
-                              onChange={(e) => setNewFolderName(e.target.value)}
-                            />
-                            <button onClick={() => {
-                              renameFolder(userID, folder, newFolderName)
-                            }}>Rename</button>
-                          </div>
-                        </div>
-                      )
-                    }
                     
-                    {showAskToDelete && renameTarget === folder  && (
-                      <div className="ask-to-delete-section" onClick={() => setShowAskToDelete(false)}>
-                        <div className="ask-to-delete" onClick={e => e.stopPropagation()}>
-                          <h3>Do you want to delete this folder?</h3>
-                          <div className="options">
-                            <button onClick={() => setShowAskToDelete(false)}>No, keep it</button>
-                            <button onClick={() => deleteFolder(userID, folder)} className='deleteFolderBtn'>Yes, delete it</button>
-                          </div>
-                        </div>
-                      </div>
-                    )}
+                    
+                    
                   </div>
                 ))}
               </div>

@@ -143,6 +143,18 @@ export default async function meaningSuggestion(word) {
           vie: 'khách quan'
           eng: '(of a person or their judgment) not influenced by personal feelings or opinions in considering and representing facts.'
       }]
+      Take an example of "initiative", you should return in JSON like this:
+      [{
+          type: 'noun',
+          vie: 'Sáng kiến, sáng tạo',
+          eng: 'The ability to assess and initiate things independently.'
+      }]
+      Take an example of "intervention", you should return in JSON like this:
+      [{
+          type: 'noun',
+          vie: 'Sự can thiệp, can dự',
+          eng: 'The action or process of intervening, especially to improve a situation.'
+      }]
   `;
   const response = await ai.models.generateContent({
       model: "gemini-2.0-flash",
