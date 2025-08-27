@@ -7,7 +7,7 @@ import './App.css'
 import './responsive.css'
 import ReactDOM from 'react-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPlus,faBars,faArrowLeft,faArrowRight,faArrowDown,faArrowUp,faTrash,faXmark,faMagnifyingGlass,faVolumeHigh,faFolder,faDumbbell,faTrophy,faChartSimple,faEllipsis,faPenToSquare,faX,faArrowRightFromBracket,faArrowsLeftRight } from '@fortawesome/free-solid-svg-icons'
+import { faPlus,faBookOpen,faBars,faArrowLeft,faArrowRight,faArrowDown,faArrowUp,faTrash,faXmark,faMagnifyingGlass,faVolumeHigh,faFolder,faDumbbell,faTrophy,faChartSimple,faEllipsis,faPenToSquare,faX,faArrowRightFromBracket,faArrowsLeftRight } from '@fortawesome/free-solid-svg-icons'
 import useSound from 'use-sound';
 import { getWordData } from './components/gemini.js'
 import { signInWithPopup,signOut  } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
@@ -21,6 +21,7 @@ import { addFolderDB, deleteFolderDB, renameFolderDB } from './components/handle
 
 import WordSection from './components/WordSection.jsx'
 import Loader from './components/Loader.jsx'
+import { DictionarySection } from './components/DictionarySection.jsx'
 
 
 
@@ -270,10 +271,11 @@ function App() {
           <h1 style={{'userSelect': 'none'}}>Memo</h1>
 
           <ul>
-            <li className={pageIndex === 0 ? 'clicked' : ''} onClick={() => setPageIndex(0)}><FontAwesomeIcon icon={faFolder} className='icon' /><span>Vocabulary</span></li>
-            <li className={pageIndex === 1 ? 'clicked' : ''} onClick={() => setPageIndex(1)}><FontAwesomeIcon icon={faDumbbell} className='icon' /><span>Review</span></li>
-            <li className={pageIndex === 2 ? 'clicked' : ''} onClick={() => setPageIndex(2)}><FontAwesomeIcon icon={faTrophy} className='icon' /><span>Rank</span></li>
-            <li className={pageIndex === 3 ? 'clicked' : ''} onClick={() => setPageIndex(3)}><FontAwesomeIcon icon={faChartSimple} className='icon' /><span>Progress</span></li>
+            <li className={pageIndex === 0 ? 'clicked' : ''} onClick={() => setPageIndex(0)}><FontAwesomeIcon icon={faBookOpen} className='icon'/><span>Dictionary</span></li>
+            <li className={pageIndex === 1 ? 'clicked' : ''} onClick={() => setPageIndex(1)}><FontAwesomeIcon icon={faFolder} className='icon' /><span>Vocabulary</span></li>
+            <li className={pageIndex === 2 ? 'clicked' : ''} onClick={() => setPageIndex(2)}><FontAwesomeIcon icon={faDumbbell} className='icon' /><span>Review</span></li>
+            <li className={pageIndex === 3 ? 'clicked' : ''} onClick={() => setPageIndex(3)}><FontAwesomeIcon icon={faTrophy} className='icon' /><span>Rank</span></li>
+            <li className={pageIndex === 4 ? 'clicked' : ''} onClick={() => setPageIndex(4)}><FontAwesomeIcon icon={faChartSimple} className='icon' /><span>Progress</span></li>
           </ul>
         </div>
         {
@@ -341,8 +343,11 @@ function App() {
               
             </div>
           </div>
-
+          
           {pageIndex === 0 && (
+            <DictionarySection />
+          )}
+          {pageIndex === 1 && (
             <div className="vocabulary-section">
               <button className='add-folder-btn' onClick={createFolder}><FontAwesomeIcon className='icon' icon={faPlus} />  <span>Create folder</span></button>
               {showCreateFolder && (
@@ -421,17 +426,17 @@ function App() {
             </div>
           )}
 
-          {pageIndex === 1 && (
+          {pageIndex === 2 && (
             <div className="practice-section developing-page">
               <h2>Comming soon!</h2>
             </div>
           )}
-          {pageIndex === 2 && (
+          {pageIndex === 3 && (
             <div className="rank-section developing-page">
               <h2>Comming soon!</h2>
             </div>
           )}
-          {pageIndex === 3 && (
+          {pageIndex === 4 && (
             <div className="progress-section developing-page">
               <h2>Comming soon!</h2>
             </div>

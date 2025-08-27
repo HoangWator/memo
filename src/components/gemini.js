@@ -2,8 +2,6 @@ import { GoogleGenAI } from "@google/genai";
 
 const ai = new GoogleGenAI({ apiKey:  import.meta.env.VITE_API_KEY});
 
-
-
 export async function geneAI(words) {
     let newWords = words.join(', ')
     const prompt = `
@@ -195,6 +193,221 @@ export async function getWordData(word) {
   }
 }
 
-
+export async function dictEngine(word) {
+  const prompt = `
+      Imagine you are Oxford dictionary, tell me all infomations of '${word}' including partOfSpeech, phonetics, meanings, examples for each meanings, idioms (if possible), synonyms, antonyms and word family. Respond in json. Make sure the json is correct and can be parsed.
+      With "work", you should return in JSON like this:
+      {
+        "word": "work",
+        "phonetics": {
+            "text": "/wɜːrk/",
+            "audio": "https://api.dictionaryapi.dev/media/pronunciations/en/work-uk.mp3"
+        },
+        "meanings": [
+            {
+            "partOfSpeech": "verb",
+            "definition": "To perform labor or engage in physical or mental activity to achieve a purpose or result.",
+            "examples": [
+                "She works as a software engineer at a tech company.",
+                "He worked tirelessly to finish the project before the deadline."
+            ],
+            "synonyms": [
+                "labor",
+                "toil",
+                "slave",
+                "drudge",
+                "exert oneself",
+                "endeavor"
+            ],
+            "antonyms": [
+                "rest",
+                "relax",
+                "idle",
+                "laze",
+                "play"
+            ]
+            },
+            {
+            "partOfSpeech": "verb",
+            "definition": "To function or operate effectively.",
+            "examples": [
+                "The new software doesn't work properly on my computer.",
+                "This strategy won't work in our current situation."
+            ],
+            "synonyms": [
+                "function",
+                "operate",
+                "run",
+                "perform",
+                "be effective"
+            ],
+            "antonyms": [
+                "malfunction",
+                "fail",
+                "break down"
+            ]
+            },
+            {
+            "partOfSpeech": "verb",
+            "definition": "To shape, form, or process a material.",
+            "examples": [
+                "The blacksmith worked the hot iron into a horseshoe.",
+                "She worked the clay into a beautiful vase."
+            ],
+            "synonyms": [
+                "shape",
+                "form",
+                "mold",
+                "fashion",
+                "craft",
+                "manipulate"
+            ],
+            "antonyms": [
+                "destroy",
+                "ruin",
+                "demolish"
+            ]
+            },
+            {
+            "partOfSpeech": "noun",
+            "definition": "Activity involving mental or physical effort done to achieve a purpose or result.",
+            "examples": [
+                "Hard work is the key to success.",
+                "I have a lot of work to finish before Friday."
+            ],
+            "synonyms": [
+                "labor",
+                "toil",
+                "effort",
+                "exertion",
+                "industry"
+            ],
+            "antonyms": [
+                "leisure",
+                "rest",
+                "play",
+                "relaxation"
+            ]
+            },
+            {
+            "partOfSpeech": "noun",
+            "definition": "A task or tasks to be undertaken; something a person or thing has to do.",
+            "examples": [
+                "She gave me some work to do while she was away.",
+                "The repair work on the bridge will take three months."
+            ],
+            "synonyms": [
+                "task",
+                "job",
+                "duty",
+                "assignment",
+                "chore"
+            ],
+            "antonyms": [
+                "hobby",
+                "pastime",
+                "entertainment"
+            ]
+            },
+            {
+            "partOfSpeech": "noun",
+            "definition": "A place of employment.",
+            "examples": [
+                "I'm going to work early tomorrow.",
+                "He left work at 5 PM as usual."
+            ],
+            "synonyms": [
+                "workplace",
+                "office",
+                "job",
+                "place of employment"
+            ],
+            "antonyms": [
+                "home",
+                "residence"
+            ]
+            },
+            {
+            "partOfSpeech": "noun",
+            "definition": "Something produced or accomplished through effort, skill, or agency.",
+            "examples": [
+                "This novel is considered her greatest work.",
+                "The museum displays works by famous artists."
+            ],
+            "synonyms": [
+                "creation",
+                "product",
+                "composition",
+                "opus",
+                "piece"
+            ],
+            "antonyms": [
+                "destruction",
+                "ruin"
+            ]
+            }
+        ],
+        "idioms": [
+            {
+            "idiom": "work like a charm",
+            "meaning": "To function perfectly or have the desired effect immediately.",
+            "example": "The new marketing strategy worked like a charm, and sales doubled within a month."
+            },
+            {
+            "idiom": "all work and no play makes Jack a dull boy",
+            "meaning": "Constant work without time for relaxation is not good for one's health or personality.",
+            "example": "You've been studying for ten hours straight - remember, all work and no play makes Jack a dull boy."
+            },
+            {
+            "idiom": "work your fingers to the bone",
+            "meaning": "To work extremely hard for a long time.",
+            "example": "She worked her fingers to the bone to put her children through college."
+            },
+            {
+            "idiom": "work out for the best",
+            "meaning": "To eventually have a good result or conclusion after a period of uncertainty.",
+            "example": "I was worried about changing jobs, but it all worked out for the best in the end."
+            },
+            {
+            "idiom": "have your work cut out for you",
+            "meaning": "To have a very difficult task ahead.",
+            "example": "With three projects due by Friday, she certainly has her work cut out for her."
+            }
+        ],
+        "word_family": {
+            "nouns": [
+            "work",
+            "worker",
+            "workforce",
+            "workaholic",
+            "workload",
+            "workplace",
+            "workshop",
+            "homework",
+            "housework"
+            ],
+            "adjectives": [
+            "working",
+            "workable",
+            "overworked",
+            "hardworking"
+            ],
+            "verbs": [
+            "work",
+            "rework",
+            "overwork"
+            ],
+            "adverbs": [
+            "workably"
+            ]
+        }
+        }
+  `;
+  const response = await ai.models.generateContent({
+      model: "gemini-2.0-flash",
+      contents: prompt,
+  });
+  return response.text;
+}
 
 

@@ -1,4 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+@import "tailwindcss";
+
 * 
 {
   padding: 0;
@@ -106,11 +108,11 @@
 .header 
 {
   width: 100%;
-  background-color: var(--color-bg);
+  /* background-color: var(--color-bg); */
   color: #000;
   display: flex;
   align-items: center;
-  padding: 10px;
+  padding: 10px 20px;
   position: fixed;
   top: 0;
   right: 0;
@@ -1563,6 +1565,7 @@ input[type='radio']:checked + .label.wrong
   min-height: 0;
   overflow-y: auto;
   background-color: var(--color-bg);
+  margin-bottom: 50px;
 }
 .word-section-body .word-list-body .word-list-content .noWords
 {
@@ -1575,4 +1578,101 @@ input[type='radio']:checked + .label.wrong
 .word-section-body .word-list-body .add-word-btn.mobile
 {
   padding: 14px 20px;
+  font-size: 18px
+}
+
+/* Dict section */
+.dict-section 
+{
+  width: 100%;
+  height: 100%;
+
+  
+  overflow-y: auto;
+}
+.dict-content 
+{
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 50%;
+  transform: translateX(-50%);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.dict-searchbar 
+{
+  width: 50%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.dict-searchbar h1 
+{
+  width: 100%;
+  margin: 0;
+  color: var(--color-primary);
+  font-size: 50px;
+  position: absolute;
+  bottom: 200%;
+  text-align: center;
+}
+.dict-searchbar input 
+{
+  width: 100%;
+  padding: 10px 20px;
+  background-color: var(--color-surface);
+  color: var(--color-text)
+}
+
+.dict-list 
+{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  margin: 20px 0;
+}
+.dict-list .dict-item
+{
+  width: 80%;
+  background-color: var(--color-surface);
+  padding: 20px;
+  border-radius: 0.5em;
+}
+.dict-list .dict-item h2 
+{
+  color: var(--color-text);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.dict-list .dict-item h2 span 
+{
+  color: var(--color-success);
+  background-color: var(--color-bg);
+  padding: 5px 10px;
+  border-radius: 0.5em;
+  font-size: 18px;
+}
+.dict-list .dict-item p 
+{
+  color: var(--color-muted);
+  font-size: 18px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: first;
+  gap: 10px;
+}
+.dict-list .dict-item p span 
+{
+  color: var(--color-primary);
+  font-weight: bold;
+  font-size: 20px;
+  /* background-color: var(--color-bg); */
+  display: inline-block;
 }

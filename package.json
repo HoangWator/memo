@@ -16,9 +16,11 @@
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
     "@fortawesome/react-fontawesome": "^0.2.2",
     "@google/genai": "^1.4.0",
+    "@tailwindcss/vite": "^4.1.12",
     "dotenv": "^16.5.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
+    "tailwindcss": "^4.1.12",
     "use-sound": "^5.0.0"
   },
   "devDependencies": {
