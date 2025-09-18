@@ -273,9 +273,7 @@ function App() {
           <ul>
             <li className={pageIndex === 0 ? 'clicked' : ''} onClick={() => setPageIndex(0)}><FontAwesomeIcon icon={faBookOpen} className='icon'/><span>Dictionary</span></li>
             <li className={pageIndex === 1 ? 'clicked' : ''} onClick={() => setPageIndex(1)}><FontAwesomeIcon icon={faFolder} className='icon' /><span>Vocabulary</span></li>
-            <li className={pageIndex === 2 ? 'clicked' : ''} onClick={() => setPageIndex(2)}><FontAwesomeIcon icon={faDumbbell} className='icon' /><span>Review</span></li>
             <li className={pageIndex === 3 ? 'clicked' : ''} onClick={() => setPageIndex(3)}><FontAwesomeIcon icon={faTrophy} className='icon' /><span>Rank</span></li>
-            <li className={pageIndex === 4 ? 'clicked' : ''} onClick={() => setPageIndex(4)}><FontAwesomeIcon icon={faChartSimple} className='icon' /><span>Progress</span></li>
           </ul>
         </div>
         {
@@ -284,26 +282,22 @@ function App() {
               <div className="sidebar" onClick={e => e.stopPropagation()}>
                 <div className="logo">
                   <button className='mobile-sidebar-toggle'onClick={() => setShowMobileSidebar(false)}><FontAwesomeIcon icon={faBars} /></button>
-                  <h1>Memo</h1>
+                  {/* <h1>Memo</h1> */}
                 </div>
 
                 <ul>
                   <li className={pageIndex === 0 ? 'clicked' : ''} onClick={() => {
                     setShowMobileSidebar(false)
                     setPageIndex(0)
-                  }}><FontAwesomeIcon icon={faFolder} className='icon' /><span>Vocabulary</span></li>
+                  }}><FontAwesomeIcon icon={faBookOpen} className='icon' /><span>Dictionary</span></li>
                   <li className={pageIndex === 1 ? 'clicked' : ''} onClick={() => {
                     setShowMobileSidebar(false)
                     setPageIndex(1)
-                  }}><FontAwesomeIcon icon={faDumbbell} className='icon' /><span>Practice</span></li>
+                  }}><FontAwesomeIcon icon={faFolder} className='icon' /><span>Vocabulary</span></li>
                   <li className={pageIndex === 2 ? 'clicked' : ''} onClick={() => {
                     setShowMobileSidebar(false)
                     setPageIndex(2)
                   }}><FontAwesomeIcon icon={faTrophy} className='icon' /><span>Rank</span></li>
-                  <li className={pageIndex === 3 ? 'clicked' : ''} onClick={() => {
-                    setShowMobileSidebar(false)
-                    setPageIndex(3)
-                  }}><FontAwesomeIcon icon={faChartSimple} className='icon' /><span>Progress</span></li>
                 </ul>
               </div>
             </div>
@@ -314,7 +308,6 @@ function App() {
           <div className="header">
             <div className="logo">
               <button className='mobile-sidebar-toggle'onClick={() => setShowMobileSidebar(true)}><FontAwesomeIcon icon={faBars} /></button>
-              <h1>Memo</h1>
             </div>
             <div className="account-section">
               <button onClick={() => {

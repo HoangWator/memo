@@ -53,6 +53,7 @@ export default function ListeningSection({listeningWords, onClose}) {
               else {
                 setListeningCardIndex(0)
                 setDoneQuestions(0);
+                console.log(redoWords);
                 onClose()
               }
               

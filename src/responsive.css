@@ -393,4 +393,10 @@
     box-sizing: border-box;
     scroll-padding-bottom: 60px;
   }
+  .search-form {
+    width: 100%;
+  }
+  .dict-container {
+    width:  100%;
+  }
 }

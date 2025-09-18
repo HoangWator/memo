@@ -1,0 +1,160 @@
+.container {
+  overflow: auto;
+}
+
+.dict-container {
+  padding-top: 30vh;
+  height: 100vh;
+  max-width: 48rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.search-section {
+  width: 70%;
+}
+
+.search-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 1.25rem;
+  text-align: center;
+  color: var(--color-primary)
+}
+
+.search-form {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.search-input {
+  flex: 1;
+  padding: 5px 20px;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  background-color: var(--color-surface);
+  outline: none;
+  border: none;
+  color: var(--color-text)
+}
+
+
+.btn {
+  padding: 0.5rem 1rem;
+  background-color: #3b82f6;
+  color: white;
+  border-radius: 0.5rem;
+}
+
+.btn:hover {
+  background-color: #2563eb;
+}
+
+.page-content {
+  margin-top: 20px;
+}
+
+.dict-item {
+  color: #6b7280;
+  width: 83.333333%;
+  padding: 1rem;
+}
+
+.word-title {
+  font-size: 2.25rem;
+  color: var(--color-text);
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.phonetic-text {
+  color: #4b5563;
+  font-style: italic;
+}
+
+.nav-buttons {
+  display: flex;
+  gap: 0.625rem;
+  margin-top: 1.25rem;
+}
+
+.content-section {
+  padding: 5rem 0;
+}
+
+.meaning-container {
+  display: flex;
+  gap: 0.625rem;
+  border-bottom: 1px solid var(--color-muted);
+  padding-bottom: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.meaning-number {
+  font-size: 1.125rem;
+  font-weight: bold;
+  color: #3b82f6;
+  width: 2rem;
+}
+
+.meaning-content {
+  flex: 1;
+}
+
+.meaning-def {
+  color: var(--color-text);
+}
+
+.part-of-speech {
+  padding: 5px;
+  border-radius: 0.25em;
+  background-color: var(--color-surface);
+}
+
+.part-of-speech.noun {
+  color: var(--color-primary);
+}
+.part-of-speech.verb {
+  color: var(--color-success)
+}
+.part-of-speech.adjective {
+  color: var(--color-pending)
+}
+.part-of-speech.adverb {
+  color: var(--color-secondary)
+}
+
+.example-list {
+  margin-left: 1rem;
+  color: #4b5563;
+  font-style: italic;
+}
+
+.tag-container {
+  display: flex;
+  gap: 0.375rem;
+  flex-wrap: wrap;
+}
+
+.tag {
+  background-color: var(--color-surface);
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+}
+
+.section-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+.word-family-list {
+  list-style-type: disc;
+  padding-left: 1.25rem;
+}
+
+.word-family-item {
+  margin-bottom: 0.25rem;
+}

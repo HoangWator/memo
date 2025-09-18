@@ -195,7 +195,10 @@ export async function getWordData(word) {
 
 export async function dictEngine(word) {
   const prompt = `
-      Imagine you are Oxford dictionary, tell me all infomations of '${word}' including partOfSpeech, phonetics, meanings, examples for each meanings, idioms (if possible), synonyms, antonyms and word family. Respond in json. Make sure the json is correct and can be parsed.
+      Imagine you are Oxford dictionary, 
+      if "${word}" is not available, return "unavailable". Return like this:
+      "unavailable"
+      If "${word}" is available, tell me all infomations of '${word}' including partOfSpeech, phonetics, meanings, examples for each meanings, idioms (if possible), synonyms, antonyms and word family. Respond in json. Make sure the json is correct and can be parsed.
       With "work", you should return in JSON like this:
       {
         "word": "work",
