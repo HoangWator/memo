@@ -5,10 +5,10 @@ export default function RenameFolder({onCloseRenameFolderSection, userID, curren
   const [newFolderName, setNewFolderName] = useState('');
 
   return (
-    <div className="rename-folder-section" onClick={onCloseRenameFolderSection}>
-      <div className="rename-folder" onClick={e => e.stopPropagation()}>
-        <h3>Rename folder</h3>
-        <input type="text" placeholder='New folder name...'
+    <div className="fixed top-0 left-0 w-full h-screen bg-black/50 z-10 flex justify-center items-center" onClick={onCloseRenameFolderSection}>
+      <div className="bg-bg flex flex-col items-center p-5 rounded-lg" onClick={e => e.stopPropagation()}>
+        <h3 className='text-2xl text-secondary-text mt-2.5 mb-2.5'>Rename folder</h3>
+        <input type="text" placeholder='New folder name...' className='input-field'
           onChange={(e) => setNewFolderName(e.target.value)}
         />
         <button onClick={() => {
@@ -30,7 +30,9 @@ export default function RenameFolder({onCloseRenameFolderSection, userID, curren
               onCloseWordSection()
             )
           }
-        }}>Rename</button>
+        }}
+          className='click-btn mt-2.5'
+        >Rename</button>
       </div>
     </div>
   )

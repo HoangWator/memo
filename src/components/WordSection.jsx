@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useEffect } from 'react';
 import { useRef } from 'react';
-import { faPlus,faPen,faBars,faArrowLeft,faArrowRight,faArrowDown,faArrowUp,faTrash,faXmark,faMagnifyingGlass,faVolumeHigh,faFolder,faDumbbell,faTrophy,faChartSimple,faEllipsis,faPenToSquare,faX,faArrowRightFromBracket,faArrowsLeftRight,faChevronRight } from '@fortawesome/free-solid-svg-icons'
+import { faPlus,faLightbulb,faPen,faBars,faArrowLeft,faArrowRight,faArrowDown,faArrowUp,faTrash,faXmark,faMagnifyingGlass,faVolumeHigh,faFolder,faDumbbell,faTrophy,faChartSimple,faEllipsis,faPenToSquare,faX,faArrowRightFromBracket,faArrowsLeftRight,faChevronRight } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import ProgressBar from './ProgressBar'
 import Loader from './Loader'
@@ -51,8 +51,6 @@ export default function WordSection({onClose, currentFolder, userID}) {
         })
         if (isReviewDay) {
           wordsToReview.push(word)
-
-
         }
       }
     })
@@ -204,12 +202,7 @@ export default function WordSection({onClose, currentFolder, userID}) {
   const [loader, setLoader] = useState(false)
 
   const generateFilling = () => {
-    if (words.length >= 4) {
-      setShowFilling(true)
-    }
-    else {
-      alert("Please enter at least 4 words!")
-    }
+    setShowFilling(true)
   }
   
   const quitFilling = () => {
@@ -264,7 +257,7 @@ export default function WordSection({onClose, currentFolder, userID}) {
       meaningCln = 'other'
     }
     return (
-      <h3>{word.name.toLowerCase()}<span className={meaningCln}>{word.type}</span></h3>
+      <h3 className='text-primary-text'>{word.name.toLowerCase()}<span className={'ml-2.5 ' + meaningCln}>{word.type}</span></h3>
     )
   }
 
@@ -275,7 +268,7 @@ export default function WordSection({onClose, currentFolder, userID}) {
 
 
   return (
-    <div className="word-section" onClick={() => {
+    <div className="fixed top-0 bottom-0 left-0 right-0 bg-bg" onClick={() => {
       if (showRemindSuggestion) {
         setShowRemindSuggestion(false)
       }
@@ -299,23 +292,23 @@ export default function WordSection({onClose, currentFolder, userID}) {
           userID={userID}
         />
       )}
-      <div className="word-section-header">
-        <button onClick={onClose} className='quitSectionBtn'><FontAwesomeIcon icon={faArrowLeft} /></button>
-        <h2>{currentFolder}</h2>
+      <div className="p-2.5 flex items-center gap-2.5">
+        <button onClick={onClose} className='quit-btn'><FontAwesomeIcon icon={faArrowLeft} /></button>
+        <h2 className='text-xl text-secondary-text'>{currentFolder}</h2>
       </div>
-      <div className="word-section-body">
+      <div className="word-section-body flex">
 
-        <div className="word-section-left">
-          <button className='word-list-btn' onClick={() => setShowWordList(true)}>
+        <div className="w-1/2 p-2.5">
+          {/* <button className='word-list-btn' onClick={() => setShowWordList(true)}>
             My words 
 
             <div className="word-count">
               {words.length}
               <FontAwesomeIcon icon={faChevronRight}/>
             </div>
-          </button>
-          <input 
-            className='pc'
+          </button> */}
+          {/* <input 
+            className='input-field w-full mb-2.5'
             type="text"
             placeholder='Enter word'
             value={word}
@@ -336,9 +329,9 @@ export default function WordSection({onClose, currentFolder, userID}) {
               }
             }}
           />
-          <div className="meaning-section">
+          <div className="meaning-section relative">
             <input 
-              className='pc'
+              className='input-field w-full mb-2.5'
               type="text"
               placeholder='Enter meaning'
               value={meaning}
@@ -389,8 +382,8 @@ export default function WordSection({onClose, currentFolder, userID}) {
               }}
             />
             {showRemindSuggestion && (
-              <div className="remind-suggestion">
-                <p>Type "/" to suggest meaning</p>
+              <div className="remind-suggestion absolute top-14 right-0 bg-primary p-2.5 rounded-lg">
+                <p className='text-primary-text flex items-center gap-2.5'><FontAwesomeIcon icon={faLightbulb} className='text-secondary' />Type "/" to suggest meaning</p>
               </div>
             )}
             {meaningListLoader && (
@@ -399,7 +392,7 @@ export default function WordSection({onClose, currentFolder, userID}) {
               </div>
             )}
             {showMeaningList && meaningList.length > 0 && (
-              <div className="meaning-list-section">
+              <div className="meaning-list-section p-2.5 bg-secondary-surface rounded-lg absolute top-13 left-0 right-0 z-10 shadow-lg">
                 <div className="meaning-list">
                   {
                     meaningList.map((meaning, index) => {
@@ -442,13 +435,20 @@ export default function WordSection({onClose, currentFolder, userID}) {
                 </div>
               </div>
             )}
-          </div>
+          </div> */}
 
-          <button className='add-word-btn pc' onClick={addWord}>Add</button>
-
-          <div className="learning-modes">
-            <button className='learnBtn' onClick={() => learnBtn(words)}>
-              <img src="https://cdn-icons-png.freepik.com/512/9100/9100957.png" alt="" />
+          {/* <button className='click-btn pr-4 pl-4' onClick={addWord}>Add</button> */}
+          <button 
+            className='click-btn mb-2.5 pr-4 pl-4 relative'
+            onClick={() => generateReview(wordsToReview)}
+          >
+            Review
+            {wordsToReview.length > 0 && <span className='absolute -top-1 -right-1 h-5 w-5 rounded-full bg-wrong text-primary-text flex items-center justify-center'>{wordsToReview.length}</span>}
+          </button>
+          <h1 className='text-xl text-primary-text'>Learning modes</h1>
+          <div className="learning-modes flex gap-2.5 mt-2.5 flex-wrap">
+            <button className='p-2.5 bg-secondary-surface cursor-pointer rounded-lg flex items-center gap-2.5 text-secondary-text' onClick={() => learnBtn(words)}>
+              <img src="https://cdn-icons-png.freepik.com/512/9100/9100957.png" alt="" className='h-10' />
               Flashcard
             </button>
 
@@ -457,32 +457,27 @@ export default function WordSection({onClose, currentFolder, userID}) {
               Matching
             </button> */}
 
-            <button onClick={() => generateFilling(words)}>
-              <img src="https://cdn-icons-png.flaticon.com/512/6559/6559624.png" alt="" />
+            <button className='p-2.5 bg-secondary-surface cursor-pointer rounded-lg flex items-center gap-2.5 text-secondary-text' onClick={() => generateFilling(words)}>
+              <img src="https://cdn-icons-png.flaticon.com/512/6559/6559624.png" alt="" className='h-10' />
               Filling
             </button>
 
-            <button onClick={() => generateListening(words)}>
-              <img src="https://cdn-icons-png.flaticon.com/512/8805/8805242.png" alt="" />
+            <button className='p-2.5 bg-secondary-surface cursor-pointer rounded-lg flex items-center gap-2.5 text-secondary-text' onClick={() => generateListening(words)}>
+              <img src="https://cdn-icons-png.flaticon.com/512/8805/8805242.png" alt="" className='h-10' />
               Listening
             </button>
           </div>
           
-          <button 
-            className='reviewBtn'
-            onClick={() => generateReview(wordsToReview)}
-          >
-            Review
-            <span className='review-count'>{wordsToReview.length > 0 && wordsToReview.length}</span>
-          </button>
+          <h1 className='text-xl text-primary-text mt-5 mb-2.5'>Settings</h1>
           
-          <button className='rename-folder-btn' onClick={() => {
+          
+          <button className='p-2.5 rounded-lg bg-secondary-surface cursor-pointer text-secondary-text block mb-2.5' onClick={() => {
             setShowRenameFolderSection(true)
-          }}><FontAwesomeIcon icon={faPen} className='icon'/> Rename folder</button>
+          }}><FontAwesomeIcon icon={faPen} className='mr-1'/> Rename folder</button>
           
-          <button className='delete-folder-btn' onClick={() => {
+          <button className='p-2.5 rounded-lg bg-secondary-surface cursor-pointer block text-wrong' onClick={() => {
             setShowDeleteValid(true)
-          }}><FontAwesomeIcon icon={faTrash} className='icon'/> Delete folder</button>
+          }}><FontAwesomeIcon icon={faTrash} className='mr-1'/> Delete folder</button>
         </div>
         
         {showWordSectionLeft && (
@@ -663,7 +658,7 @@ export default function WordSection({onClose, currentFolder, userID}) {
                           </li>
                         )
                     ) : (
-                      <p className='noWords'>Nothing here!</p>
+                      <p className='noWords mr-auto ml-auto text-secondary-text'>Nothing here!</p>
                     )
                   }
                 </ul>
@@ -672,41 +667,45 @@ export default function WordSection({onClose, currentFolder, userID}) {
           </div>
         )}
         
-        <div className={word.length > 0 ? "word-section-right" : "word-section-right empty"}>
+        <div className="word-section-right w-1/2 p-2.5 flex flex-col">
           
-          <div className="searchBox-section">
+          <div className="searchBox-section relative">
             <input 
               type="text" 
-              className="searchBox" 
+              className="input-field w-full pl-10 mb-2.5" 
               placeholder='Find your word...'
               onChange={searchWord}/>
-            <FontAwesomeIcon icon={faMagnifyingGlass} className='searchIcon'/>
+            <FontAwesomeIcon icon={faMagnifyingGlass} className='absolute left-4 top-3.5 text-secondary-text'/>
           </div>
-          <ul>
-            {
-              words.length > 0 ? (
-                  words.map((word, index) => 
-                    <li key={index}>
-                      <MeaningDisplay word={word}/>
-                      <p>{word.mean.toLowerCase()}</p>
+          <div className="flex flex-1 overflow-auto max-h-[75vh]">
+            <ul className='flex flex-col items-center gap-2.5 w-full'>
+              {
+                words.length > 0 ? (
+                    words.map((word, index) => 
+                      <li key={index} className='p-2.5 bg-secondary-surface rounded-lg flex items-center justify-between w-full'>
+                        <div>
+                          <MeaningDisplay word={word}/>
+                          <p className='text-secondary-text'>{word.mean.toLowerCase()}</p>
+                        </div>
 
-                      <button 
-                        className='deleteBtn'
-                        onClick={() => {
-                          const newWords = words.filter((words, i) => i !== index)
-                          setAllWords(newWords)
-                          setWords(newWords)
-                          deleteWordDB(userID, currentFolder, word)
-                        }}>
-                          <FontAwesomeIcon icon={faTrash} />
-                        </button>
-                    </li>
-                  )
-              ) : (
-                <p className='noWords'>Nothing here!</p>
-              )
-            }
-          </ul>
+                        <button 
+                          className='text-wrong p-2.5 cursor-pointer rounded-lg hover:bg-bg-hover'
+                          onClick={() => {
+                            const newWords = words.filter((words, i) => i !== index)
+                            setAllWords(newWords)
+                            setWords(newWords)
+                            deleteWordDB(userID, currentFolder, word)
+                          }}>
+                            <FontAwesomeIcon icon={faTrash} />
+                          </button>
+                      </li>
+                    )
+                ) : (
+                  <p className='mt-10 text-secondary-text mr-auto ml-auto'>Nothing here!</p>
+                )
+              }
+            </ul>
+          </div>
         </div>
       </div>
 

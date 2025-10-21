@@ -15,47 +15,35 @@ export default function Flashcard({data, onClose}) {
       setShowDef(!showDef)
     }
     return (
-      <div className="card" onClick={handleDef}>
-        {showDef ? <p>{word.mean}</p> : <h1>{`${word.name} (${word.type})`}</h1>}
-        <span><FontAwesomeIcon icon={faArrowsLeftRight} /></span>
+      <div className="relative w-90 h-90 p-5 bg-primary-surface rounded-lg text-primary-text flex items-center justify-center select-none cursor-pointer mt-2.5 mb-2.5" onClick={handleDef}>
+        {showDef ? <p className='text-center'>{word.mean}</p> : <h1 className='text-3xl'>{`${word.name} (${word.type})`}</h1>}
+        <span className='absolute bottom-5 right-5'><FontAwesomeIcon icon={faArrowsLeftRight} /></span>
       </div>
     )
   }
 
   return (
-    <div className="flashcard-section">
-      <button onClick={onClose} className='quitLearnSectionBtn quitSectionBtn'><FontAwesomeIcon icon={faArrowLeft} /></button>
+    <div className="fixed top-0 bottom-0 left-0 right-0 bg-bg flex flex-col items-center justify-center p-4 z-50">
+      <button onClick={onClose} className='quit-btn absolute top-2.5 left-2.5'><FontAwesomeIcon icon={faArrowLeft} /></button>
 
-      <div className="card-list">
-        <p className="card-number">
+      <div className="card-list flex flex-col items-center">
+        <p className="text-secondary-text">
           {indexLearn + 1} / {data.length}
         </p>
 
         <Card word={data[indexLearn]} />
 
         <div className="nav-btns">
-          {indexLearn > 0 ? (
-            <button className="prev-btn" onClick={() => {
-              if (indexLearn > 0) {
-                setIndexLearn(indexLearn - 1)
-              }
-            }}><FontAwesomeIcon icon={faArrowLeft} /></button>
-          ) : (
-            <button className="disabled prev-btn"><FontAwesomeIcon icon={faArrowLeft} /></button>
-          )
-          }
-
-          {indexLearn < data.length - 1 ? (
-            <button className="next-btn" onClick={() => {
-              if (indexLearn < data.length - 1) {
-                setIndexLearn(indexLearn + 1)
-              }
-            }}><FontAwesomeIcon icon={faArrowRight} /></button>
-          )
-          : (
-            <button className="disabled next-btn"><FontAwesomeIcon icon={faArrowRight} /></button>
-          )
-          }
+          <button className="p-2.5 bg-primary-surface rounded-lg cursor-pointer text-secondary-text mr-2.5 hover:bg-secondary-surface" onClick={() => {
+            if (indexLearn > 0) {
+              setIndexLearn(indexLearn - 1)
+            }
+          }}><FontAwesomeIcon icon={faArrowLeft} /></button>
+          <button className="p-2.5 bg-primary-surface rounded-lg cursor-pointer text-secondary-text hover:bg-secondary-surface" onClick={() => {
+            if (indexLearn < data.length - 1) {
+              setIndexLearn(indexLearn + 1)
+            }
+          }}><FontAwesomeIcon icon={faArrowRight} /></button>
         </div>
       </div>
     </div>

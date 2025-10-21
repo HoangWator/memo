@@ -4,6 +4,7 @@ import { faPlus,faBars,faArrowLeft,faArrowRight,faArrowDown,faArrowUp,faTrash,fa
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import ProgressBar from './ProgressBar';
 import Flashcard from './Flashcard';
+import FillingSection from './FillingSection';
 
 export default function ReviewSection({data, onClose}) {
   console.log(data)
@@ -14,7 +15,8 @@ export default function ReviewSection({data, onClose}) {
         <h2>Review</h2>
       </div>
       <div className="review-content">
-        <Flashcard data={data} onClose={onClose}/>
+        {/* <Flashcard data={data} onClose={onClose}/> */}
+        <FillingSection data={data} onClose={onClose}/>
       </div>
     </div>
   )

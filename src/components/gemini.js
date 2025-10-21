@@ -2,42 +2,42 @@ import { GoogleGenAI } from "@google/genai";
 
 const ai = new GoogleGenAI({ apiKey:  import.meta.env.VITE_API_KEY});
 
-export async function geneAI(words) {
-    let newWords = words.join(', ')
+export async function geneAI(wordDetails, words) {
+    // input: array of words
+    // Eg: ['economics (noun: ...)', 'biology (noun: ...)']
+    let newWords = wordDetails.join(', ')
+    const instructions = `
+    You are an expert in creating fill-in-the-blank questions for language learning.
+    Create a fill-in-the-blank question for each word provided. It should be designed to help learners understand the usage and meaning of the word in round brackets.
+    Each question should have one blank space represented square brackets ([]).
+    Return in JSON format like this:
+    {
+        question: "The study of how societies use resources to produce goods and services is called [economics].",
+        options: ["economics", "biology", "chemistry", "physics"],
+        answer: "economics"
+    }
+    Make sure each question is clear and concise, focusing on the practical application of the word.
+    Provide a variety of sentence structures to enhance learning.
+    `
     const prompt = `
-        Create 3 fill-in-the-blank questions to learn how to use word '${newWords}'. 
-        No '*', '_', '[', and ']' contained (important). 
-        Each questions have at least 7 words. 
-        Each words, I want you to return like this:
-        [ordinal number]. [word that need to learn]
-        -[Question 1]
-        -[Question 2]
-        -[Question 3]
-        For example, I want to learn 'exhaustive' and 'biology'. You should return like this:
-        1. Economics
-        -The study of [economics] involves analyzing how societies allocate scarce resources to satisfy the unlimited needs and wants of their citizens within various market structures.
-        -Understanding [economics] is crucial for governments to make informed decisions about taxation, public spending, and the regulation of financial markets across international borders.
-        -Many political debates center around different perspectives on [economics], with each side proposing policies intended to improve economic growth and social welfare.
-        2. Biology
-        -Modern [biology] integrates principles from chemistry and physics to understand the complex biochemical processes that drive life at the cellular level for all living organisms.
-        -Conservation [biology] aims to protect endangered species and their habitats by applying ecological and genetic principles to manage and restore ecosystems to their natural state.
-        -Evolutionary [biology] explains the diversity of life on Earth through the process of natural selection, which leads to adaptation and the formation of new species over extended periods of time.
-        Avoid returning like this: 
-        1. Economics
-        -The study of _____ [economics] involves analyzing how societies allocate scarce resources to satisfy the unlimited needs and wants of their citizens within various market structures.
-        -Understanding _____ [economics] is crucial for governments to make informed decisions about taxation, public spending, and the regulation of financial markets across international borders.
-        -Many political debates center around different perspectives on _____ [economics], with each side proposing policies intended to improve economic growth and social welfare.
-        2. Biology
-        -Modern _____ [biology] integrates principles from chemistry and physics to understand the complex biochemical processes that drive life at the cellular level for all living organisms.
-        -Conservation _____ [biology] aims to protect endangered species and their habitats by applying ecological and genetic principles to manage and restore ecosystems to their natural state.
-        -Evolutionary _____ [biology] explains the diversity of life on Earth through the process of natural selection, which leads to adaptation and the formation of new species over extended periods of time.
+        Create fill-in-the-blank questions to learn how to use these words: ${newWords}
     `;
     const response = await ai.models.generateContent({
         model: "gemini-2.0-flash",
         contents: prompt,
+        config: {
+            systemInstruction: instructions,
+        }
     });
-    return getContents(response.text, words);
+    return processJSON(response.text);
     // return 
+}
+
+function processJSON(text) {
+    let startIndex = text.indexOf('[');
+    let endIndex = text.lastIndexOf(']') + 1;
+    let jsonString = text.slice(startIndex, endIndex);
+    return JSON.parse(jsonString);
 }
 
 function getContents(texts, words) {
@@ -194,11 +194,11 @@ export async function getWordData(word) {
 }
 
 export async function dictEngine(word) {
-  const prompt = `
-      Imagine you are Oxford dictionary, 
-      if "${word}" is not available, return "unavailable". Return like this:
+  const instructions = `
+      You are Oxford dictionary.
+      if word is not available, return like this:
       "unavailable"
-      If "${word}" is available, tell me all infomations of '${word}' including partOfSpeech, phonetics, meanings, examples for each meanings, idioms (if possible), synonyms, antonyms and word family. Respond in json. Make sure the json is correct and can be parsed.
+      If word is available, tell me all infomations of that word including partOfSpeech, phonetics, meanings, examples for each meanings, idioms (if possible), synonyms, antonyms and word family. Respond in json. Make sure the json is correct and can be parsed.
       With "work", you should return in JSON like this:
       {
         "word": "work",
@@ -406,9 +406,13 @@ export async function dictEngine(word) {
         }
         }
   `;
+  const prompt = `Give me all informations of '${word}'`
   const response = await ai.models.generateContent({
       model: "gemini-2.0-flash",
       contents: prompt,
+      config: {
+        systemInstruction: instructions
+      }
   });
   return response.text;
 }

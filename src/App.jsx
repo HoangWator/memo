@@ -7,7 +7,7 @@ import './App.css'
 import './responsive.css'
 import ReactDOM from 'react-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPlus,faBookOpen,faBars,faArrowLeft,faArrowRight,faArrowDown,faArrowUp,faTrash,faXmark,faMagnifyingGlass,faVolumeHigh,faFolder,faDumbbell,faTrophy,faChartSimple,faEllipsis,faPenToSquare,faX,faArrowRightFromBracket,faArrowsLeftRight } from '@fortawesome/free-solid-svg-icons'
+import { faPlus,faBookOpen,faBars,faGear,faArrowLeft,faArrowRight,faArrowDown,faArrowUp,faTrash,faXmark,faMagnifyingGlass,faVolumeHigh,faFolder,faDumbbell,faTrophy,faChartSimple,faEllipsis,faPenToSquare,faX,faArrowRightFromBracket,faArrowsLeftRight } from '@fortawesome/free-solid-svg-icons'
 import useSound from 'use-sound';
 import { getWordData } from './components/gemini.js'
 import { signInWithPopup,signOut  } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
@@ -22,6 +22,7 @@ import { addFolderDB, deleteFolderDB, renameFolderDB } from './components/handle
 import WordSection from './components/WordSection.jsx'
 import Loader from './components/Loader.jsx'
 import { DictionarySection } from './components/DictionarySection.jsx'
+import { SettingPage } from './components/SettingPage.jsx';
 
 
 
@@ -248,7 +249,7 @@ function App() {
 
     if (wordsToReview.length > 0) {
       return (
-        <span>{wordsToReview.length}</span>
+        <p className='h-6 text-base text-secondary-text  inline-flex rounded-lg items-center gap-1'>Need review: <span className='font-bold text-wrong'>{wordsToReview.length} words</span></p>
       )
     }
     else {
@@ -262,19 +263,72 @@ function App() {
 
   const [loader, setLoader] = useState(false)
 
+  const [showSettingPage, setShowSettingPage] = useState(false)
+
+  const [expandSidebar, setExpandSidebar] = useState(true)
+
   return (
     <div className="main">
       {loader && <Loader />}
       
-      <div className="content">
-        <div className="sidebar pc">
-          <h1 style={{'userSelect': 'none'}}>Memo</h1>
+      <div className="w-full h-screen flex">
+        <div className={"h-screen bg-primary-surface flex flex-col justify-between select-none"} style={{width: expandSidebar ? '20%' : '80px'}}>
+          <div className={'pl-2.5 pr-2.5 ' +  (expandSidebar ? '' : 'flex flex-col items-center')}>
+            <div 
+              className='mt-2.5 h-9 w-9 cursor-pointer rounded-full flex items-center justify-center hover:bg-secondary-surface'
+              onClick={() => setExpandSidebar(!expandSidebar)}  
+            >
+              <FontAwesomeIcon icon={faBars} className='text-primary' />
+            </div>
 
-          <ul>
-            <li className={pageIndex === 0 ? 'clicked' : ''} onClick={() => setPageIndex(0)}><FontAwesomeIcon icon={faBookOpen} className='icon'/><span>Dictionary</span></li>
-            <li className={pageIndex === 1 ? 'clicked' : ''} onClick={() => setPageIndex(1)}><FontAwesomeIcon icon={faFolder} className='icon' /><span>Vocabulary</span></li>
-            <li className={pageIndex === 3 ? 'clicked' : ''} onClick={() => setPageIndex(3)}><FontAwesomeIcon icon={faTrophy} className='icon' /><span>Rank</span></li>
-          </ul>
+            <ul className='mt-2.5'>
+              <li 
+                className={'p-2.5 rounded-lg cursor-pointer mb-1 flex gap-2.5 items-center hover:bg-secondary-surface ' + (pageIndex === 0 ? 'text-primary bg-secondary-surface border-l-4 border-primary' : 'text-secondary-text hover:text-primary-text') + (expandSidebar ? '' : ' justify-center')} 
+                onClick={() => setPageIndex(0)}
+              >
+                <FontAwesomeIcon icon={faBookOpen} className='pt-[5px] pb-[5px]'/>{expandSidebar && <span>Dictionary</span> }
+              </li>
+              <li 
+                className={'p-2.5 rounded-lg cursor-pointer mb-1 flex gap-2.5 items-center hover:bg-secondary-surface ' + (pageIndex === 1 ? 'text-primary bg-secondary-surface border-l-4 border-primary' : 'text-secondary-text hover:text-primary-text') + (expandSidebar ? '' : ' justify-center')} 
+                onClick={() => setPageIndex(1)}
+              >
+                <FontAwesomeIcon icon={faFolder} className='pt-[5px] pb-[5px]' />{expandSidebar && <span>Vocabulary</span>}
+              </li>
+              <li 
+                className={'p-2.5 rounded-lg cursor-pointer mb-1 flex gap-2.5 items-center hover:bg-secondary-surface ' + (pageIndex === 3 ? 'text-primary bg-secondary-surface border-l-4 border-primary' : 'text-secondary-text hover:text-primary-text') + (expandSidebar ? '' : ' justify-center')} 
+                onClick={() => setPageIndex(3)}
+              >
+                <FontAwesomeIcon icon={faTrophy} className='pt-[5px] pb-[5px]' />{expandSidebar && <span>Rank</span>}
+              </li>
+            </ul>
+          </div>
+
+          <div className='m-2.5 border-t-1 border-t-muted'>
+            <button 
+              className='flex items-center justify-start gap-2.5 text-secondary-text hover:bg-secondary-surface rounded-lg w-full p-2 mt-2.5 cursor-pointer'
+              onClick={() => {
+                if (userID == '') {
+                  setShowLoginSection(true)
+                }
+                else {
+                  setShowLogoutBtn(!showLogoutBtn)
+                  setShowSettingPage(true)
+                }
+              }}>
+              <img 
+                src={avatarUrl || 'https://sbcf.fr/wp-content/uploads/2018/03/sbcf-default-avatar.png'}
+                alt=""
+                style={{ width: 32, height: 32, borderRadius: "50%" }} 
+              />
+              {expandSidebar && (
+                userID ? userName : 'Sign in'
+              )}
+            </button>
+            {/* <button 
+              className='bg-secondary-surface rounded-full text-primary-text cursor-pointer h-10 w-10 flex items-center justify-center'
+              onClick={() => setShowSettingPage(true)}  
+            ><FontAwesomeIcon icon={faGear} /></button> */}
+          </div>
         </div>
         {
           showMobileSidebar && (
@@ -304,27 +358,14 @@ function App() {
           )
         }
 
-        <div className="main-content">
-          <div className="header">
+        <div className="bg-bg relative" style={{width: expandSidebar ? '80%' : 'calc(100% - 80px)'}}>
+          <div className="flex items-center justify-between absolute top-0 left-0 right-0">
             <div className="logo">
               <button className='mobile-sidebar-toggle'onClick={() => setShowMobileSidebar(true)}><FontAwesomeIcon icon={faBars} /></button>
             </div>
-            <div className="account-section">
-              <button onClick={() => {
-                if (userID == '') {
-                  setShowLoginSection(true)
-                }
-                else {
-                  setShowLogoutBtn(!showLogoutBtn)
-                }
-              }}>
-                <img 
-                  src={avatarUrl || 'https://sbcf.fr/wp-content/uploads/2018/03/sbcf-default-avatar.png'}
-                  alt=""
-                  style={{ width: 32, height: 32, borderRadius: "50%" }} 
-                />
-                {userID ? userName : 'Sign in'}
-              </button>
+            <div className="flex items-center gap-2.5 p-2">
+              
+              
 
               {showLogoutBtn && 
                 <button className='logoutBtn' onClick={() => {
@@ -338,64 +379,92 @@ function App() {
           </div>
           
           {pageIndex === 0 && (
-            <DictionarySection />
+            <DictionarySection folderList={allFolders} userID={userID}/>
           )}
+          {/* Folder management */}
           {pageIndex === 1 && (
-            <div className="vocabulary-section">
-              <button className='add-folder-btn' onClick={createFolder}><FontAwesomeIcon className='icon' icon={faPlus} />  <span>Create folder</span></button>
-              {showCreateFolder && (
-                <div className="create-folder-section" onClick={() => setShowCreateFolder(false)}>
-                    <div className="create-folder-field" onClick={e => e.stopPropagation()}>
-                      <button onClick={() => setShowCreateFolder(false)} className='close-create-folder-btn'><FontAwesomeIcon icon={faX} /></button>
-                      <h3>Create a folder</h3>
-                      <input 
-                        type="text" 
-                        placeholder='Enter folder name' 
-                        onChange={e => setFolderName(e.target.value)}
-                        onKeyDown={e => {
-                          if (e.key === 'Enter') {
-                            addFolder();
-                          }
-                        }}
-                        value={folderName}
-                      />
-                      <button onClick={addFolder}>Add folder</button>
-                    </div>
+            <div className="w-full h-screen pl-2.5 pr-2.5 overflow-auto">
+              <h1 className='text-2xl text-primary-text mt-2.5'>Folder overview</h1>
+              <p className='text-base text-secondary-text'>Mange your words here.</p>
+              <div className='flex gap-2.5 pb-2.5 border-b-1 border-b-muted mb-2.5'>
+                <div className='bg-secondary-surface flex flex-col items-center gap-2.5 p-4 rounded-lg mt-2.5 mb-2.5 border-l-4 border-l-primary'>
+                  <p className='text-secondary-text'>Total Folders</p>
+                  <h2 className='text-primary-text text-3xl font-bold'>{allFolders.length}</h2>
                 </div>
-              )}
-              <div className="search-folder">
-                <div className="search-field">
-                  <FontAwesomeIcon icon={faMagnifyingGlass} className='search-icon' />
-                  <input 
-                    type="text" 
-                    placeholder='Search folder...'
-                    onChange={e => {
-                      const searchValue = e.target.value.toLowerCase();
-                      if (searchValue.length > 0) {
-                        const filteredFolders = allFolders.filter(folder =>
-                          folder.toLowerCase().includes(searchValue)
-                        );
-                        setFolders(filteredFolders);
-                      } else {
-                        setFolders(allFolders);
-                      }
-                    }}
-                  />
+                <div className='bg-secondary-surface flex flex-col items-center gap-2.5 p-4 rounded-lg mt-2.5 mb-2.5 border-l-4 border-l-wrong'>
+                  <p className='text-secondary-text'>Need to Review</p>
+                  <h2 className='text-primary-text text-3xl font-bold'>6</h2>
                 </div>
               </div>
-              <div className="folder-list">
+              
+              {showCreateFolder && (
+                <div className="fixed top-0 bottom-0 right-0 left-0 bg-black/50 flex items-center justify-center z-1" onClick={() => setShowCreateFolder(false)}>
+                  <div className="w-100 bg-secondary-surface p-2.5 rounded-lg relative" onClick={e => e.stopPropagation()}>
+                    <button onClick={() => setShowCreateFolder(false)} className='quit-btn absolute right-2.5 top-2.5'><FontAwesomeIcon icon={faX} /></button>
+                    <h3 className='text-2xl text-primary-text text-center mt-4 mb-4'>Create a folder</h3>
+                    <input 
+                      type="text" 
+                      placeholder='Enter folder name...' 
+                      onChange={e => setFolderName(e.target.value)}
+                      onKeyDown={e => {
+                        if (e.key === 'Enter') {
+                          addFolder();
+                        }
+                      }}
+                      className='mt-2.5 w-full pt-2.5 pb-2.5 pl-5 pr-5 outline-none border-none bg-bg text-primary-text text-base rounded-full'
+                      value={folderName}
+                    />
+                    <div className='text-center'>
+                      <button 
+                        onClick={addFolder}
+                        className='mt-2.5 click-btn'
+                      >Add folder</button>
+                    </div>
+                  </div>
+                </div>
+              )}
+              <div className='flex items-center gap-2.5'>
+                <div className="search-folder">
+                  <div className="search-field relative">
+                    <FontAwesomeIcon icon={faMagnifyingGlass} className='absolute left-3 top-3.75 text-secondary-text' />
+                    <input 
+                    className='input-field pl-9'
+                      type="text" 
+                      placeholder='Search folder...'
+                      onChange={e => {
+                        const searchValue = e.target.value.toLowerCase();
+                        if (searchValue.length > 0) {
+                          const filteredFolders = allFolders.filter(folder =>
+                            folder.toLowerCase().includes(searchValue)
+                          );
+                          setFolders(filteredFolders);
+                        } else {
+                          setFolders(allFolders);
+                        }
+                      }}
+                    />
+                  </div>
+                </div>
+                <button className='click-btn' onClick={createFolder}>
+                  <FontAwesomeIcon className='text-base' icon={faPlus} /><span> Create folder</span>
+                </button>
+
+              </div>
+              <div className="flex gap-2.5 flex-wrap mt-2.5">
                 {folders.length === 0 && (
-                  <div className="folder-list-empty">
-                    <p>No folders yet.</p>
+                  <div className="w-full pt-15">
+                    <p className='text-center text-secondary-text'>No folders yet.</p>
                   </div>
                 )}
                 {folders.map((folder, index) => (
-                  <div className="folder-item" key={index}>
-                    <div className="folder" onClick={() => openWordSection(folder)}>
+                  <div className="folder-item bg-secondary-surface p-4 rounded-lg min-w-37.5 relative cursor-pointer" key={index}>
+                    <div className="" onClick={() => openWordSection(folder)}>
+                      <div className='flex gap-2.5 items-center'>
+                        <FontAwesomeIcon icon={faFolder} className='folder-icon text-primary text-2xl' />
+                        <h2 className='text-xl text-secondary-text'>{folder}</h2>
+                      </div>
+                      <p className='text-secondary-text mt-2.5'>Total items:<span className='ml-2.5 font-bold text-primary-text'>{userData.folders[folder].length || 0} words</span></p>
                       <ReviewWordsNums folder={folder}/>
-                      <FontAwesomeIcon icon={faFolder} className='folder-icon' />
-                      <h2>{folder}</h2>
-                      <p>{userData.folders[folder].length || 0} words</p>
                       {/* <div className="more" onClick={(e) => {e.stopPropagation()}}>
                         <FontAwesomeIcon icon={faEllipsis} />
                         <div className="more-options">
@@ -410,28 +479,15 @@ function App() {
                         </div>
                       </div> */}
                     </div>
-                    
-                    
-                    
                   </div>
                 ))}
               </div>
             </div>
           )}
 
-          {pageIndex === 2 && (
-            <div className="practice-section developing-page">
-              <h2>Comming soon!</h2>
-            </div>
-          )}
           {pageIndex === 3 && (
-            <div className="rank-section developing-page">
-              <h2>Comming soon!</h2>
-            </div>
-          )}
-          {pageIndex === 4 && (
-            <div className="progress-section developing-page">
-              <h2>Comming soon!</h2>
+            <div className="w-full h-screen flex items-center justify-center">
+              <h2 className='text-secondary-text'>Comming soon!</h2>
             </div>
           )}
 
@@ -472,6 +528,7 @@ function App() {
         </div>
       )}
 
+      {showSettingPage && <SettingPage onClose={() => setShowSettingPage(false)} userAvatar={avatarUrl} userName={userName}/>}
       
     </div>
   )
