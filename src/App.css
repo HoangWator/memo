@@ -20,7 +20,7 @@
 
 @layer components {
   .input-field {
-    @apply pt-2.5 pb-2.5 pl-5 pr-5 outline-none border-none bg-secondary-surface text-primary-text text-base rounded-full
+    @apply pt-2.5 pb-2.5 pl-5 pr-5 outline-none bg-secondary-surface text-primary-text text-base rounded-full
   }
   .click-btn {
     @apply p-2.5 text-primary-text text-base bg-primary rounded-full cursor-pointer hover:bg-primary
@@ -40,7 +40,7 @@
   .adverb {
     @apply bg-bg text-secondary p-1 rounded-lg
   }
-  .other {
+  .phverb {
     @apply bg-bg text-purple p-1 rounded-lg
   }
 }

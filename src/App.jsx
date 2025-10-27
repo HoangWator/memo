@@ -393,7 +393,7 @@ function App() {
                 </div>
                 <div className='bg-secondary-surface flex flex-col items-center gap-2.5 p-4 rounded-lg mt-2.5 mb-2.5 border-l-4 border-l-wrong'>
                   <p className='text-secondary-text'>Need to Review</p>
-                  <h2 className='text-primary-text text-3xl font-bold'>6</h2>
+                  <h2 className='text-primary-text text-3xl font-bold'>__</h2>
                 </div>
               </div>
               
@@ -501,12 +501,15 @@ function App() {
       />}
 
       {showLoginSection && (
-        <div className="login-section" onClick={() => setShowLoginSection(false)}>
-          <div className="login-container"  onClick={e => e.stopPropagation()}>
-            <button className='quitLogin' onClick={() => setShowLoginSection(false)}><FontAwesomeIcon icon={faXmark} /></button>
-            <h1>Sign in</h1>
+        <div className="fixed top-0 bottom-0 right-0 left-0 bg-black/50 flex items-center justify-center" onClick={() => setShowLoginSection(false)}>
+          <div className="p-5 bg-bg rounded-lg relative"  onClick={e => e.stopPropagation()}>
+            <button className='quit-btn absolute top-2.5 right-2.5' onClick={() => setShowLoginSection(false)}><FontAwesomeIcon icon={faXmark} /></button>
+            <h1 className='text-center text-2xl mb-2.5 text-secondary-text'>Sign in</h1>
             <div className="login-options">
-              <button onClick={loginWithGoogle}><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/800px-Google_%22G%22_logo.svg.png" alt="" />Continue with Google</button>
+              <button 
+                onClick={loginWithGoogle}
+                className='flex items-center gap-2.5 bg-primary-surface p-2.5 rounded-lg w-full justify-center text-secondary-text cursor-pointer'
+              ><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/800px-Google_%22G%22_logo.svg.png" alt="" className='h-10'/>Continue with Google</button>
               {/* <button><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Facebook_Logo_%282019%29.png/500px-Facebook_Logo_%282019%29.png" alt="" />Continue with Facebook</button> */}
             </div>
           </div>

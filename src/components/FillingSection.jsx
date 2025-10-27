@@ -199,13 +199,20 @@ export default function FillingSection({onClose, data}) {
             <div className="result-display pr-10 pl-10 pt-2.5 pb-2.5 bg-primary-surface rounded-lg text-center">
               <p className='text-secondary-text'>You correct:</p>
               <h1 className='text-3xl font-bold text-primary-text mt-5 mb-5'>{Math.round(100 - wrongAnswers.length / fillingQuestions.length * 100) + '%'}</h1>
-              <button 
-                onClick={() => {
-                  setResultDisplay(false)
-                  onClose()
-                }}
-                className='click-btn'
-              >Close</button>
+              <div className='flex gap-2.5 items-center'>
+                <button 
+                  onClick={() => {
+                    setResultDisplay(false)
+                    onClose()
+                  }}
+                  className='click-btn bg-'
+                >Close</button>
+                {wrongAnswers.length > 0 &&
+                  <button className='click-btn'>
+                    Retake
+                  </button>
+                }
+              </div>
             </div>
           )
         }

@@ -253,11 +253,11 @@ export default function WordSection({onClose, currentFolder, userID}) {
     else if (word.type === 'adverb') {
       meaningCln = 'adverb'
     }
-    else {
-      meaningCln = 'other'
+    else if (word.type === 'phverb') {
+      meaningCln = 'phverb'
     }
     return (
-      <h3 className='text-primary-text'>{word.name.toLowerCase()}<span className={'ml-2.5 ' + meaningCln}>{word.type}</span></h3>
+      <h3 className='text-primary-text'>{word.name.toLowerCase()}<span className={'ml-2.5 ' + meaningCln}>{word.type === 'phverb' ? 'phrasal verb' : word.type}</span></h3>
     )
   }
 

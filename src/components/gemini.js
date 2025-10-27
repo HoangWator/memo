@@ -198,7 +198,7 @@ export async function dictEngine(word) {
       You are Oxford dictionary.
       if word is not available, return like this:
       "unavailable"
-      If word is available, tell me all infomations of that word including partOfSpeech, phonetics, meanings, examples for each meanings, idioms (if possible), synonyms, antonyms and word family. Respond in json. Make sure the json is correct and can be parsed.
+      If word is available, tell me all infomations of that word including partOfSpeech, phonetics, meanings (both english and vietnamese), examples for each meanings, idioms (if possible), synonyms, antonyms and word family. Respond in json. Make sure the json is correct and can be parsed.
       With "work", you should return in JSON like this:
       {
         "word": "work",
@@ -209,7 +209,7 @@ export async function dictEngine(word) {
         "meanings": [
             {
             "partOfSpeech": "verb",
-            "definition": "To perform labor or engage in physical or mental activity to achieve a purpose or result.",
+            "definition": "To perform labor or engage in physical or mental activity to achieve a purpose or result. (làm việc, lao động)",
             "examples": [
                 "She works as a software engineer at a tech company.",
                 "He worked tirelessly to finish the project before the deadline."
@@ -232,7 +232,7 @@ export async function dictEngine(word) {
             },
             {
             "partOfSpeech": "verb",
-            "definition": "To function or operate effectively.",
+            "definition": "To function or operate effectively. (hoạt động, vận hành)",
             "examples": [
                 "The new software doesn't work properly on my computer.",
                 "This strategy won't work in our current situation."
@@ -252,7 +252,7 @@ export async function dictEngine(word) {
             },
             {
             "partOfSpeech": "verb",
-            "definition": "To shape, form, or process a material.",
+            "definition": "To shape, form, or process a material. (chế tác, gia công)",
             "examples": [
                 "The blacksmith worked the hot iron into a horseshoe.",
                 "She worked the clay into a beautiful vase."
@@ -273,7 +273,7 @@ export async function dictEngine(word) {
             },
             {
             "partOfSpeech": "noun",
-            "definition": "Activity involving mental or physical effort done to achieve a purpose or result.",
+            "definition": "Activity involving mental or physical effort done to achieve a purpose or result. (công việc, sự lao động)",
             "examples": [
                 "Hard work is the key to success.",
                 "I have a lot of work to finish before Friday."
@@ -294,7 +294,7 @@ export async function dictEngine(word) {
             },
             {
             "partOfSpeech": "noun",
-            "definition": "A task or tasks to be undertaken; something a person or thing has to do.",
+            "definition": "A task or tasks to be undertaken; something a person or thing has to do. (công việc, nhiệm vụ)",
             "examples": [
                 "She gave me some work to do while she was away.",
                 "The repair work on the bridge will take three months."
@@ -314,7 +314,7 @@ export async function dictEngine(word) {
             },
             {
             "partOfSpeech": "noun",
-            "definition": "A place of employment.",
+            "definition": "A place of employment. ( Nơi làm việc)",
             "examples": [
                 "I'm going to work early tomorrow.",
                 "He left work at 5 PM as usual."
@@ -332,7 +332,7 @@ export async function dictEngine(word) {
             },
             {
             "partOfSpeech": "noun",
-            "definition": "Something produced or accomplished through effort, skill, or agency.",
+            "definition": "Something produced or accomplished through effort, skill, or agency. (Tác phẩm, sản phẩm)",
             "examples": [
                 "This novel is considered her greatest work.",
                 "The museum displays works by famous artists."
@@ -353,27 +353,27 @@ export async function dictEngine(word) {
         "idioms": [
             {
             "idiom": "work like a charm",
-            "meaning": "To function perfectly or have the desired effect immediately.",
+            "meaning": "To function perfectly or have the desired effect immediately. (hiệu quả tốt đẹp, thành công nhanh chóng)",
             "example": "The new marketing strategy worked like a charm, and sales doubled within a month."
             },
             {
             "idiom": "all work and no play makes Jack a dull boy",
-            "meaning": "Constant work without time for relaxation is not good for one's health or personality.",
+            "meaning": "Constant work without time for relaxation is not good for one's health or personality. (Chỉ làm việc mà không nghỉ ngơi sẽ khiến con người trở nên nhàm chán)",
             "example": "You've been studying for ten hours straight - remember, all work and no play makes Jack a dull boy."
             },
             {
             "idiom": "work your fingers to the bone",
-            "meaning": "To work extremely hard for a long time.",
+            "meaning": "To work extremely hard for a long time. (cần cù, siêng năng làm việc)",
             "example": "She worked her fingers to the bone to put her children through college."
             },
             {
             "idiom": "work out for the best",
-            "meaning": "To eventually have a good result or conclusion after a period of uncertainty.",
+            "meaning": "To eventually have a good result or conclusion after a period of uncertainty. (kết cục tốt đẹp)",
             "example": "I was worried about changing jobs, but it all worked out for the best in the end."
             },
             {
             "idiom": "have your work cut out for you",
-            "meaning": "To have a very difficult task ahead.",
+            "meaning": "To have a very difficult task ahead. (đối mặt với nhiệm vụ khó khăn)",
             "example": "With three projects due by Friday, she certainly has her work cut out for her."
             }
         ],
