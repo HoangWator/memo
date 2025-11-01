@@ -10,6 +10,10 @@ function AccountPage({userAvatar, userName}) {
       <div className='w-full flex flex-col items-center'>
         <img src={userAvatar} alt="" className='rounded-full'/>
         <h2 className='text-primary-text mt-2.5'>{userName}</h2>
+        <button className='click-btn mt-2.5 bg-secondary-surface hover:text-wrong' onClick={() => {
+          // setShowLogoutSection(true)
+          // setShowLogoutBtn(false)
+        }}>Log out<FontAwesomeIcon icon={faArrowRightFromBracket} className='ml-2.5' /></button>
       </div>
     </div>
   )

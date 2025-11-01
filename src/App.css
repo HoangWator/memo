@@ -23,7 +23,7 @@
     @apply pt-2.5 pb-2.5 pl-5 pr-5 outline-none bg-secondary-surface text-primary-text text-base rounded-full
   }
   .click-btn {
-    @apply p-2.5 text-primary-text text-base bg-primary rounded-full cursor-pointer hover:bg-primary
+    @apply p-2.5 text-primary-text text-base bg-primary rounded-lg cursor-pointer hover:bg-primary
   }
   .quit-btn {
     @apply pr-2.5 pl-2.5 text-base text-secondary-text cursor-pointer

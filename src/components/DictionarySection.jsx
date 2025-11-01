@@ -70,6 +70,7 @@ function DictItem({data, handleSearch, folderList, userID}) {
   function MeaningSection({meanings, word, folderList}) {
     const [showFolderList, setShowFolderList] = useState(false);
     const [meaningIndex, setMeaningIndex] = useState(0);
+    const [addedNoti, setAddedNoti] = useState(false);
 
     const addWordToFolder = (folderName, word, meaning, partOfSpeech) => {
       const d = new Date()
@@ -81,11 +82,23 @@ function DictItem({data, handleSearch, folderList, userID}) {
         lastReview: null,
         reviewCount: 0,
         scheduleReview: createReviewDates(d)
+      }).then(() => {
+        setAddedNoti(true);
+        setTimeout(() => {
+          setAddedNoti(false);
+        }, 2600);
+
       });
       setShowFolderList(false);
     }
     return (
       <div>
+        {
+          addedNoti &&
+          <div className="added-noti fixed top-5 left-1/2 transform -translate-x-1/2 bg-success text-primary-text p-2.5 rounded-lg">
+            "{word}" added successfully!
+          </div>
+        }
         {meanings.map((meaning, index) => {
           const definition = meaning.definition;
           const partOfSpeech = meaning.partOfSpeech === 'phrasal verb' ? 'phverb' : meaning.partOfSpeech;
@@ -300,6 +313,14 @@ function DictItem({data, handleSearch, folderList, userID}) {
             </ul>
           </div>
         )}
+        {
+          nouns.length === 0 &&
+          verbs.length === 0 &&
+          adjectives.length === 0 &&
+          adverbs.length === 0 && (
+          <p className="text-gray-500">No word family found.</p>
+        )}
+
       </div>
     )
       
@@ -401,10 +422,9 @@ export function DictionarySection({folderList, userID}) {
 
   return (
     <div className="w-full h-screen overflow-auto">
-      {showLoader && <LoaderDict />}
-      <div className="w-full h-screen dict-container flex flex-col items-center pt-10 pb-10">
+      <div className={"w-full h-screen dict-container flex flex-col items-center pt-10 pb-10 " + (searchResults ? "justify-start" : "justify-center")}>
         <div className="search-section">
-          <h1 className="text-primary text-4xl text-center mb-2.5 mt-25">Dictionary</h1>
+          <h1 className="text-primary text-4xl text-center mb-2.5">Dictionary</h1>
           <p className='text-secondary-text mb-6'>Search for definitions, examples, and word families.</p>
           <div className="flex">
             <input 
@@ -426,6 +446,9 @@ export function DictionarySection({folderList, userID}) {
               <FontAwesomeIcon icon={faMagnifyingGlass} />
             </button>
           </div>
+
+          {showLoader && <LoaderDict />}
+
         </div>
         {searchResults && <DictItem data={searchResults} handleSearch={handleSearch} folderList={folderList} userID={userID}/>}
       </div>

@@ -368,10 +368,7 @@ function App() {
               
 
               {showLogoutBtn && 
-                <button className='logoutBtn' onClick={() => {
-                  setShowLogoutSection(true)
-                  setShowLogoutBtn(false)
-                }}>Log out<FontAwesomeIcon icon={faArrowRightFromBracket} /></button>
+                <div></div>
               }
               
               
@@ -399,7 +396,7 @@ function App() {
               
               {showCreateFolder && (
                 <div className="fixed top-0 bottom-0 right-0 left-0 bg-black/50 flex items-center justify-center z-1" onClick={() => setShowCreateFolder(false)}>
-                  <div className="w-100 bg-secondary-surface p-2.5 rounded-lg relative" onClick={e => e.stopPropagation()}>
+                  <div className="w-100 bg-bg p-2.5 rounded-lg relative" onClick={e => e.stopPropagation()}>
                     <button onClick={() => setShowCreateFolder(false)} className='quit-btn absolute right-2.5 top-2.5'><FontAwesomeIcon icon={faX} /></button>
                     <h3 className='text-2xl text-primary-text text-center mt-4 mb-4'>Create a folder</h3>
                     <input 
@@ -411,14 +408,21 @@ function App() {
                           addFolder();
                         }
                       }}
-                      className='mt-2.5 w-full pt-2.5 pb-2.5 pl-5 pr-5 outline-none border-none bg-bg text-primary-text text-base rounded-full'
+                      // className='mt-2.5 w-full pt-2.5 pb-2.5 pl-5 pr-5 outline-none border-none bg-bg text-primary-text text-base rounded-full'
+                      className='input-field w-full'
                       value={folderName}
                     />
                     <div className='text-center'>
                       <button 
-                        onClick={addFolder}
-                        className='mt-2.5 click-btn'
-                      >Add folder</button>
+                        onClick={() => {
+                          if (folderName != '') {
+                            addFolder()
+                          }
+                        }}
+                        className={'mt-2.5 click-btn ' + (folderName == '' ? 'bg-primary-surface cursor-not-allowed' : '')}
+                      >
+                        <FontAwesomeIcon icon={faPlus} className='mr-2' />
+                        Add folder</button>
                     </div>
                   </div>
                 </div>
