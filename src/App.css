@@ -1,46 +1,49 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 @import "tailwindcss";
 @theme {
-  --color-primary: #60a5fa;  /* primary accent */
+  --color-primary: #4A90E2;  /* primary accent */
   /* --color-primary-hover: #2563eb;   */
   --color-secondary: #FACC15;    
   --color-success: #10B981;  
   --color-pending: #F97316;
   --color-wrong: #DC2626;
   --color-purple: #8B5CF6;
-  --color-bg: #10172A;     /* base background */
+  --color-bg: #fff;     /*base background*/
   /* --color-bg-hover: #27344a;      */
-  --color-primary-surface: #1e293b; /* primary surface */
-  --color-secondary-surface: #27344a;     /* secondary surface */
-  --color-primary-text: #eef2f8;         /* primary text */
-  --color-secondary-text: #94a3b8;   /* secondary text */
+  --color-primary-surface: #F6F6F6; 
+  --color-secondary-surface: #E7EAE5;     /* secondary surface */
+  --color-primary-text: #100E09;         /* primary text */
+  --color-secondary-text: #757575;   /* secondary text */
   /* --color-muted-hover: #7B8794;   */
-  --color-muted: #3e4e6c;     /* borders and dividers */
+  --color-muted: #e1e1e1;     /* borders and dividers */
 }
 
 @layer components {
   .input-field {
-    @apply pt-2.5 pb-2.5 pl-5 pr-5 outline-none bg-secondary-surface text-primary-text text-base rounded-full
+    @apply pt-2.5 pb-2.5 pl-5 pr-5 outline-none bg-primary-surface text-primary-text text-base rounded-full
   }
   .click-btn {
-    @apply p-2.5 text-primary-text text-base bg-primary rounded-lg cursor-pointer hover:bg-primary
+    @apply p-2.5 text-bg text-base bg-primary rounded-lg cursor-pointer hover:bg-primary
   }
   .quit-btn {
     @apply pr-2.5 pl-2.5 text-base text-secondary-text cursor-pointer
   }
   .noun {
-    @apply bg-bg text-primary p-1 rounded-lg
+    @apply bg-primary-surface text-primary p-1 rounded-lg
   }
   .verb {
-    @apply bg-bg text-success p-1 rounded-lg
+    @apply bg-primary-surface text-success p-1 rounded-lg
   }
   .adjective {
-    @apply bg-bg text-pending p-1 rounded-lg
+    @apply bg-primary-surface text-pending p-1 rounded-lg
   }
   .adverb {
-    @apply bg-bg text-secondary p-1 rounded-lg
+    @apply bg-primary-surface text-secondary p-1 rounded-lg
   }
   .phverb {
-    @apply bg-bg text-purple p-1 rounded-lg
+    @apply bg-primary-surface text-purple p-1 rounded-lg
+  }
+  .idiom {
+    @apply bg-primary-surface text-purple p-1 rounded-lg
   }
 }

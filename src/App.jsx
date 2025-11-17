@@ -272,10 +272,10 @@ function App() {
       {loader && <Loader />}
       
       <div className="w-full h-screen flex">
-        <div className={"h-screen bg-primary-surface flex flex-col justify-between select-none"} style={{width: expandSidebar ? '20%' : '80px'}}>
+        <div className={"h-screen bg-bg flex flex-col justify-between select-none"} style={{width: expandSidebar ? '20%' : '80px'}}>
           <div className={'pl-2.5 pr-2.5 ' +  (expandSidebar ? '' : 'flex flex-col items-center')}>
             <div 
-              className='mt-2.5 h-9 w-9 cursor-pointer rounded-full flex items-center justify-center hover:bg-secondary-surface'
+              className='mt-2.5 h-9 w-9 cursor-pointer rounded-full flex items-center justify-center hover:bg-primary-surface'
               onClick={() => setExpandSidebar(!expandSidebar)}  
             >
               <FontAwesomeIcon icon={faBars} className='text-primary' />
@@ -283,19 +283,19 @@ function App() {
 
             <ul className='mt-2.5'>
               <li 
-                className={'p-2.5 rounded-lg cursor-pointer mb-1 flex gap-2.5 items-center hover:bg-secondary-surface ' + (pageIndex === 0 ? 'text-primary bg-secondary-surface border-l-4 border-primary' : 'text-secondary-text hover:text-primary-text') + (expandSidebar ? '' : ' justify-center')} 
+                className={'p-2.5 rounded-lg cursor-pointer mb-1 flex gap-2.5 items-center hover:bg-primary-surface ' + (pageIndex === 0 ? 'text-primary bg-primary-surface border-l-4 border-primary' : 'text-secondary-text') + (expandSidebar ? '' : ' justify-center')} 
                 onClick={() => setPageIndex(0)}
               >
                 <FontAwesomeIcon icon={faBookOpen} className='pt-[5px] pb-[5px]'/>{expandSidebar && <span>Dictionary</span> }
               </li>
               <li 
-                className={'p-2.5 rounded-lg cursor-pointer mb-1 flex gap-2.5 items-center hover:bg-secondary-surface ' + (pageIndex === 1 ? 'text-primary bg-secondary-surface border-l-4 border-primary' : 'text-secondary-text hover:text-primary-text') + (expandSidebar ? '' : ' justify-center')} 
+                className={'p-2.5 rounded-lg cursor-pointer mb-1 flex gap-2.5 items-center hover:bg-primary-surface ' + (pageIndex === 1 ? 'text-primary bg-primary-surface border-l-4 border-primary' : 'text-secondary-text') + (expandSidebar ? '' : ' justify-center')} 
                 onClick={() => setPageIndex(1)}
               >
                 <FontAwesomeIcon icon={faFolder} className='pt-[5px] pb-[5px]' />{expandSidebar && <span>Vocabulary</span>}
               </li>
               <li 
-                className={'p-2.5 rounded-lg cursor-pointer mb-1 flex gap-2.5 items-center hover:bg-secondary-surface ' + (pageIndex === 3 ? 'text-primary bg-secondary-surface border-l-4 border-primary' : 'text-secondary-text hover:text-primary-text') + (expandSidebar ? '' : ' justify-center')} 
+                className={'p-2.5 rounded-lg cursor-pointer mb-1 flex gap-2.5 items-center hover:bg-primary-surface ' + (pageIndex === 3 ? 'text-primary bg-primary-surface border-l-4 border-primary' : 'text-secondary-text') + (expandSidebar ? '' : ' justify-center')} 
                 onClick={() => setPageIndex(3)}
               >
                 <FontAwesomeIcon icon={faTrophy} className='pt-[5px] pb-[5px]' />{expandSidebar && <span>Rank</span>}
@@ -305,7 +305,7 @@ function App() {
 
           <div className='m-2.5 border-t-1 border-t-muted'>
             <button 
-              className='flex items-center justify-start gap-2.5 text-secondary-text hover:bg-secondary-surface rounded-lg w-full p-2 mt-2.5 cursor-pointer'
+              className='flex items-center font-semibold justify-start gap-2.5 text-primary-text hover:bg-primary-surface rounded-lg w-full p-2 mt-2.5 cursor-pointer'
               onClick={() => {
                 if (userID == '') {
                   setShowLoginSection(true)
@@ -358,7 +358,7 @@ function App() {
           )
         }
 
-        <div className="bg-bg relative" style={{width: expandSidebar ? '80%' : 'calc(100% - 80px)'}}>
+        <div className="bg-primary-surface relative" style={{width: expandSidebar ? '80%' : 'calc(100% - 80px)'}}>
           <div className="flex items-center justify-between absolute top-0 left-0 right-0">
             <div className="logo">
               <button className='mobile-sidebar-toggle'onClick={() => setShowMobileSidebar(true)}><FontAwesomeIcon icon={faBars} /></button>
@@ -381,16 +381,16 @@ function App() {
           {/* Folder management */}
           {pageIndex === 1 && (
             <div className="w-full h-screen pl-2.5 pr-2.5 overflow-auto">
-              <h1 className='text-2xl text-primary-text mt-2.5'>Folder overview</h1>
+              <h1 className='text-2xl text-primary-text mt-2.5 font-bold'>Folder overview</h1>
               <p className='text-base text-secondary-text'>Mange your words here.</p>
               <div className='flex gap-2.5 pb-2.5 border-b-1 border-b-muted mb-2.5'>
-                <div className='bg-secondary-surface flex flex-col items-center gap-2.5 p-4 rounded-lg mt-2.5 mb-2.5 border-l-4 border-l-primary'>
+                <div className='bg-primary/10 flex flex-col items-center gap-2.5 p-4 rounded-lg mt-2.5 mb-2.5 border-l-4 border-l-primary'>
                   <p className='text-secondary-text'>Total Folders</p>
                   <h2 className='text-primary-text text-3xl font-bold'>{allFolders.length}</h2>
                 </div>
-                <div className='bg-secondary-surface flex flex-col items-center gap-2.5 p-4 rounded-lg mt-2.5 mb-2.5 border-l-4 border-l-wrong'>
+                <div className='bg-success/10 flex flex-col items-center gap-2.5 p-4 rounded-lg mt-2.5 mb-2.5 border-l-4 border-l-success'>
                   <p className='text-secondary-text'>Need to Review</p>
-                  <h2 className='text-primary-text text-3xl font-bold'>__</h2>
+                  <h2 className='text-primary-text text-3xl font-bold'>0</h2>
                 </div>
               </div>
               
@@ -432,7 +432,7 @@ function App() {
                   <div className="search-field relative">
                     <FontAwesomeIcon icon={faMagnifyingGlass} className='absolute left-3 top-3.75 text-secondary-text' />
                     <input 
-                    className='input-field pl-9'
+                    className='input-field pl-9 bg-bg'
                       type="text" 
                       placeholder='Search folder...'
                       onChange={e => {
@@ -449,8 +449,8 @@ function App() {
                     />
                   </div>
                 </div>
-                <button className='click-btn' onClick={createFolder}>
-                  <FontAwesomeIcon className='text-base' icon={faPlus} /><span> Create folder</span>
+                <button className='click-btn px-6 py-3 flex items-center' onClick={createFolder}>
+                  <FontAwesomeIcon className='text-base mr-2' icon={faPlus} /><span>Create folder</span>
                 </button>
 
               </div>
@@ -461,13 +461,11 @@ function App() {
                   </div>
                 )}
                 {folders.map((folder, index) => (
-                  <div className="folder-item bg-secondary-surface p-4 rounded-lg min-w-37.5 relative cursor-pointer" key={index}>
+                  <div className="folder-item px-6 py-3 rounded-lg min-w-37.5 relative cursor-pointer shadow-lg hover:shadow-xl bg-bg" key={index}>
                     <div className="" onClick={() => openWordSection(folder)}>
-                      <div className='flex gap-2.5 items-center'>
-                        <FontAwesomeIcon icon={faFolder} className='folder-icon text-primary text-2xl' />
-                        <h2 className='text-xl text-secondary-text'>{folder}</h2>
-                      </div>
-                      <p className='text-secondary-text mt-2.5'>Total items:<span className='ml-2.5 font-bold text-primary-text'>{userData.folders[folder].length || 0} words</span></p>
+                      <FontAwesomeIcon icon={faFolder} className='folder-icon text-primary text-2xl' />
+                      <h2 className='text-xl text-primary-text font-semibold mt-2.5'>{folder}</h2>
+                      <p className='text-secondary-text'><span className='text-secondary-text'>{userData.folders[folder].length || 0} words</span></p>
                       <ReviewWordsNums folder={folder}/>
                       {/* <div className="more" onClick={(e) => {e.stopPropagation()}}>
                         <FontAwesomeIcon icon={faEllipsis} />

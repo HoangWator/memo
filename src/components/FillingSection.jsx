@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { geneAI } from './gemini.js'
 import ProgressBar from './ProgressBar';
 import meaningSuggestion from './gemini.js';
+import LoaderDict from './LoaderDict.jsx';
 
 
 export default function FillingSection({onClose, data}) {
@@ -14,11 +15,19 @@ export default function FillingSection({onClose, data}) {
   const [resultDisplay, setResultDisplay] = useState(false)
   const [showFillingCard, setShowFillingCard] = useState(true)
   const [wrongAnswers, setWrongAnswers] = useState([])
+  const [showLoader, setShowLoader] = useState(false)
 
   const addWrongAnswer = (question) => {
     setWrongAnswers(prevWrongAnswers => [...prevWrongAnswers, question]);
   }
-
+  // Shuffle array utility function
+  function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+  }
   useEffect(() => {
     // Create questions for filling section
     let wordDetails = []
@@ -26,10 +35,11 @@ export default function FillingSection({onClose, data}) {
     data.forEach(item => words.push(item.name))
     data.forEach(item => wordDetails.push(`${item.name} (${item.type}: ${item.mean})`))
     console.log(words)
-
+    setShowLoader(true)
     geneAI(wordDetails, words).then((value) => {
       console.log(value)
-      setFillingQuestions(value)
+      setFillingQuestions(shuffleArray(value))
+      setShowLoader(false)
     }).catch((error) => {
       console.error(error)
     })
@@ -136,8 +146,8 @@ export default function FillingSection({onClose, data}) {
         
         { clicked !== -1 && (
           <div className={'p-2.5 rounded-lg mt-5 overflow-hidden ' + explainClassName}>
-            <h3 className='text-primary-text'>Answer:</h3>
-            <p className='text-secondary-text'>{startQuestion}<span className='text-primary-text font-semibold'>{ans}</span>{endQuestion}</p>
+            <h3 className='text-primary-text font-semibold'>Answer:</h3>
+            <p className='text-secondary-text'>{startQuestion}<span className='text-primary-text font-semibold underline'>{ans}</span>{endQuestion}</p>
             <button 
               onClick={() => {
                 const isCorrect = userInput === ans
@@ -175,6 +185,10 @@ export default function FillingSection({onClose, data}) {
 
   return (
     <div className="fixed top-0 left-0 w-full h-full bg-bg z-50 filling-section">
+      {showLoader && 
+        <div className='w-full h-screen flex items-center justify-center'>
+          <LoaderDict />
+        </div>}
       <div className="header p-2.5 fixed top-0 left-0 w-full flex items-center justify-center bg-bg z-50">
         <button className='quit-btn absolute top-2.5 left-2.5' onClick={() => {
           setFillingIndex(0)

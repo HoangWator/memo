@@ -17,7 +17,7 @@ export async function geneAI(wordDetails, words) {
         answer: "economics"
     }
     Make sure each question is clear and concise, focusing on the practical application of the word.
-    Provide a variety of sentence structures to enhance learning.
+    Provide a variety of sentence structures to enhance learning. Shuffle the options for each question.
     `
     const prompt = `
         Create fill-in-the-blank questions to learn how to use these words: ${newWords}
@@ -40,88 +40,7 @@ function processJSON(text) {
     return JSON.parse(jsonString);
 }
 
-function getContents(texts, words) {
-    let contents = []
 
-    function shuffleArray(array) {
-        const arr = [...array]; // make a copy to avoid mutating original
-        for (let i = arr.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [arr[i], arr[j]] = [arr[j], arr[i]];
-        }
-        return arr;
-    }
-
-    function getQuestions(data) { 
-        let questions = []
-        let newDatas = data.split('\n')
-        
-        newDatas.forEach(newData => {
-            if (newData.indexOf('-') != -1) {
-                questions.push(newData.replace('-', '').trim())
-            }
-        }); 
-
-        return questions //Return an array of questions
-    }
-
-    // Return an array of options (containing the word to learn and 3 other options)
-    function getOptions(key, words) {
-        let otherOptions = shuffleArray(words.filter(word => word.toLowerCase() !== key.toLowerCase()));
-        otherOptions = otherOptions.slice(0, 3); // Get only 3 other
-        let options = [key, ...otherOptions];
-        return shuffleArray(options);
-    }
-
-
-    for (let i = 1; i <= words.length; i++) {
-        if (i == words.length) {
-            let newText = texts.slice(texts.indexOf(i))
-            let questionList = getQuestions(newText)
-            questionList.forEach(element => {
-                let options
-                if (element.indexOf('[') != -1 && element.indexOf(']') != -1) {
-                    let key = element.slice(element.indexOf('[') + 1, element.indexOf(']')).toLowerCase()
-                    options = getOptions(key, words)
-                }
-                if (element.indexOf('_') != -1) {
-                    let key = words[i - 1].toLowerCase()
-                    options = getOptions(key, words)
-                }
-                if (element.indexOf('[') != -1 && element.indexOf(']') != -1 && element.indexOf('_') != -1) {
-                    element.replace(/_/g, '')
-                    let key = element.slice(element.indexOf('[') + 1, element.indexOf(']')).toLowerCase()
-                    options = getOptions(key, words)
-                }
-                contents.push({
-                    word: words[i - 1], 
-                    question: element,
-                    options: options
-                })   
-            })
-        }
-        else {
-            let newText = texts.slice(texts.indexOf(i), texts.indexOf(i + 1))
-            let questionList = getQuestions(newText)
-            questionList.forEach(element => {
-                let options
-                if (element.indexOf('[') != -1 && element.indexOf(']') != -1) {
-                    let key = element.slice(element.indexOf('[') + 1, element.indexOf(']')).toLowerCase()
-                    options = getOptions(key, words)
-                }
-                if (element.indexOf('_') != -1) {
-                    let key = words[i - 1].toLowerCase()
-                    options = getOptions(key, words)
-                }
-                contents.push({
-                    word: words[i - 1], 
-                    question: element, 
-                    options: options
-            })})
-        }
-    }
-    return shuffleArray(contents)
-}
 
 export default async function meaningSuggestion(word) {
   function getJSONdata(text) {
@@ -209,7 +128,8 @@ export async function dictEngine(word) {
         "meanings": [
             {
             "partOfSpeech": "verb",
-            "definition": "To perform labor or engage in physical or mental activity to achieve a purpose or result. (làm việc, lao động)",
+            "definition_eng": "To perform labor or engage in physical or mental activity to achieve a purpose or result.",
+            "definition_vie": "làm việc, lao động",
             "examples": [
                 "She works as a software engineer at a tech company.",
                 "He worked tirelessly to finish the project before the deadline."
@@ -232,7 +152,8 @@ export async function dictEngine(word) {
             },
             {
             "partOfSpeech": "verb",
-            "definition": "To function or operate effectively. (hoạt động, vận hành)",
+            "definition_eng": "To function or operate effectively.",
+            "definition_vie": "hoạt động, vận hành",
             "examples": [
                 "The new software doesn't work properly on my computer.",
                 "This strategy won't work in our current situation."
@@ -252,7 +173,8 @@ export async function dictEngine(word) {
             },
             {
             "partOfSpeech": "verb",
-            "definition": "To shape, form, or process a material. (chế tác, gia công)",
+            "definition_eng": "To shape, form, or process a material.",
+            "definition_vie": "chế tác, gia công",
             "examples": [
                 "The blacksmith worked the hot iron into a horseshoe.",
                 "She worked the clay into a beautiful vase."
@@ -273,7 +195,8 @@ export async function dictEngine(word) {
             },
             {
             "partOfSpeech": "noun",
-            "definition": "Activity involving mental or physical effort done to achieve a purpose or result. (công việc, sự lao động)",
+            "definition_eng": "Activity involving mental or physical effort done to achieve a purpose or result.",
+            "definition_vie": "Công việc, nghề nghiệp",
             "examples": [
                 "Hard work is the key to success.",
                 "I have a lot of work to finish before Friday."
@@ -294,7 +217,8 @@ export async function dictEngine(word) {
             },
             {
             "partOfSpeech": "noun",
-            "definition": "A task or tasks to be undertaken; something a person or thing has to do. (công việc, nhiệm vụ)",
+            "definition_eng": "A task or tasks to be undertaken; something a person or thing has to do.",
+            "definition_vie": "Nhiệm vụ, công việc được giao",
             "examples": [
                 "She gave me some work to do while she was away.",
                 "The repair work on the bridge will take three months."
@@ -314,7 +238,8 @@ export async function dictEngine(word) {
             },
             {
             "partOfSpeech": "noun",
-            "definition": "A place of employment. ( Nơi làm việc)",
+            "definition_eng": "A place of employment.",
+            "definition_vie": "Nơi làm việc",
             "examples": [
                 "I'm going to work early tomorrow.",
                 "He left work at 5 PM as usual."
@@ -332,7 +257,8 @@ export async function dictEngine(word) {
             },
             {
             "partOfSpeech": "noun",
-            "definition": "Something produced or accomplished through effort, skill, or agency. (Tác phẩm, sản phẩm)",
+            "definition_eng": "Something produced or accomplished through effort, skill, or agency.",
+            "definition_vie": "Tác phẩm, sản phẩm",
             "examples": [
                 "This novel is considered her greatest work.",
                 "The museum displays works by famous artists."
@@ -353,27 +279,32 @@ export async function dictEngine(word) {
         "idioms": [
             {
             "idiom": "work like a charm",
-            "meaning": "To function perfectly or have the desired effect immediately. (hiệu quả tốt đẹp, thành công nhanh chóng)",
+            "definition_eng": "To function perfectly or have the desired effect immediately.",
+            "definition_vie": "Hoạt động hoàn hảo, có hiệu quả ngay lập tức",
             "example": "The new marketing strategy worked like a charm, and sales doubled within a month."
             },
             {
             "idiom": "all work and no play makes Jack a dull boy",
-            "meaning": "Constant work without time for relaxation is not good for one's health or personality. (Chỉ làm việc mà không nghỉ ngơi sẽ khiến con người trở nên nhàm chán)",
+            "definition_eng": "Constant work without time for relaxation is not good for one's health or personality.",
+            "definition_vie": "Chỉ làm việc mà không nghỉ ngơi sẽ khiến con người trở nên nhàm chán và mệt mỏi",
             "example": "You've been studying for ten hours straight - remember, all work and no play makes Jack a dull boy."
             },
             {
             "idiom": "work your fingers to the bone",
-            "meaning": "To work extremely hard for a long time. (cần cù, siêng năng làm việc)",
+            "definition_eng": "To work extremely hard for a long time.",
+            "definition_vie": "Làm việc cực kỳ chăm chỉ trong thời gian dài",
             "example": "She worked her fingers to the bone to put her children through college."
             },
             {
             "idiom": "work out for the best",
-            "meaning": "To eventually have a good result or conclusion after a period of uncertainty. (kết cục tốt đẹp)",
+            "definition_eng": "To eventually have a good result or conclusion after a period of uncertainty.",
+            "definition_vie": "Kết cục tốt đẹp",
             "example": "I was worried about changing jobs, but it all worked out for the best in the end."
             },
             {
             "idiom": "have your work cut out for you",
-            "meaning": "To have a very difficult task ahead. (đối mặt với nhiệm vụ khó khăn)",
+            "definition_eng": "To have a very difficult task ahead.",
+            "definition_vie": "đối mặt với nhiệm vụ khó khăn",
             "example": "With three projects due by Friday, she certainly has her work cut out for her."
             }
         ],

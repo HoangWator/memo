@@ -3,7 +3,7 @@ import { dictEngine } from './gemini';
 import Loader from './Loader';
 import LoaderDict from './LoaderDict';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus,faBookOpen,faBars,faArrowLeft,faArrowRight,faArrowDown,faArrowUp,faTrash,faXmark,faMagnifyingGlass,faVolumeHigh,faFolder,faDumbbell,faTrophy,faChartSimple,faEllipsis,faPenToSquare,faX,faArrowRightFromBracket,faArrowsLeftRight } from '@fortawesome/free-solid-svg-icons'
+import { faPlus,faBookOpen,faBars,faArrowLeft,faArrowRight,faArrowDown,faArrowUp,faTrash,faXmark,faMagnifyingGlass,faCheck,faVolumeHigh,faFolder,faDumbbell,faTrophy,faChartSimple,faEllipsis,faPenToSquare,faX,faArrowRightFromBracket,faArrowsLeftRight } from '@fortawesome/free-solid-svg-icons'
 import { addWordDB } from '../components/handleData';
 
 function createReviewDates(startDate) {
@@ -72,11 +72,12 @@ function DictItem({data, handleSearch, folderList, userID}) {
     const [meaningIndex, setMeaningIndex] = useState(0);
     const [addedNoti, setAddedNoti] = useState(false);
 
-    const addWordToFolder = (folderName, word, meaning, partOfSpeech) => {
+    const addWordToFolder = (folderName, word, definitionEng, definitionVie, partOfSpeech) => {
       const d = new Date()
       addWordDB(userID, folderName, {
         name: word.toLowerCase(), 
-        mean: meaning,
+        definition_eng: definitionEng,
+        definition_vie: definitionVie,
         type: partOfSpeech,
         dateAdded: d,
         lastReview: null,
@@ -95,12 +96,13 @@ function DictItem({data, handleSearch, folderList, userID}) {
       <div>
         {
           addedNoti &&
-          <div className="added-noti fixed top-5 left-1/2 transform -translate-x-1/2 bg-success text-primary-text p-2.5 rounded-lg">
-            "{word}" added successfully!
+          <div className="added-noti fixed top-5 left-1/2 transform -translate-x-1/2 bg-bg text-primary-text p-2.5 rounded-lg">
+            "{word}" added successfully! <span className='bg-success text-white text-base w-10 h-10 rounded-full'><FontAwesomeIcon icon={faCheck} /></span>
           </div>
         }
         {meanings.map((meaning, index) => {
-          const definition = meaning.definition;
+          const definitionEng = meaning.definition_eng;
+          const definitionVie = meaning.definition_vie;
           const partOfSpeech = meaning.partOfSpeech === 'phrasal verb' ? 'phverb' : meaning.partOfSpeech;
           const examples = meaning.examples;
           const synonyms = meaning.synonyms || [];
@@ -112,7 +114,7 @@ function DictItem({data, handleSearch, folderList, userID}) {
               <div className="meaning-number mr-2.5 text-primary-text">{index + 1}</div>
               <div className="meaning-content">
                 <p className="meaning-def text-primary-text flex items-center gap-2.5 mb-2">
-                  <span className={"bg-primary-surface " + partOfSpeech}>{partOfSpeech === 'phverb' ? 'phrasal verb' : partOfSpeech}</span> {definition}
+                  <span className={"bg-primary-surface " + partOfSpeech}>{partOfSpeech === 'phverb' ? 'phrasal verb' : partOfSpeech}</span> {definitionEng} ({definitionVie})
                   <button 
                     className='text-primary h-8 w-8 rounded-full flex justify-center items-center cursor-pointer hover:bg-primary-surface' 
                     onClick={() => {
@@ -127,13 +129,13 @@ function DictItem({data, handleSearch, folderList, userID}) {
                 {examples.map((ex, exIndex) => (
                   <li key={exIndex} className="example-list text-primary-text">{ex}</li>
                 ))}
-                <p className="font-medium mt-2.5">Synonyms:</p>
+                <p className="font-medium mt-2.5 text-primary-text">Synonyms:</p>
                 <div className="flex flex-wrap gap-2.5 mb-2.5">
                   {synonyms.map((syn, synIndex) => 
                     <span key={synIndex} className="p-1 bg-primary-surface rounded-lg">{syn}</span>
                   )}
                 </div>
-                <p className="font-medium">Antonyms:</p>
+                <p className="font-medium text-primary-text">Antonyms:</p>
                 <div className="flex flex-wrap gap-2.5 mb-2.5">
                   {antonyms.map((ant, antIndex) => 
                     <span key={antIndex} className="p-1 bg-primary-surface rounded-lg">{ant}</span>
@@ -156,7 +158,7 @@ function DictItem({data, handleSearch, folderList, userID}) {
                             key={index} 
                             className="bg-primary-surface p-2.5 rounded-lg cursor-pointer hover:bg-secondary-surface hover:text-primary-text"
                             onClick={() => {
-                              addWordToFolder(folder, word, definition, partOfSpeech)
+                              addWordToFolder(folder, word, definitionEng, definitionVie, partOfSpeech)
                             }}
                           >
                             <FontAwesomeIcon icon={faFolder} className='mr-2.5' />{folder}
@@ -182,11 +184,12 @@ function DictItem({data, handleSearch, folderList, userID}) {
     const [showFolderList, setShowFolderList] = useState(false);
     const [meaningIndex, setMeaningIndex] = useState(0);
 
-    const addWordToFolder = (folderName, word, meaning, partOfSpeech) => {
+    const addWordToFolder = (folderName, word, definition_eng, definition_vie, partOfSpeech) => {
       const d = new Date()
       addWordDB(userID, folderName, {
         name: word.toLowerCase(), 
-        mean: meaning,
+        definition_eng: definition_eng,
+        definition_vie: definition_vie,
         type: partOfSpeech,
         dateAdded: d,
         lastReview: null,
@@ -207,9 +210,10 @@ function DictItem({data, handleSearch, folderList, userID}) {
                 </div>
                 <div className="flex-1">
                   <h2 className="font-semibold text-lg mb-2 text-primary-text">{idiom.idiom}</h2>
-                  <p className="mb-2">{idiom.meaning}</p>
-                  <p className="font-medium">Example:</p>
-                  <li className="ml-4 text-gray-600 italic">{idiom.example}</li>
+                  <p className="text-primary-text">{idiom.definition_eng}</p>
+                  <p className="mb-2 text-primary-text">{idiom.definition_vie}</p>
+                  <p className="font-medium text-primary-text">Example:</p>
+                  <li className="ml-4 italic text-primary-text">{idiom.example}</li>
                 </div>
                 <button 
                   className='h-8 w-8 rounded-full text-primary cursor-pointer hover:bg-primary-surface'
@@ -233,7 +237,7 @@ function DictItem({data, handleSearch, folderList, userID}) {
                                 key={index} 
                                 className="bg-primary-surface p-2.5 rounded-lg cursor-pointer hover:bg-secondary-surface hover:text-primary-text"
                                 onClick={() => {
-                                  addWordToFolder(folder, idiom.idiom, idiom.meaning, 'idiom')
+                                  addWordToFolder(folder, idiom.idiom, idiom.definition_eng, idiom.definition_vie, 'idiom')
                                 }}
                               >
                                 <FontAwesomeIcon icon={faFolder} className='mr-2.5' />{folder}
@@ -260,67 +264,68 @@ function DictItem({data, handleSearch, folderList, userID}) {
   function WordFamilySection({nouns, verbs, adjectives, adverbs}) {
     return (
       <div className="space-y-6">
-        <h1 className="text-2xl font-bold mb-4">Word family</h1>
-        {nouns.length > 0 && (
-          <div className="mb-6">
-            <h2 className="text-xl font-semibold mb-2">Nouns</h2>
-            <ul className="list-disc pl-5 space-y-1">
-              {nouns.map((noun, index) => (
-                <a key={index} className='list-none block cursor-pointer underline' onClick={() => handleSearch(noun)}>{noun}</a>
-              ))}
-            </ul>
-          </div>
-        )}
-        {verbs.length > 0 && (
-          <div className="mb-6">
-            <h2 className="text-xl font-semibold mb-2">Verbs</h2>
-            <ul className="list-disc pl-5 space-y-1">
-              {wordFamilyVerbs.map((verb, index) => (
-                <a 
-                  key={index} 
-                  className='list-none block cursor-pointer underline' 
-                  onClick={() => handleSearch(verb)}
-                  >{verb}</a>
+        <h1 className="text-2xl font-bold mb-4 text-primary-text">Word family</h1>
+        <div className='flex justify-evenly'>
+          {nouns.length > 0 && (
+            <div className="mb-6">
+              <h2 className="text-xl font-semibold mb-2 text-primary-text">Nouns</h2>
+              <ul className="list-disc space-y-1 flex flex-col">
+                {nouns.map((noun, index) => (
+                  <a key={index} className='list-none cursor-pointer underline text-secondary-text hover:text-primary' onClick={() => handleSearch(noun)}>{noun}</a>
                 ))}
-            </ul>
-          </div>
-        )}
-        {adjectives.length > 0 && (
-          <div className="mb-6">
-            <h2 className="text-xl font-semibold mb-2">Adjectives</h2>
-            <ul className="list-disc pl-5 space-y-1">
-              {adjectives.map((adj, index) => (
-                <a 
-                  key={index} 
-                  className='list-none block cursor-pointer underline'
-                  onClick={() => handleSearch(adj)}
-                >{adj}</a>
-              ))}
-            </ul>
-          </div>
-        )}
-        {adverbs.length > 0 && (
-          <div className="mb-6">
-            <h2 className="text-xl font-semibold mb-2">Adverb</h2>
-            <ul className="list-disc pl-5 space-y-1">
-              {adverbs.map((adv, index) => (
-                <a 
-                  key={index} 
-                  className='list-none block cursor-pointer underline'
-                  onClick={() => handleSearch(adv)}
-                >{adv}</a>
-              ))}
-            </ul>
-          </div>
-        )}
-        {
-          nouns.length === 0 &&
-          verbs.length === 0 &&
-          adjectives.length === 0 &&
-          adverbs.length === 0 && (
-          <p className="text-gray-500">No word family found.</p>
-        )}
-
+              </ul>
+            </div>
+          )}
+          {verbs.length > 0 && (
+            <div className="mb-6">
+              <h2 className="text-xl font-semibold mb-2 text-primary-text">Verbs</h2>
+              <ul className="list-disc space-y-1">
+                {wordFamilyVerbs.map((verb, index) => (
+                  <a 
+                    key={index} 
+                    className='list-none block cursor-pointer underline hover:text-primary' 
+                    onClick={() => handleSearch(verb)}
+                    >{verb}</a>
+                  ))}
+              </ul>
+            </div>
+          )}
+          {adjectives.length > 0 && (
+            <div className="mb-6">
+              <h2 className="text-xl font-semibold mb-2 text-primary-text">Adjectives</h2>
+              <ul className="list-disc space-y-1">
+                {adjectives.map((adj, index) => (
+                  <a 
+                    key={index} 
+                    className='list-none block cursor-pointer underline hover:text-primary'
+                    onClick={() => handleSearch(adj)}
+                  >{adj}</a>
+                ))}
+              </ul>
+            </div>
+          )}
+          {adverbs.length > 0 && (
+            <div className="mb-6">
+              <h2 className="text-xl font-semibold mb-2 text-primary-text">Adverb</h2>
+              <ul className="list-disc space-y-1">
+                {adverbs.map((adv, index) => (
+                  <a 
+                    key={index} 
+                    className='list-none block cursor-pointer underline hover:text-primary'
+                    onClick={() => handleSearch(adv)}
+                  >{adv}</a>
+                ))}
+              </ul>
+            </div>
+          )}
+          {
+            nouns.length === 0 &&
+            verbs.length === 0 &&
+            adjectives.length === 0 &&
+            adverbs.length === 0 && (
+            <p className="text-gray-500">No word family found.</p>
+          )}
+        </div>
       </div>
     )
       
@@ -330,7 +335,7 @@ function DictItem({data, handleSearch, folderList, userID}) {
     <div className="text-gray-500 w-5/6 p-4">
       <h2 className='text-3xl text-primary-text font-semibold'>{word}</h2>
       <p className="text-primary italic">{phonetics.text}</p>
-      <div className="flex gap-2.5 mt-5 mb-5 border-b--muted border-b-1">
+      <div className="flex gap-2.5 mt-5 mb-5 border-b-muted border-b-1">
         {nouns.length > 0 && 
           <button 
             className={"p-2.5 cursor-pointer " + (pageName === "noun" ? " border-b-2 border-b-primary text-primary" : "text-secondary-text hover:text-primary-text")}
@@ -398,21 +403,22 @@ export function DictionarySection({folderList, userID}) {
   const handleSearch = async (word) => {
     if (word.trim() !== "") {
       setShowLoader(true);
-      const datas = await dictEngine(word);
-      const processedData = datas.slice(datas.indexOf('{'), datas.lastIndexOf('}') + 1);
-      setShowLoader(false);
-      if (processedData.length > 0) {
-        const jsonData = JSON.parse(processedData)
-        setSearchResults(jsonData);
-      }
-      else {
-        alert("Word not found in the dictionary.");
-      }
-      console.log(datas);
-      console.log(typeof datas);
-      console.log(processedData);
-      console.log(typeof processedData);
-      setSearchTerm('')
+      dictEngine(word).then((datas) => {
+        const processedData = datas.slice(datas.indexOf('{'), datas.lastIndexOf('}') + 1);
+        setShowLoader(false);
+        if (processedData.length > 0) {
+          const jsonData = JSON.parse(processedData)
+          setSearchResults(jsonData);
+        }
+        else {
+          alert("Word not found in the dictionary.");
+        }
+        setSearchTerm('')
+      }).catch((error) => {
+        setShowLoader(false);
+        alert("An error occurred while fetching the definition. Please try again.");
+        console.error("Error fetching definition:", error);
+      })
     }
     else {
       alert("Please enter a word to search.");
@@ -424,13 +430,13 @@ export function DictionarySection({folderList, userID}) {
     <div className="w-full h-screen overflow-auto">
       <div className={"w-full h-screen dict-container flex flex-col items-center pt-10 pb-10 " + (searchResults ? "justify-start" : "justify-center")}>
         <div className="search-section">
-          <h1 className="text-primary text-4xl text-center mb-2.5">Dictionary</h1>
+          <h1 className="text-primary text-4xl text-center mb-2.5 font-bold">Dictionary</h1>
           <p className='text-secondary-text mb-6'>Search for definitions, examples, and word families.</p>
           <div className="flex">
             <input 
               type="text" 
               placeholder="Search dictionary..." 
-              className="input-field w-full"
+              className="input-field w-full bg-bg"
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
               onKeyDown={e => {
@@ -440,7 +446,7 @@ export function DictionarySection({folderList, userID}) {
               }}
             />
             <button 
-              className=" ml-2.5 pt-2.5 pb-2.5 text-primary-text text-base bg-primary rounded-full cursor-pointer hover:bg-primary pr-4 pl-4"
+              className=" ml-2.5 pt-2.5 pb-2.5 text-bg text-base bg-primary rounded-full cursor-pointer hover:bg-primary pr-4 pl-4"
               onClick={() => handleSearch(searchTerm)}
             >
               <FontAwesomeIcon icon={faMagnifyingGlass} />

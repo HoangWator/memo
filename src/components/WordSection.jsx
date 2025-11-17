@@ -9,6 +9,7 @@ import Flashcard from './Flashcard.jsx'
 import FillingSection from './FillingSection.jsx'
 import ListeningSection from './ListeningSection.jsx'
 import ReviewSection from './ReviewSection.jsx'
+import MatchingSection from './MatchingSection.jsx'
 import DeleteValid from './modals/DeleteValid.jsx'
 import RenameFolder from './modals/RenameFolder.jsx'
 
@@ -188,13 +189,8 @@ export default function WordSection({onClose, currentFolder, userID}) {
   const [showLearn, setShowLearn] = useState(false)
   const [flashcardWords, setFlashcardWords] = useState([])
   const learnBtn = (words) => {
-    if (words.length >= 4) {
-      setShowLearn(true)
-      setFlashcardWords(words)
-    }
-    else {
-      alert('Please enter at least 4 words.')
-    }
+    setShowLearn(true)
+    setFlashcardWords(words)
   }
 
   // Filling
@@ -233,6 +229,9 @@ export default function WordSection({onClose, currentFolder, userID}) {
     }
   }
 
+  //Matching 
+  const [showMatching, setShowMatching] = useState(false)
+
   // Review Section
   const [showReview, setShowReview] = useState(false)
   const generateReview = (words) => {
@@ -256,8 +255,11 @@ export default function WordSection({onClose, currentFolder, userID}) {
     else if (word.type === 'phverb') {
       meaningCln = 'phverb'
     }
+    else if (word.type === 'idiom') {
+      meaningCln = 'idiom'
+    }
     return (
-      <h3 className='text-primary-text'>{word.name.toLowerCase()}<span className={'ml-2.5 ' + meaningCln}>{word.type === 'phverb' ? 'phrasal verb' : word.type}</span></h3>
+      <h3 className='text-primary-text font-bold text-xl'>{word.name.toLowerCase()}<span className={'ml-2.5 font-normal text-base ' + meaningCln}>{word.type === 'phverb' ? 'phrasal verb' : word.type}</span></h3>
     )
   }
 
@@ -443,39 +445,39 @@ export default function WordSection({onClose, currentFolder, userID}) {
             onClick={() => generateReview(wordsToReview)}
           >
             Review
-            {wordsToReview.length > 0 && <span className='absolute -top-1 -right-1 h-5 w-5 rounded-full bg-wrong text-primary-text flex items-center justify-center'>{wordsToReview.length}</span>}
+            {wordsToReview.length > 0 && <span className='absolute -top-1 -right-1 h-5 w-5 rounded-full bg-wrong text-white flex text-base items-center justify-center'>{wordsToReview.length}</span>}
           </button>
           <h1 className='text-xl text-primary-text'>Learning modes</h1>
           <div className="learning-modes flex gap-2.5 mt-2.5 flex-wrap">
-            <button className='p-2.5 bg-secondary-surface cursor-pointer rounded-lg flex items-center gap-2.5 text-secondary-text' onClick={() => learnBtn(words)}>
+            <button className='p-2.5 bg-primary-surface cursor-pointer rounded-lg flex items-center gap-2.5 text-secondary-text hover:bg-secondary-surface' onClick={() => learnBtn(words)}>
               <img src="https://cdn-icons-png.freepik.com/512/9100/9100957.png" alt="" className='h-10' />
               Flashcard
             </button>
 
-            {/* <button onClick={() => generateMatching(words)} className='openMatchingBtn'>
-              <img src="https://cdn-icons-png.freepik.com/512/282/282100.png" alt="" />
-              Matching
-            </button> */}
-
-            <button className='p-2.5 bg-secondary-surface cursor-pointer rounded-lg flex items-center gap-2.5 text-secondary-text' onClick={() => generateFilling(words)}>
+            <button className='p-2.5 bg-primary-surface cursor-pointer rounded-lg flex items-center gap-2.5 text-secondary-text hover:bg-secondary-surface' onClick={() => generateFilling(words)}>
               <img src="https://cdn-icons-png.flaticon.com/512/6559/6559624.png" alt="" className='h-10' />
               Filling
             </button>
 
-            <button className='p-2.5 bg-secondary-surface cursor-pointer rounded-lg flex items-center gap-2.5 text-secondary-text' onClick={() => generateListening(words)}>
+            <button className='p-2.5 bg-primary-surface cursor-pointer rounded-lg flex items-center gap-2.5 text-secondary-text hover:bg-secondary-surface' onClick={() => generateListening(words)}>
               <img src="https://cdn-icons-png.flaticon.com/512/8805/8805242.png" alt="" className='h-10' />
               Listening
+            </button>
+
+            <button className='p-2.5 bg-primary-surface cursor-pointer rounded-lg flex items-center gap-2.5 text-secondary-text hover:bg-secondary-surface' onClick={() => setShowMatching(true)}>
+              <img src="https://cdn-icons-png.flaticon.com/512/3952/3952841.png" alt="" className='h-10' />
+              Matching
             </button>
           </div>
           
           <h1 className='text-xl text-primary-text mt-5 mb-2.5'>Settings</h1>
           
           
-          <button className='p-2.5 rounded-lg bg-secondary-surface cursor-pointer text-secondary-text block mb-2.5' onClick={() => {
+          <button className='p-2.5 rounded-lg bg-primary-surface cursor-pointer text-secondary-text block mb-2.5 hover:bg-secondary-surface' onClick={() => {
             setShowRenameFolderSection(true)
           }}><FontAwesomeIcon icon={faPen} className='mr-1'/> Rename folder</button>
           
-          <button className='p-2.5 rounded-lg bg-secondary-surface cursor-pointer block text-wrong' onClick={() => {
+          <button className='p-2.5 rounded-lg bg-primary-surface cursor-pointer block text-wrong hover:bg-secondary-surface' onClick={() => {
             setShowDeleteValid(true)
           }}><FontAwesomeIcon icon={faTrash} className='mr-1'/> Delete folder</button>
         </div>
@@ -682,14 +684,15 @@ export default function WordSection({onClose, currentFolder, userID}) {
               {
                 words.length > 0 ? (
                     words.map((word, index) => 
-                      <li key={index} className='p-2.5 bg-secondary-surface rounded-lg flex items-center justify-between w-full'>
+                      <li key={index} className='p-2.5 rounded-lg flex items-center justify-between w-full'>
                         <div>
                           <MeaningDisplay word={word}/>
-                          <p className='text-secondary-text'>{word.mean.toLowerCase()}</p>
+                          <p className='text-secondary-text text-base '>{word.definition_eng}</p>
+                          <p className='text-secondary-text text-base '>{word.definition_vie}</p>
                         </div>
 
                         <button 
-                          className='text-wrong p-2.5 cursor-pointer rounded-lg hover:bg-bg-hover'
+                          className='text-primary-surface cursor-pointer rounded-lg hover:text-wrong'
                           onClick={() => {
                             const newWords = words.filter((words, i) => i !== index)
                             setAllWords(newWords)
@@ -724,6 +727,13 @@ export default function WordSection({onClose, currentFolder, userID}) {
 
       {showListening && (
         <ListeningSection listeningWords={listeningWords} onClose={() => setShowListening(false)}/>
+      )}
+
+      {showMatching && (
+        <MatchingSection
+          onClose={() => setShowMatching(false)}
+          data={words}
+        />
       )}
 
       {showReview && (

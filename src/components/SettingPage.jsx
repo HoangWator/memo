@@ -10,7 +10,7 @@ function AccountPage({userAvatar, userName}) {
       <div className='w-full flex flex-col items-center'>
         <img src={userAvatar} alt="" className='rounded-full'/>
         <h2 className='text-primary-text mt-2.5'>{userName}</h2>
-        <button className='click-btn mt-2.5 bg-secondary-surface hover:text-wrong' onClick={() => {
+        <button className='click-btn text-primary-text mt-2.5 bg-secondary-surface hover:text-wrong' onClick={() => {
           // setShowLogoutSection(true)
           // setShowLogoutBtn(false)
         }}>Log out<FontAwesomeIcon icon={faArrowRightFromBracket} className='ml-2.5' /></button>
@@ -30,7 +30,12 @@ function ThemePage() {
 
 function LanguagePage() {
   return (
-    <div>Language Settings</div>
+    <div className='p-2.5'>
+      <h1 className='font-semibold'>Dictionary Display</h1>
+      {/* Select language display on dictionary */}
+
+
+    </div>
   )
 }
 export function SettingPage({onClose, userAvatar, userName}) {
@@ -38,7 +43,7 @@ export function SettingPage({onClose, userAvatar, userName}) {
 
   return (
     <div className="fixed top-0 bottom-0 right-0 left-0 bg-black/50 flex items-center justify-center">
-      <div className="bg-primary-surface w-1/2 relative rounded-lg h-[80vh] flex flex-col">
+      <div className="bg-bg w-1/2 relative rounded-lg h-[80vh] flex flex-col">
         <h1 className="text-2xl text-primary-text text-center mt-5 mb-5">Settings</h1>
         <button 
           onClick={() => {
@@ -52,21 +57,17 @@ export function SettingPage({onClose, userAvatar, userName}) {
         <div className="flex flex-1 pl-2.5 pr-2.5 pb-2.5">
           <ul className="pr-2.5 border-r-1 border-r-muted">
             <li 
-              className={"pt-2.5 pb-2.5 pr-5 pl-5 mb-1 rounded-lg  cursor-pointer text-center hover:bg-secondary-surface hover:text-primary-text " + (selectedPage === 0 ? 'bg-secondary-surface text-primary-text' : 'text-secondary-text')}
+              className={"pt-2.5 pb-2.5 pr-5 pl-5 mb-1 rounded-lg  cursor-pointer text-center hover:bg-primary-surface  " + (selectedPage === 0 ? 'bg-primary-surface text-primary-text' : 'text-secondary-text')}
               onClick={() => setSelectedPage(0)}
             >Account</li>
             <li 
-              className={"pt-2.5 pb-2.5 pr-5 pl-5 mb-1 rounded-lg cursor-pointer text-center hover:bg-secondary-surface hover:text-primary-text " + (selectedPage === 1 ? 'bg-secondary-surface text-primary-text' : 'text-secondary-text')}
+              className={"pt-2.5 pb-2.5 pr-5 pl-5 mb-1 rounded-lg cursor-pointer text-center hover:bg-primary-surface  " + (selectedPage === 1 ? 'bg-primary-surface text-primary-text' : 'text-secondary-text')}
               onClick={() => setSelectedPage(1)}
             >Theme</li>
             <li 
-              className={"pt-2.5 pb-2.5 pr-5 pl-5 mb-1 rounded-lg cursor-pointer text-center hover:bg-secondary-surface hover:text-primary-text " + (selectedPage === 2 ? 'bg-secondary-surface text-primary-text' : 'text-secondary-text')}
+              className={"pt-2.5 pb-2.5 pr-5 pl-5 mb-1 rounded-lg cursor-pointer text-center hover:bg-primary-surface  " + (selectedPage === 2 ? 'bg-primary-surface text-primary-text' : 'text-secondary-text')}
               onClick={() => setSelectedPage(2)}
             >Language</li>
-            <li 
-              className={"pt-2.5 pb-2.5 pr-5 pl-5 mb-1 rounded-lg cursor-pointer text-center hover:bg-secondary-surface hover:text-primary-text " + (selectedPage === 3 ? 'bg-secondary-surface text-primary-text' : 'text-secondary-text')}
-              onClick={() => setSelectedPage(3)}
-            >Dictionary</li>
           </ul>
 
           {selectedPage === 0 && <AccountPage userAvatar={userAvatar} userName={userName}/>}
