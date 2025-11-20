@@ -5,6 +5,7 @@ import LoaderDict from './LoaderDict';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus,faBookOpen,faBars,faArrowLeft,faArrowRight,faArrowDown,faArrowUp,faTrash,faXmark,faMagnifyingGlass,faCheck,faVolumeHigh,faFolder,faDumbbell,faTrophy,faChartSimple,faEllipsis,faPenToSquare,faX,faArrowRightFromBracket,faArrowsLeftRight } from '@fortawesome/free-solid-svg-icons'
 import { addWordDB } from '../components/handleData';
+import { addWordToDictDB,searchWordInDictDB,checkWordInDictDB } from '../components/handleData';
 
 function createReviewDates(startDate) {
   // Date distance between review times
@@ -332,7 +333,7 @@ function DictItem({data, handleSearch, folderList, userID}) {
   }
 
   return (
-    <div className="text-gray-500 w-5/6 p-4">
+    <div id="dict-item" className="text-gray-500 w-5/6 p-4">
       <h2 className='text-3xl text-primary-text font-semibold'>{word}</h2>
       <p className="text-primary italic">{phonetics.text}</p>
       <div className="flex gap-2.5 mt-5 mb-5 border-b-muted border-b-1">
@@ -403,22 +404,34 @@ export function DictionarySection({folderList, userID}) {
   const handleSearch = async (word) => {
     if (word.trim() !== "") {
       setShowLoader(true);
-      dictEngine(word).then((datas) => {
-        const processedData = datas.slice(datas.indexOf('{'), datas.lastIndexOf('}') + 1);
+      const isInDict = await checkWordInDictDB(word);
+
+      if (isInDict) {
+        const wordInDict = await searchWordInDictDB(word);
+        setSearchResults(wordInDict);
         setShowLoader(false);
-        if (processedData.length > 0) {
-          const jsonData = JSON.parse(processedData)
-          setSearchResults(jsonData);
-        }
-        else {
-          alert("Word not found in the dictionary.");
-        }
-        setSearchTerm('')
-      }).catch((error) => {
-        setShowLoader(false);
-        alert("An error occurred while fetching the definition. Please try again.");
-        console.error("Error fetching definition:", error);
-      })
+        setSearchTerm('');
+      }
+      else {
+        dictEngine(word).then((datas) => {
+          const processedData = datas.slice(datas.indexOf('{'), datas.lastIndexOf('}') + 1);
+          setShowLoader(false);
+          if (processedData.length > 0) {
+            const jsonData = JSON.parse(processedData)
+            console.log(jsonData)
+            setSearchResults(jsonData);
+            addWordToDictDB(jsonData);
+          }
+          else {
+            alert("Word not found in the dictionary.");
+          }
+          setSearchTerm('')
+        }).catch((error) => {
+          setShowLoader(false);
+          alert("An error occurred while fetching the definition. Please try again.");
+          console.error("Error fetching definition:", error);
+        })
+      }
     }
     else {
       alert("Please enter a word to search.");
@@ -442,6 +455,7 @@ export function DictionarySection({folderList, userID}) {
               onKeyDown={e => {
                 if (e.key === 'Enter') {
                   handleSearch(searchTerm)
+                  
                 }
               }}
             />

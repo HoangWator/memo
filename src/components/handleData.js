@@ -122,3 +122,47 @@ export async function getFolderDataDB(uid, folderName) {
   }
 }
 
+// Add word to dictionary
+export async function addWordToDictDB(word) {
+  try {
+    await setDoc(doc(db, "dictionary", word.word), word)
+  } catch (e) {
+    console.error("Error adding document: ", e);
+  }
+}
+
+// Check if word exists in dictionary
+export async function checkWordInDictDB(word) {
+  try {
+    const querySnapshot = await getDocs(collection(db, "dictionary"));
+    let exists = false; 
+    querySnapshot.forEach((doc) => {
+      if (doc.data().word === word) {
+        exists = true; 
+      }
+    });
+    return exists;
+  } catch (e) {
+    console.error("Error checking document: ", e);
+    return false; 
+  }
+}
+
+// Search word in dictionary
+export async function searchWordInDictDB(word) {
+  try {
+    const docRef = doc(db, "dictionary", word);
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+      return docSnap.data()
+    } else {
+      // docSnap.data() will be undefined in this case
+      console.log("No such document!");
+    }
+
+  } catch (e) {
+    console.error("Error searching document: ", e);
+    return [];
+  }
+}

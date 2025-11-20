@@ -117,7 +117,9 @@ export async function dictEngine(word) {
       You are Oxford dictionary.
       if word is not available, return like this:
       "unavailable"
-      If word is available, tell me all infomations of that word including partOfSpeech, phonetics, meanings (both english and vietnamese), examples for each meanings, idioms (if possible), synonyms, antonyms and word family. Respond in json. Make sure the json is correct and can be parsed.
+      If word is available, tell me all infomations of that word including partOfSpeech, phonetics, meanings (both english and vietnamese), examples for each meanings, idioms (if possible), synonyms, antonyms and word family. 
+      If the word is plural or different tense, give me the base form of that word.
+      Respond in json. Make sure the json is correct and can be parsed.
       With "work", you should return in JSON like this:
       {
         "word": "work",
