@@ -17,7 +17,7 @@ export async function isAlreadyLogin(uid) {
 export async function addUser(uid) {
   try {
     await setDoc(doc(db, "users", uid), {
-      folders: {}
+      folders: []
     });
 
   } catch (e) {
@@ -40,7 +40,7 @@ export async function getUserData(uid) {
 export async function addFolderDB(uid, folderName) {
   try {
     await updateDoc(doc(db, "users", uid), {
-      [`folders.${folderName}`]: []
+      folders: arrayUnion({name: folderName, words: []})
     })
   } catch (e) {
     console.error("Error adding document: ", e);
@@ -50,7 +50,7 @@ export async function addFolderDB(uid, folderName) {
 export async function deleteFolderDB(uid, folderName) {
   try {
     await updateDoc(doc(db, "users", uid), {
-      [`folders.${folderName}`]: deleteField()
+      folders: arrayRemove({name: folderName, words: []})
     });
   } catch (e) {
     console.error("Error deleting document: ");
@@ -61,22 +61,20 @@ export async function renameFolderDB(uid, clickedFolder, newFolderName) {
   try {
     const docRef = doc(db, "users", uid);
     const docSnap = await getDoc(docRef);
-
     if (docSnap.exists()) {
       const data = docSnap.data();
-      const folders = data.folders || {};
-
-      // If the old folder exists and the new one does not
-      if (folders[clickedFolder] && !folders[newFolderName]) {
-        // Copy the data to the new folder name
-        await updateDoc(docRef, {
-          [`folders.${newFolderName}`]: folders[clickedFolder],
-          [`folders.${clickedFolder}`]: deleteField()
-        });
-      } else {
-        console.error("Rename failed: Folder does not exist or new name already taken.");
-      }
+      const folderData = data.folders || [];
+      // Find and update the specific folder
+      const updatedFolders = folderData.map(item => 
+        item.name === clickedFolder ? { ...item, name: newFolderName } : item
+      );
+      // Update the folder with the modified array
+      await updateDoc(docRef, {
+        folders: updatedFolders
+      });
     }
+
+
   } catch (e) {
     console.error("Error deleting document: ");
   }
@@ -86,9 +84,22 @@ export async function renameFolderDB(uid, clickedFolder, newFolderName) {
 
 export async function addWordDB(uid, folderName, word) {
   try {
-    await updateDoc(doc(db, "users", uid), {
-      [`folders.${folderName}`]: arrayUnion(word)
-    });
+    const docRef = doc(db, "users", uid);
+
+    // 1. Get the current data
+    const snapshot = await getDoc(docRef);
+    const data = snapshot.data();
+
+    // 2. Find the folder and push the new item
+    const folderIndex = data.folders.findIndex(folder => folder.name === folderName);
+    if (folderIndex !== -1) {
+      data.folders[folderIndex].words.push(word);
+
+      // 3. Write the WHOLE folders array back
+      await updateDoc(docRef, {
+        folders: data.folders
+      });
+    }
   } catch (e) {
     console.error("Error adding document: ", e);
   }
@@ -97,9 +108,22 @@ export async function addWordDB(uid, folderName, word) {
 export async function deleteWordDB(uid, folderName, word) {
   console.log('Delete works!')
   try {
-    await updateDoc(doc(db, "users", uid), {
-      [`folders.${folderName}`]: arrayRemove(word)
-    });
+    const docRef = doc(db, "users", uid);
+
+    // 1. Get the current data
+    const snapshot = await getDoc(docRef);
+    const data = snapshot.data();
+
+    // 2. Find the folder and push the new item
+    const folderIndex = data.folders.findIndex(folder => folder.name === folderName);
+    if (folderIndex !== -1) {
+      data.folders[folderIndex].words.splice(data.folders[folderIndex].words.indexOf(word), 1);
+
+      // 3. Write the WHOLE folders array back
+      await updateDoc(docRef, {
+        folders: data.folders
+      });
+    }
   } catch (e) {
     console.error("Error adding document: ", e);
   }
@@ -112,7 +136,9 @@ export async function getFolderDataDB(uid, folderName) {
 
     if (docSnap.exists()) {
       const data = docSnap.data();
-      return data.folders[folderName] || [];
+      const userFolders = data.folders || [];
+      const folderData = userFolders.find(folder => folder.name === folderName);
+      return folderData
     } else {
       console.log("No such document!");
       return null;
@@ -164,5 +190,58 @@ export async function searchWordInDictDB(word) {
   } catch (e) {
     console.error("Error searching document: ", e);
     return [];
+  }
+}
+
+export async function updateReviewSchedule(uid, folderName, datas, mode) {
+  const docRef = doc(db, "users", uid);
+  const docSnap = await getDoc(docRef);
+  if (docSnap.exists()) {
+    const data = docSnap.data();
+    const folderData = data.folders || [];
+    const currentFolder = folderData.find(folder => folder.name === folderName);
+    let wordsInFolder = currentFolder.words || [];
+
+    wordsInFolder.forEach(wordItem => {
+      datas.forEach(item => {
+        if (wordItem.name === item.word && wordItem.definition_eng === item.answer_eng && wordItem.definition_vie === item.answer_vie) {
+          // Update review schedule based on result
+          const reviewedDate = new Date();
+          let newScheduleReview = [];
+          if (item.result === 'correct' && wordItem.rateAccuracy !== true) {
+            for (let i = 1; i <= 10; i++) {
+              if (i === 1) {
+                reviewedDate.setDate(reviewedDate.getDate() + 1);
+                newScheduleReview.push(reviewedDate);
+              }
+              else {
+                const lastDate = new Date(newScheduleReview[newScheduleReview.length - 1]);
+                lastDate.setDate(lastDate.getDate() + i);
+                newScheduleReview.push(lastDate);
+              }
+            }
+            let modeReviewIndex = wordItem.scheduleReview.findIndex(item => item.mode === mode);
+            wordItem.scheduleReview[modeReviewIndex].rateAccuracy = true
+            wordItem.scheduleReview[modeReviewIndex].lastReview = new Date()
+            wordItem.scheduleReview[modeReviewIndex].reviewDates = newScheduleReview;
+            updateDoc(docRef, {
+              folders: folderData
+            });
+          }
+          else if (item.result === 'wrong' && wordItem.rateAccuracy === true) {
+            reviewedDate.setDate(reviewedDate.getDate() + 1);
+            newScheduleReview.push(reviewedDate);
+            let modeReviewIndex = wordItem.scheduleReview.findIndex(item => item.mode === mode);
+            wordItem.scheduleReview[modeReviewIndex].rateAccuracy = false
+            wordItem.scheduleReview[modeReviewIndex].lastReview = new Date()
+            wordItem.scheduleReview[modeReviewIndex].scheduleReview = newScheduleReview;
+            updateDoc(docRef, {
+              folders: folderData
+            });
+          }
+        }
+      })  
+    })
+
   }
 }

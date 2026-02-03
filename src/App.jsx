@@ -63,9 +63,8 @@ function App() {
       // Get user's folders
       getUserData(user.uid).then((data) => {
         if (data) {
-          const folderKeys = Object.keys(data.folders);
-          setFolders(folderKeys);
-          setAllFolders(folderKeys); // <-- keep the full list
+          setFolders(data.folders);
+          setAllFolders(data.folders); // <-- keep the full list
           setUserData(data);
         } else {
           setFolders([]);
@@ -92,8 +91,8 @@ function App() {
         // Optionally, fetch user data here
         getUserData(user.uid).then((data) => {
           if (data) {
-            setFolders(Object.keys(data.folders));
-            setAllFolders(Object.keys(data.folders))
+            setFolders(data.folders);
+            setAllFolders(data.folders)
             setUserData(data);
           } else {
             setFolders([]);
@@ -113,7 +112,7 @@ function App() {
     return () => unsubscribe();
   }, []);
 
-
+  
   
   // Logout section
   const [showLogoutSection, setShowLogoutSection] = useState(false)
@@ -128,7 +127,21 @@ function App() {
 
   // Directing page
   const [pageIndex, setPageIndex] = useState(0)
-  
+
+  useEffect(() => {
+    getUserData(userID).then((data) => {
+        if (data) {
+          setFolders(data.folders)
+          setAllFolders(data.folders)
+          setUserData(data)
+        }
+        else {
+          setFolders([])
+          setAllFolders([])
+          // setUserData(data)
+        }
+      })
+  }, [pageIndex])
   
   // Create a folder
   const [showCreateFolder, setShowCreateFolder] = useState(false)
@@ -148,8 +161,8 @@ function App() {
 
       getUserData(userID).then((data) => {
         if (data) {
-          setFolders(Object.keys(data.folders))
-          setAllFolders(Object.keys(data.folders))
+          setFolders(data.folders)
+          setAllFolders(data.folders)
           setUserData(data)
         }
         else {
@@ -190,8 +203,8 @@ function App() {
     getUserData(userID).then((data) => {
       // console.log(data)
       setUserData(data)
-      setFolders(Object.keys(data.folders));
-      setAllFolders(Object.keys(data.folders));
+      setFolders(data.folders);
+      setAllFolders(data.folders);
     })
     console.log('Quit word section')
   }
@@ -244,8 +257,7 @@ function App() {
       return wordsToReview
     }
 
-    let wordsInFolder = userData.folders[folder]
-    let wordsToReview = getWordsToReview(wordsInFolder)
+    let wordsToReview = getWordsToReview(folder.words || [])
 
     if (wordsToReview.length > 0) {
       return (
@@ -439,7 +451,7 @@ function App() {
                         const searchValue = e.target.value.toLowerCase();
                         if (searchValue.length > 0) {
                           const filteredFolders = allFolders.filter(folder =>
-                            folder.toLowerCase().includes(searchValue)
+                            folder.name.toLowerCase().includes(searchValue)
                           );
                           setFolders(filteredFolders);
                         } else {
@@ -460,29 +472,18 @@ function App() {
                     <p className='text-center text-secondary-text'>No folders yet.</p>
                   </div>
                 )}
-                {folders.map((folder, index) => (
-                  <div className="folder-item px-6 py-3 rounded-lg min-w-37.5 relative cursor-pointer shadow-lg hover:shadow-xl bg-bg" key={index}>
-                    <div className="" onClick={() => openWordSection(folder)}>
-                      <FontAwesomeIcon icon={faFolder} className='folder-icon text-primary text-2xl' />
-                      <h2 className='text-xl text-primary-text font-semibold mt-2.5'>{folder}</h2>
-                      <p className='text-secondary-text'><span className='text-secondary-text'>{userData.folders[folder].length || 0} words</span></p>
-                      <ReviewWordsNums folder={folder}/>
-                      {/* <div className="more" onClick={(e) => {e.stopPropagation()}}>
-                        <FontAwesomeIcon icon={faEllipsis} />
-                        <div className="more-options">
-                          <button className='edit-folder-btn' onClick={() => {
-                            setShowRenameFolderSection(true)
-                            setRenameTarget(folder)
-                          }}><FontAwesomeIcon icon={faPenToSquare} /> Rename</button>
-                          <button className='delete-folder-btn' onClick={() => {
-                            setShowAskToDelete(true)
-                            setRenameTarget(folder)
-                          }}><FontAwesomeIcon icon={faTrash} /> Delete</button>
-                        </div>
-                      </div> */}
+                {folders.map((folder, index) => {
+                  return (
+                    <div className="folder-item px-6 py-3 rounded-lg min-w-37.5 relative cursor-pointer shadow-lg hover:shadow-xl bg-bg" key={index}>
+                      <div className="" onClick={() => openWordSection(folder.name)}>
+                        <FontAwesomeIcon icon={faFolder} className='folder-icon text-primary text-2xl' />
+                        <h2 className='text-xl text-primary-text font-semibold mt-2.5'>{folder.name}</h2>
+                        <p className='text-secondary-text'><span className='text-secondary-text'>{folder.words.length} words</span></p>
+                        <ReviewWordsNums folder={folder}/>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  )
+                })}
               </div>
             </div>
           )}

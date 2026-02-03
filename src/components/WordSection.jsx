@@ -34,64 +34,95 @@ export default function WordSection({onClose, currentFolder, userID}) {
   function getWordsToReview(words) {
     const currentDay = new Date()
     let wordsToReview = []
+    let matchingReviewItems = []
+    let fillingReviewItems = []
+    let listeningReviewItems = []
     words.forEach(word => {
-      let schedule = word.scheduleReview
-      let lastReview = word.lastReview
+      let scheduleReview = word.scheduleReview
       let currentYear = currentDay.getFullYear()
       let currentMonth = currentDay.getMonth()
       let currentDate = currentDay.getDate()
 
-      if (schedule) {
-        let isReviewDay = schedule.some(date => {
-          const dateReview = new Date(date.seconds * 1000)
-          return (
-            dateReview.getFullYear() === currentYear &&
-            dateReview.getMonth() === currentMonth && 
-            dateReview.getDate() === currentDate
-          )
-        })
-        if (isReviewDay) {
-          wordsToReview.push(word)
-        }
-      }
-    })
+      for (const item of scheduleReview) {
+        let reviewDates = item.reviewDates
 
-    return wordsToReview
-  }
-  //Generate review schedule
-  function createReviewDates(startDate) {
-    // Date distance between review times
-    let nums = [0, 1, 2]
-    let i = 1
-    while (nums.length < 10) {
-      nums.push(nums[i] + nums[i + 1])
-      i++
-    }
-    function dateAdd(nums, i) {
-      let add = 0
-      for (let j = 0; j <= i; j++) {
-        add += nums[j]
+        if (item.lastReview === null) {
+          let isReviewDay = reviewDates.some(date => {
+            const reviewDate = new Date(date.seconds * 1000)
+            return (
+              reviewDate.getFullYear() === currentYear &&
+              reviewDate.getMonth() === currentMonth && 
+              reviewDate.getDate() === currentDate
+            )
+          })
+          
+          if (isReviewDay) {
+            wordsToReview.push(word)
+            if (item.mode === 'matching') {
+              matchingReviewItems.push(word)
+            }
+            else if (item.mode === 'filling') {
+              fillingReviewItems.push(word)
+            }
+            else if (item.mode === 'listening') {
+              listeningReviewItems.push(word)
+            }
+            break
+          }
+        }
+        else if (item.lastReview) {
+          let lastReviewDate = new Date(item.lastReview.seconds * 1000)
+          if (
+            lastReviewDate.getFullYear() !== currentYear &&
+            lastReviewDate.getMonth() !== currentMonth && 
+            lastReviewDate.getDate() !== currentDate
+          ) {
+            let isReviewDay = reviewDates.some(date => {
+              const reviewDate = new Date(date.seconds * 1000)
+              return (
+                reviewDate.getFullYear() === currentYear &&
+                reviewDate.getMonth() === currentMonth && 
+                reviewDate.getDate() === currentDate
+              )
+            })
+            
+            if (isReviewDay) {
+              wordsToReview.push(word)
+              if (item.mode === 'matching') {
+                matchingReviewItems.push(word)
+              }
+              else if (item.mode === 'filling') {
+                fillingReviewItems.push(word)
+              }
+              else if (item.mode === 'listening') {
+                listeningReviewItems.push(word)
+              }
+              break
+            }
+          }
+        }
+        
+        
       }
-      return add
-    }
-    // Add dates to review
-    const dates = [];
-    for (let i = 0; i < nums.length; i++) {
-      const d = new Date(startDate);
-      d.setDate(d.getDate() + dateAdd(nums, i));
-      dates.push(d);
-    }
-    
-    return dates;
+      
+    })
+    return {
+      wordsToReview: wordsToReview,
+      matchingReviewItems: matchingReviewItems,
+      fillingReviewItems: fillingReviewItems,
+      listeningReviewItems: listeningReviewItems
+    };
   }
+  
   
   useEffect(() => {
     setLoader(true)
     getFolderDataDB(userID, currentFolder).then((data) =>  {
         if (data) {
-          setWordsToReview(getWordsToReview(data))
-          setWords(data);
-          setAllWords(data);
+          console.log(getWordsToReview(data.words))
+          setWordsToReview(getWordsToReview(data.words).wordsToReview)
+          setWords(data.words);
+          setAllWords(data.words);
           setLoader(false);
         }
     }).catch((error) => {
@@ -102,7 +133,7 @@ export default function WordSection({onClose, currentFolder, userID}) {
   useEffect(() => {
     getFolderDataDB(userID, currentFolder).then((data) =>  {
         if (data) {
-          setWordsToReview(getWordsToReview(data))
+          setWordsToReview(getWordsToReview(data.words))
         }
     }).catch((error) => {
         console.error("Error fetching folder data:", error);
@@ -110,29 +141,6 @@ export default function WordSection({onClose, currentFolder, userID}) {
   }, [words])
 
   
-  const addWord = () => {
-    const d = new Date()
-    if (word != '' && meaning != '') {
-      let typeWord = meaning.slice(meaning.indexOf('(') + 1, meaning.indexOf(')'))
-      let newMeaning =  meaning.slice(meaning.indexOf(')') + 1).trim()
-      setWords([...words, {
-        name: word.toLowerCase(), 
-        mean: newMeaning, 
-        type: typeWord
-      }])
-      addWordDB(userID, currentFolder, {
-        name: word.toLowerCase(), 
-        mean: newMeaning,
-        type: typeWord,
-        dateAdded: d,
-        lastReview: null,
-        reviewCount: 0,
-        scheduleReview: createReviewDates(d)
-      })
-    }
-    setWord('')
-    setMeaning('')
-  }
   
   // Suggest meaning feature
   const meaningRefs = useRef([]);
@@ -233,11 +241,6 @@ export default function WordSection({onClose, currentFolder, userID}) {
   const [showMatching, setShowMatching] = useState(false)
 
   // Review Section
-  const [showReview, setShowReview] = useState(false)
-  const generateReview = (words) => {
-    setShowReview(true)
-  }
-
   function MeaningDisplay({word}) {
     let meaningCln;
     if (word.type === 'noun') {
@@ -270,7 +273,7 @@ export default function WordSection({onClose, currentFolder, userID}) {
 
 
   return (
-    <div className="fixed top-0 bottom-0 left-0 right-0 bg-bg" onClick={() => {
+    <div className="fixed top-0 bottom-0 left-0 right-0 bg-bg overflow-scroll" onClick={() => {
       if (showRemindSuggestion) {
         setShowRemindSuggestion(false)
       }
@@ -301,152 +304,13 @@ export default function WordSection({onClose, currentFolder, userID}) {
       <div className="word-section-body flex">
 
         <div className="w-1/2 p-2.5">
-          {/* <button className='word-list-btn' onClick={() => setShowWordList(true)}>
-            My words 
-
-            <div className="word-count">
-              {words.length}
-              <FontAwesomeIcon icon={faChevronRight}/>
-            </div>
-          </button> */}
-          {/* <input 
-            className='input-field w-full mb-2.5'
-            type="text"
-            placeholder='Enter word'
-            value={word}
-            ref={wordInputRef}
-            onChange={e => setWord(e.target.value)} 
-            onClick={() => {
-              setShowRemindSuggestion(false)
-              setShowMeaningList(false)
-              if (meaningList.length > 0) {
-                setMeaningList([])
-              }
-            }}
-            onKeyDown={e => {
-              if (e.key === 'Enter' || e.key === 'ArrowDown') {
-                // Move focus to meaning input
-                meaningInputRef.current && meaningInputRef.current.focus();
-                setShowRemindSuggestion(true)
-              }
-            }}
-          />
-          <div className="meaning-section relative">
-            <input 
-              className='input-field w-full mb-2.5'
-              type="text"
-              placeholder='Enter meaning'
-              value={meaning}
-              ref={meaningInputRef}
-              onChange={e => {
-                setMeaning(e.target.value)
-                setShowMeaningList(false)
-                setSelectedMeaningIndex(-1);
-                if (e.target.value === '/') {
-                  suggestMeaning()
-                }
-                if (e.target.value === '') {
-                  setShowRemindSuggestion(true)
-                }
-                else {
-                  setShowRemindSuggestion(false)
-                }
-              }} 
-              onKeyDown={e => {
-                if (showMeaningList && meaningList.length > 0) {
-                  if (e.key === 'ArrowDown') {
-                    e.preventDefault();
-                    setSelectedMeaningIndex(prev =>
-                      prev < meaningList.length - 1 ? prev + 1 : 0
-                    );
-                  } else if (e.key === 'ArrowUp') {
-                    e.preventDefault();
-                    setSelectedMeaningIndex(prev =>
-                      prev > 0 ? prev - 1 : meaningList.length - 1
-                    );
-                  } else if (e.key === 'Enter' && selectedMeaningIndex !== -1) {
-                    setMeaning(`(${meaningList[selectedMeaningIndex].type}) ${meaningList[selectedMeaningIndex].vie}`);
-                    setShowMeaningList(false);
-                  } else if (e.key === 'Enter') {
-                    addWord();
-                    wordInputRef.current && wordInputRef.current.focus();
-                  }
-                } else if (e.key === 'Enter') {
-                  addWord();
-                  wordInputRef.current && wordInputRef.current.focus();
-                }
-
-              }}
-              onClick={() => {
-                if (word) {
-                  setShowRemindSuggestion(true)
-                }
-              }}
+          {wordsToReview.length > 0 && 
+            <ReviewSection 
+              data={wordsToReview} 
+              userID={userID}
+              currentFolder={currentFolder}  
             />
-            {showRemindSuggestion && (
-              <div className="remind-suggestion absolute top-14 right-0 bg-primary p-2.5 rounded-lg">
-                <p className='text-primary-text flex items-center gap-2.5'><FontAwesomeIcon icon={faLightbulb} className='text-secondary' />Type "/" to suggest meaning</p>
-              </div>
-            )}
-            {meaningListLoader && (
-              <div className="meaning-suggest-loader-section">
-                <div className="meaning-suggest-loader"></div>
-              </div>
-            )}
-            {showMeaningList && meaningList.length > 0 && (
-              <div className="meaning-list-section p-2.5 bg-secondary-surface rounded-lg absolute top-13 left-0 right-0 z-10 shadow-lg">
-                <div className="meaning-list">
-                  {
-                    meaningList.map((meaning, index) => {
-                      let typeClassName;
-                      if (meaning.type === 'noun') {
-                        typeClassName = 'noun'
-                      }
-                      else if (meaning.type === 'verb') {
-                        typeClassName = 'verb'
-                      }
-                      else if (meaning.type === 'adjective') {
-                        typeClassName = 'adjective'
-                      }
-                      else if (meaning.type === 'adverb') {
-                        typeClassName = 'adverb'
-                      }
-                      else {
-                        typeClassName = 'other'
-                      }
-                      
-                      const isSelected = index === selectedMeaningIndex;
-
-                      return (
-                      <li 
-                        ref={el => (meaningRefs.current[index] = el)}
-                        className={`meaning${isSelected ? ' selected' : ''}`}
-                        key={index}
-                        onClick={() => {
-                          setMeaning(`(${meaning.type}) ${meaning.vie}`)
-                          setShowMeaningList(false)
-                        }}
-                        // style={isSelected ? { background: '' } : {}}
-                      >
-                        <p className={typeClassName}>{meaning.type}</p>
-                        <p>{meaning.vie}</p>
-                        <p>{meaning.eng}</p>
-                      </li>
-                    )})
-                  }
-                </div>
-              </div>
-            )}
-          </div> */}
-
-          {/* <button className='click-btn pr-4 pl-4' onClick={addWord}>Add</button> */}
-          <button 
-            className='click-btn mb-2.5 pr-4 pl-4 relative'
-            onClick={() => generateReview(wordsToReview)}
-          >
-            Review
-            {wordsToReview.length > 0 && <span className='absolute -top-1 -right-1 h-5 w-5 rounded-full bg-wrong text-white flex text-base items-center justify-center'>{wordsToReview.length}</span>}
-          </button>
+          }
           <h1 className='text-xl text-primary-text'>Learning modes</h1>
           <div className="learning-modes flex gap-2.5 mt-2.5 flex-wrap">
             <button className='p-2.5 bg-primary-surface cursor-pointer rounded-lg flex items-center gap-2.5 text-secondary-text hover:bg-secondary-surface' onClick={() => learnBtn(words)}>
@@ -482,145 +346,7 @@ export default function WordSection({onClose, currentFolder, userID}) {
           }}><FontAwesomeIcon icon={faTrash} className='mr-1'/> Delete folder</button>
         </div>
         
-        {showWordSectionLeft && (
-          <div className="word-section-left-modal mobile" onClick={() => {
-            setShowWordSectionLeft(false)
-          }}>
-            <div className="word-section-left" onClick={e => e.stopPropagation()}>
-              <input 
-                className='mobile'
-                type="text"
-                placeholder='Enter word'
-                value={word}
-                ref={wordInputRef}
-                onChange={e => setWord(e.target.value)} 
-                onClick={() => {
-                  setShowRemindSuggestion(false)
-                  setShowMeaningList(false)
-                  if (meaningList.length > 0) {
-                    setMeaningList([])
-                  }
-                }}
-                onKeyDown={e => {
-                  if (e.key === 'Enter' || e.key === 'ArrowDown') {
-                    // Move focus to meaning input
-                    meaningInputRef.current && meaningInputRef.current.focus();
-                    setShowRemindSuggestion(true)
-                  }
-                }}
-              />
-              <div className="meaning-section mobile">
-                <input 
-                  type="text"
-                  placeholder='Enter meaning'
-                  value={meaning}
-                  ref={meaningInputRef}
-                  onChange={e => {
-                    setMeaning(e.target.value)
-                    setShowMeaningList(false)
-                    setSelectedMeaningIndex(-1);
-                    if (e.target.value === '/') {
-                      suggestMeaning()
-                    }
-                    if (e.target.value.length > 0) {
-                      setShowRemindSuggestion(false)
-                    }
-                    else {
-                      setShowRemindSuggestion(true)
-                    }
-                  }} 
-                  onKeyDown={e => {
-                    if (showMeaningList && meaningList.length > 0) {
-                      if (e.key === 'ArrowDown') {
-                        e.preventDefault();
-                        setSelectedMeaningIndex(prev =>
-                          prev < meaningList.length - 1 ? prev + 1 : 0
-                        );
-                      } else if (e.key === 'ArrowUp') {
-                        e.preventDefault();
-                        setSelectedMeaningIndex(prev =>
-                          prev > 0 ? prev - 1 : meaningList.length - 1
-                        );
-                      } else if (e.key === 'Enter' && selectedMeaningIndex !== -1) {
-                        setMeaning(`(${meaningList[selectedMeaningIndex].type}) ${meaningList[selectedMeaningIndex].vie}`);
-                        setShowMeaningList(false);
-                      } else if (e.key === 'Enter') {
-                        addWord();
-                        wordInputRef.current && wordInputRef.current.focus();
-                      }
-                    } else if (e.key === 'Enter') {
-                      addWord();
-                      wordInputRef.current && wordInputRef.current.focus();
-                    }
-
-                  }}
-
-                  onClick={() => {
-                    if (word) {
-                      setShowRemindSuggestion(true)
-                    }
-                  }}
-                />
-                {showRemindSuggestion && (
-                  <div className="remind-suggestion">
-                    <p>Type "/" to suggest meaning</p>
-                  </div>
-                )}
-                {meaningListLoader && (
-                  <div className="meaning-suggest-loader-section">
-                    <div className="meaning-suggest-loader"></div>
-                  </div>
-                )}
-                {showMeaningList && meaningList && (
-                  <div className="meaning-list-section">
-                    <div className="meaning-list">
-                      {
-                        meaningList.map((meaning, index) => {
-                          let typeClassName;
-                          if (meaning.type === 'noun') {
-                            typeClassName = 'noun'
-                          }
-                          else if (meaning.type === 'verb') {
-                            typeClassName = 'verb'
-                          }
-                          else if (meaning.type === 'adjective') {
-                            typeClassName = 'adjective'
-                          }
-                          else {
-                            typeClassName = 'other'
-                          }
-                          
-                          const isSelected = index === selectedMeaningIndex;
-
-                          return (
-                          <li 
-                            ref={el => (meaningRefs.current[index] = el)}
-                            className={`meaning${isSelected ? ' selected' : ''}`}
-                            key={index}
-                            onClick={() => {
-                              setMeaning(`(${meaning.type}) ${meaning.vie}`)
-                              setShowMeaningList(false)
-                            }}
-                          >
-                            <p className={typeClassName}>{meaning.type}</p>
-                            <p>{meaning.vie}</p>
-                            <p>{meaning.eng}</p>
-                          </li>
-                        )})
-                      }
-                    </div>
-                  </div>
-                )}
-              </div>
-              
-              <button onClick={addWord} className='add-word-btn'>Add</button>
-
-              
-              
-              
-            </div>
-          </div>
-        )}
+        
         
         {showWordList && (
           <div className="word-list">
@@ -680,7 +406,7 @@ export default function WordSection({onClose, currentFolder, userID}) {
             <FontAwesomeIcon icon={faMagnifyingGlass} className='absolute left-4 top-3.5 text-secondary-text'/>
           </div>
           <div className="flex flex-1 overflow-auto max-h-[75vh]">
-            <ul className='flex flex-col items-center gap-2.5 w-full'>
+            <ul className='flex flex-col items-center w-full'>
               {
                 words.length > 0 ? (
                     words.map((word, index) => 
@@ -733,12 +459,12 @@ export default function WordSection({onClose, currentFolder, userID}) {
         <MatchingSection
           onClose={() => setShowMatching(false)}
           data={words}
+          userID={userID}
+          currentFolder={currentFolder}
         />
       )}
 
-      {showReview && (
-        <ReviewSection data={wordsToReview} onClose={() => setShowReview(false)}/>
-      )}
+      
     </div>
   )
 }

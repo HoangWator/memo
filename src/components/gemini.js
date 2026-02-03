@@ -117,12 +117,13 @@ export async function dictEngine(word) {
       You are Oxford dictionary.
       if word is not available, return like this:
       "unavailable"
-      If word is available, tell me all infomations of that word including partOfSpeech, phonetics, meanings (both english and vietnamese), examples for each meanings, idioms (if possible), synonyms, antonyms and word family. 
+      If word is available, tell me all infomations of that word including partOfSpeech, phonetics, CEFR level, meanings (both english and vietnamese), examples for each meanings, idioms (if possible), phrasal verbs (if possible), synonyms, antonyms and word family. 
       If the word is plural or different tense, give me the base form of that word.
       Respond in json. Make sure the json is correct and can be parsed.
       With "work", you should return in JSON like this:
       {
         "word": "work",
+        "CEFR_level": "A1",
         "phonetics": {
             "text": "/wɜːrk/",
             "audio": "https://api.dictionaryapi.dev/media/pronunciations/en/work-uk.mp3"
@@ -309,6 +310,23 @@ export async function dictEngine(word) {
             "definition_vie": "đối mặt với nhiệm vụ khó khăn",
             "example": "With three projects due by Friday, she certainly has her work cut out for her."
             }
+        ],
+        "phrasal_verbs": [
+            "work around",
+            "work around to",
+            "work at",
+            "work in",
+            "work into",
+            "work off",
+            "work on",
+            "work out",
+            "work over",
+            "work round to",
+            "work to",
+            "work towards",
+            "work up",
+            "work up into",
+            "work up to" 
         ],
         "word_family": {
             "nouns": [

@@ -16,7 +16,7 @@ export default function Flashcard({data, onClose}) {
     }
     return (
       <div className="relative w-90 h-90 p-5 bg-primary-surface rounded-lg text-primary-text flex items-center justify-center select-none cursor-pointer mt-2.5 mb-2.5" onClick={handleDef}>
-        {showDef ? <p className='text-center'>{word.mean}</p> : <h1 className='text-3xl'>{`${word.name} (${word.type})`}</h1>}
+        {showDef ? <p className='text-center'>{word.definition_eng + ' (' + word.definition_vie + ')'}</p> : <h1 className='text-3xl'>{`${word.name} (${word.type})`}</h1>}
         <span className='absolute bottom-5 right-5'><FontAwesomeIcon icon={faArrowsLeftRight} /></span>
       </div>
     )

@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { faPlus,faBars,faArrowLeft,faArrowRight,faArrowDown,faArrowUp,faTrash,faXmark,faMagnifyingGlass,faVolumeHigh,faFolder,faDumbbell,faTrophy,faChartSimple,faEllipsis,faPenToSquare,faX,faArrowRightFromBracket,faArrowsLeftRight } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { updateReviewSchedule } from '../components/handleData'
 
-function MatchingCard({data, onNext}) {
+function MatchingCard({data, onNext, addToHistory}) {
   const [isCorrect, setIsCorrect] = useState(null)
   const [selectedIndex, setSelectedIndex] = useState(null)
   const options = data.options
@@ -10,9 +11,21 @@ function MatchingCard({data, onNext}) {
   const checkAnswer = (selectedOption, index) => {
     if (isCorrect !== null) return
     setSelectedIndex(index)
-    if (selectedOption === data.answer) {
+    if (selectedOption.definition_eng === data.answer_eng || selectedOption.definition_vie === data.answer_vie) {
+      addToHistory({
+        word: data.question, 
+        answer_eng: data.answer_eng, 
+        answer_vie: data.answer_vie,
+        result: "correct",
+      })
       setIsCorrect(true)
     } else {
+      addToHistory({
+        word: data.question, 
+        answer_eng: data.answer_eng, 
+        answer_vie: data.answer_vie,
+        result: "wrong",
+      })
       setIsCorrect(false)
     }
   }
@@ -29,7 +42,7 @@ function MatchingCard({data, onNext}) {
             (isCorrect === false && selectedIndex === index ? "border-l-2 border-l-wrong bg-wrong/10" : '')
             }
             onClick={() => checkAnswer(option, index)}
-          >{option}</button>
+          >{option.definition_eng} <span className='italic'>{option.definition_vie}</span></button>
         ))}
       </div>
       <div className='text-center mt-2.5'>
@@ -48,11 +61,17 @@ function MatchingCard({data, onNext}) {
   )
 }
 
-function MatchingSection({onClose, data}) {
+function MatchingSection({onClose, data, reviewMode, userID, currentFolder}) {
   // console.log(data)
   
   const [questions, setQuestions] = useState([])
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
+
+  const [historyData, setHistoryData] = useState([])
+
+  const addToHistory = (item) => {
+    setHistoryData([...historyData, item])
+  }
 
   const handleNextCard = () => {
     if (currentQuestionIndex < questions.length - 1) {
@@ -60,6 +79,10 @@ function MatchingSection({onClose, data}) {
     }
     else {
       onClose()
+      console.log('History Data:', historyData)
+      if (reviewMode && userID && currentFolder) {
+        updateReviewSchedule(userID, currentFolder, historyData, 'matching')
+      }
     }
   }
 
@@ -75,17 +98,31 @@ function MatchingSection({onClose, data}) {
   useEffect(() => {
     const questions = [] 
     data.forEach(item => {
-      const otherOptions = data.filter(i => i.mean !== item.mean)
-      const shuffleOptions = shuffleArray(otherOptions).slice(0,3) || shuffleArray(otherOptions)
+      const otherOptions = data.filter(i => i.definition_eng !== item.definition_eng && i.definition_vie !== item.definition_vie && i.name !== item.name)
+      
+      let shuffleOptions;
+      if (otherOptions.length > 3) {
+        shuffleOptions = shuffleArray(otherOptions).slice(0,3)
+      }
+      else {
+        shuffleOptions = shuffleArray(otherOptions)
+      }
 
       const options = []
-      options.push(item.mean)
+      options.push({
+        definition_eng: item.definition_eng,
+        definition_vie: item.definition_vie
+      })
       shuffleOptions.forEach(opt => {
-        options.push(opt.mean)
+        options.push({
+          definition_eng: opt.definition_eng,
+          definition_vie: opt.definition_vie
+        })
       })
       questions.push({
         question: item.name, 
-        answer: item.mean,
+        answer_eng: item.definition_eng,
+        answer_vie: item.definition_vie,
         options: shuffleArray(options)
       })
     })
@@ -94,7 +131,7 @@ function MatchingSection({onClose, data}) {
   }, [])
 
   return (
-    <div className='fixed top-0 left-0 w-full h-screen bg-bg'>
+    <div className='fixed top-0 left-0 w-full h-screen bg-bg z-10'>
       <div className='p-4 absolute top-0 left-0 flex items-center gap-4'>
         <button 
           className='quit-btn'
@@ -107,6 +144,7 @@ function MatchingSection({onClose, data}) {
           <MatchingCard 
             data={questions[currentQuestionIndex]}
             onNext={handleNextCard}
+            addToHistory={addToHistory}
           />
         }
       </div>
