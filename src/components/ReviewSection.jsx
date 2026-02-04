@@ -47,12 +47,12 @@ export default function ReviewSection({data, onClose, userID, currentFolder}) {
           
           <div className="relative z-10 flex justify-between items-end">
             <div>
-              <p className="text-indigo-200 text-xs font-bold uppercase tracking-widest mb-1">Today's Target</p>
-              <h2 className="text-3xl font-bold">{data.length} Words</h2>
+              <p className="text-indigo-200 text-xs font-bold uppercase tracking-widest mb-1">Mục tiêu hôm nay</p>
+              <h2 className="text-3xl font-bold">{data.length} Từ</h2>
             </div>
             <div className="text-right">
-              <div className="text-2xl font-bold opacity-90">1 min</div>
-              <p className="text-indigo-200 text-xs">estimated</p>
+              <div className="text-2xl font-bold opacity-90">1 phút</div>
+              <p className="text-indigo-200 text-xs">ước tính</p>
             </div>
           </div>
         </div>
@@ -87,10 +87,10 @@ export default function ReviewSection({data, onClose, userID, currentFolder}) {
               className="w-full py-3 mt-1 text-xs text-slate-500 font-bold hover:bg-slate-50 hover:text-indigo-600 rounded-xl transition-all flex items-center justify-center gap-1 uppercase tracking-wide cursor-pointer"
             >
               {isExpanded ? (
-                <>Show Less</>
+                <>Ẩn bớt</>
               ) : (
                 <>
-                  See More
+                  Xem thêm
                   <FontAwesomeIcon icon={faChevronDown} />
                 </>
               )}
@@ -107,7 +107,7 @@ export default function ReviewSection({data, onClose, userID, currentFolder}) {
             <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center group-hover:bg-white/30 transition-colors">
               <FontAwesomeIcon icon={faCaretRight} />
             </div>
-            Start Review Session
+            Bắt đầu ôn tập
           </button>
         </div>
 

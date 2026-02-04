@@ -38,8 +38,8 @@ export default function RenameFolder({onCloseRenameFolderSection, userID, curren
   // )
   // State for the input field value, initialized with the current name
   const [folderName, setFolderName] = useState(currentFolder);
-  // State for managing validation errors
-  const [error, setError] = useState(null);
+    // State for managing validation errors
+    const [error, setError] = useState(null);
   // State for showing the custom confirmation/alert message box
   const [message, setMessage] = useState(null);
 
@@ -50,49 +50,47 @@ export default function RenameFolder({onCloseRenameFolderSection, userID, curren
 
   // Handler for the Rename button click
   const handleRename = () => {
-      const newName = folderName.trim();
+            const newName = folderName.trim();
 
-      if (newName === "") {
-          setError("Folder name cannot be empty.");
-          return;
-      }
+            if (newName === "") {
+                    setError("Tên thư mục không được để trống.");
+                    return;
+            }
 
-      if (newName.length > 50) {
-          setError("Folder name cannot exceed 50 characters.");
-          return;
-      }
+            if (newName.length > 50) {
+                    setError("Tên thư mục không được quá 50 ký tự.");
+                    return;
+            }
 
-      if (!folderName.trim()) {
-        alert('Please enter a valid folder name');
-        return;
-      }
-      else if (folderName === currentFolder) {
-        alert('The folder name is the same as the current one');
-        return;
-      }
-      else if (folderName.length > 20) {
-        alert('Folder name cannot exceed 20 characters');
-        return;
-      }
-      else {
-        onCloseRenameFolderSection();
-        renameFolderDB(userID, currentFolder, folderName).then(() => 
-          onCloseWordSection()
-        )
-      }
+            if (!folderName.trim()) {
+                alert('Vui lòng nhập tên thư mục hợp lệ');
+                return;
+            }
+            else if (folderName === currentFolder) {
+                alert('Tên thư mục giống với tên hiện tại');
+                return;
+            }
+            else if (folderName.length > 20) {
+                alert('Tên thư mục không được vượt quá 20 ký tự');
+                return;
+            }
+            else {
+                onCloseRenameFolderSection();
+                renameFolderDB(userID, currentFolder, folderName).then(() => 
+                    onCloseWordSection()
+                )
+            }
 
-      // Clear error if validation passes
-      setError(null);
+            // Clear error if validation passes
+            setError(null);
 
-      // Simulate the action
-      showMessage(`Successfully renamed folder to: "${newName}"`);
-
-      // In a real application, you would make an API call here and close the modal.
+            // Simulate the action
+            showMessage(`Đã đổi tên thư mục thành: "${newName}"`);
   };
 
   // Handler for the Cancel button click
   const handleCancel = () => {
-      showMessage("Rename action cancelled.");
+      showMessage("Đã hủy đổi tên thư mục.");
       onCloseRenameFolderSection()
   };
 
@@ -117,11 +115,11 @@ export default function RenameFolder({onCloseRenameFolderSection, userID, curren
 
               {/* Header and Title */}
               <header className="mb-6 border-b border-muted pb-4">
-                  <h2 className="text-2xl font-semibold tracking-tight">Rename Folder</h2>
-                  {/* Updated Description */}
-                  <p className="text-sm text-secondary-text mt-1">
-                      Enter a new name for the <strong className="text-primary-text font-semibold">Project Alpha Folder</strong>.
-                  </p>
+                  <h2 className="text-2xl font-semibold tracking-tight">Đổi tên thư mục</h2>
+                      {/* Updated Description */}
+                      <p className="text-sm text-secondary-text mt-1">
+                          Nhập tên mới cho thư mục hiện tại: <strong className="text-primary-text font-semibold">{currentFolder}</strong>.
+                      </p>
               </header>
 
               {/* Form Input Section */}
@@ -130,7 +128,7 @@ export default function RenameFolder({onCloseRenameFolderSection, userID, curren
                       htmlFor="new-name" 
                       className="block text-sm font-medium text-primary-text"
                   >
-                      New Name
+                      Tên mới
                   </label>
                   <input
                       type="text"
@@ -145,8 +143,8 @@ export default function RenameFolder({onCloseRenameFolderSection, userID, curren
                           // Allow 'Enter' key to trigger rename
                           if (e.key === 'Enter') handleRename();
                       }}
-                      placeholder="Enter the new folder name..."
-                      className='input-field w-full bg-secondary-surface'
+                      placeholder="Nhập tên thư mục mới..."
+                      className='input-field w-full bg-secondary-surface text-primary-text'
                       aria-invalid={!!error}
                       aria-describedby={error ? "error-message" : undefined}
                   />
@@ -162,7 +160,7 @@ export default function RenameFolder({onCloseRenameFolderSection, userID, curren
               {/* Validation Rules and Context */}
               <div className="mt-4 pt-4 border-t border-muted">
                   <p className="text-xs text-secondary-text">
-                      The folder name must be unique within its parent directory. Length must be between 1 and 50 characters.
+                      Tên thư mục phải là duy nhất trong thư mục cha. Chiều dài từ 1 đến 50 ký tự.
                   </p>
               </div>
               
@@ -172,18 +170,18 @@ export default function RenameFolder({onCloseRenameFolderSection, userID, curren
                   <button
                       onClick={handleCancel}
                       className="cursor-pointer px-5 py-2.5 text-sm font-medium text-white bg-gray-700 rounded-lg hover:bg-gray-600 transition duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:ring-offset-gray-800"
-                      aria-label="Cancel renaming the folder"
+                      aria-label="Hủy đổi tên thư mục"
                   >
-                      Cancel
+                      Hủy
                   </button>
 
                   {/* Primary Action: Rename */}
                   <button
                       onClick={handleRename}
                       className="click-btn"
-                      aria-label="Confirm and rename the folder"
+                      aria-label="Xác nhận đổi tên thư mục"
                   >
-                      Rename
+                      Đổi tên
                   </button>
               </footer>
           </div>

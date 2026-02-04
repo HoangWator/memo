@@ -1,0 +1,59 @@
+:root {
+	--bg: #ffffff;
+	--primary-text: #0f1720;
+	--secondary-text: #6b7280;
+	--primary-surface: #F6F6F6;
+	--secondary-surface: #E7EAE5;
+	--muted: #e1e1e1;
+	--wrong: #DC2626;
+	--accent: #4A90E2;
+}
+
+.dark {
+	--bg: #0b1115; /* deep slate */
+	--primary-text: #e6eef6; /* soft off-white */
+	--secondary-text: #9aa6b2; /* muted blue-gray */
+	--primary-surface: #0f1720; /* card surface */
+	--secondary-surface: #111418; /* hover surface */
+	--muted: #273036; /* dividers */
+	--wrong: #f87171;
+	--accent: #60a5fa;
+}
+
+/* Utility-like helpers used across components */
+.bg-bg { background-color: var(--bg); }
+.text-primary-text { color: var(--primary-text); }
+.text-secondary-text { color: var(--secondary-text); }
+.bg-primary-surface { background-color: var(--primary-surface); }
+.bg-secondary-surface { background-color: var(--secondary-surface); }
+.text-wrong { color: var(--wrong); }
+.text-bg { color: var(--bg); }
+.border-r-muted { border-right: 1px solid var(--muted); }
+.border-r-1 { border-right-width: 1px; }
+
+/* basic body background to follow theme */
+html, body, #root { height: 100%; }
+body { background-color: var(--bg); }
+
+/* simple toggle styles for theme button */
+.theme-toggle { display:flex; align-items:center; gap:0.75rem; }
+.theme-switch {
+	width: 48px; height: 28px; border-radius: 9999px; display:inline-flex; align-items:center; padding:4px; cursor:pointer; transition: background-color .2s;
+}
+.theme-thumb { width:20px; height:20px; background:white; border-radius:9999px; transform:translateX(0); transition: transform .2s; }
+.theme-switch.dark { background: #334155; }
+.theme-switch.light { background: #e6e6e6; }
+.theme-switch.dark .theme-thumb { transform: translateX(20px); }
+
+/* Utility-style hover helpers for custom CSS variables
+	These match common Tailwind-like class names used in JSX such as
+	`hover:bg-primary-surface` and `hover:bg-secondary-surface`.
+	They rely on the CSS variables in :root / .dark so they adapt to theme. */
+.hover\:bg-primary-surface { transition: background-color .12s, color .12s; }
+.hover\:bg-primary-surface:hover { background-color: var(--primary-surface); color: var(--primary-text); }
+
+.hover\:bg-secondary-surface { transition: background-color .12s, color .12s; }
+.hover\:bg-secondary-surface:hover { background-color: var(--secondary-surface); color: var(--primary-text); }
+
+.hover\:text-primary-text { transition: color .12s; }
+.hover\:text-primary-text:hover { color: var(--primary-text); }

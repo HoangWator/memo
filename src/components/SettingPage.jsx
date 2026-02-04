@@ -6,32 +6,57 @@ import { faPlus,faBookOpen,faBars,faArrowLeft,faArrowRight,faArrowDown,faArrowUp
 
 function AccountPage({userAvatar, userName}) {
   return (
-    <div className='w-full p-2.5'>
+    <div className='p-2.5'>
       <div className='w-full flex flex-col items-center'>
         <img src={userAvatar} alt="" className='rounded-full'/>
         <h2 className='text-primary-text mt-2.5'>{userName}</h2>
         <button className='click-btn text-primary-text mt-2.5 bg-secondary-surface hover:text-wrong' onClick={() => {
           // setShowLogoutSection(true)
           // setShowLogoutBtn(false)
-        }}>Log out<FontAwesomeIcon icon={faArrowRightFromBracket} className='ml-2.5' /></button>
+        }}>Đăng xuất<FontAwesomeIcon icon={faArrowRightFromBracket} className='ml-2.5' /></button>
       </div>
     </div>
   )
 }
   
-function ThemePage() {
+  function ThemePage() {
+  const [theme, setTheme] = useState(() => {
+    try {
+      const stored = localStorage.getItem('theme');
+      if (stored) return stored;
+    } catch (e) {}
+    if (typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) return 'dark';
+    return 'light';
+  });
+
+  useEffect(() => {
+    try {
+      if (theme === 'dark') document.documentElement.classList.add('dark');
+      else document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', theme);
+    } catch (e) {}
+  }, [theme]);
+
   return (
     <div className='p-2.5'>
-      <h1 className='text-primary-text'>Theme options:</h1>
-      
+      <h1 className='text-primary-text'>Tùy chọn giao diện:</h1>
+      <div className='mt-4 theme-toggle'>
+        <div className={'theme-switch ' + (theme === 'dark' ? 'dark' : 'light')} onClick={() => setTheme(t => t === 'dark' ? 'light' : 'dark')} role="button" aria-label="Toggle theme">
+          <div className='theme-thumb' />
+        </div>
+        <div>
+          <p className='text-primary-text font-semibold'>Tối</p>
+        </div>
+      </div>
     </div>
   )
 }
 
-function LanguagePage() {
+
+  function LanguagePage() {
   return (
     <div className='p-2.5'>
-      <h1 className='font-semibold'>Dictionary Display</h1>
+      <h1 className='font-semibold'>Hiển thị từ điển</h1>
       {/* Select language display on dictionary */}
 
 
@@ -44,7 +69,7 @@ export function SettingPage({onClose, userAvatar, userName}) {
   return (
     <div className="fixed top-0 bottom-0 right-0 left-0 bg-black/50 flex items-center justify-center">
       <div className="bg-bg w-1/2 relative rounded-lg h-[80vh] flex flex-col">
-        <h1 className="text-2xl text-primary-text text-center mt-5 mb-5">Settings</h1>
+        <h1 className="text-2xl text-primary-text text-center mt-5 mb-5">Cài đặt</h1>
         <button 
           onClick={() => {
             onClose()
@@ -59,15 +84,15 @@ export function SettingPage({onClose, userAvatar, userName}) {
             <li 
               className={"pt-2.5 pb-2.5 pr-5 pl-5 mb-1 rounded-lg  cursor-pointer text-center hover:bg-primary-surface  " + (selectedPage === 0 ? 'bg-primary-surface text-primary-text' : 'text-secondary-text')}
               onClick={() => setSelectedPage(0)}
-            >Account</li>
+            >Tài khoản</li>
             <li 
               className={"pt-2.5 pb-2.5 pr-5 pl-5 mb-1 rounded-lg cursor-pointer text-center hover:bg-primary-surface  " + (selectedPage === 1 ? 'bg-primary-surface text-primary-text' : 'text-secondary-text')}
               onClick={() => setSelectedPage(1)}
-            >Theme</li>
+            >Giao diện</li>
             <li 
               className={"pt-2.5 pb-2.5 pr-5 pl-5 mb-1 rounded-lg cursor-pointer text-center hover:bg-primary-surface  " + (selectedPage === 2 ? 'bg-primary-surface text-primary-text' : 'text-secondary-text')}
               onClick={() => setSelectedPage(2)}
-            >Language</li>
+            >Ngôn ngữ</li>
           </ul>
 
           {selectedPage === 0 && <AccountPage userAvatar={userAvatar} userName={userName}/>}

@@ -273,7 +273,7 @@ export default function WordSection({onClose, currentFolder, userID}) {
 
 
   return (
-    <div className="fixed top-0 bottom-0 left-0 right-0 bg-bg overflow-scroll" onClick={() => {
+    <div className="fixed top-0 bottom-0 left-0 right-0 bg-bg" onClick={() => {
       if (showRemindSuggestion) {
         setShowRemindSuggestion(false)
       }
@@ -311,39 +311,39 @@ export default function WordSection({onClose, currentFolder, userID}) {
               currentFolder={currentFolder}  
             />
           }
-          <h1 className='text-xl text-primary-text'>Learning modes</h1>
+          <h1 className='text-xl text-primary-text'>Chế độ học</h1>
           <div className="learning-modes flex gap-2.5 mt-2.5 flex-wrap">
-            <button className='p-2.5 bg-primary-surface cursor-pointer rounded-lg flex items-center gap-2.5 text-secondary-text hover:bg-secondary-surface' onClick={() => learnBtn(words)}>
+              <button className='p-2.5 bg-primary-surface cursor-pointer rounded-lg flex items-center gap-2.5 text-secondary-text hover:bg-secondary-surface' onClick={() => learnBtn(words)}>
               <img src="https://cdn-icons-png.freepik.com/512/9100/9100957.png" alt="" className='h-10' />
-              Flashcard
+              Thẻ nhớ
             </button>
 
             <button className='p-2.5 bg-primary-surface cursor-pointer rounded-lg flex items-center gap-2.5 text-secondary-text hover:bg-secondary-surface' onClick={() => generateFilling(words)}>
               <img src="https://cdn-icons-png.flaticon.com/512/6559/6559624.png" alt="" className='h-10' />
-              Filling
+              Điền từ
             </button>
 
             <button className='p-2.5 bg-primary-surface cursor-pointer rounded-lg flex items-center gap-2.5 text-secondary-text hover:bg-secondary-surface' onClick={() => generateListening(words)}>
               <img src="https://cdn-icons-png.flaticon.com/512/8805/8805242.png" alt="" className='h-10' />
-              Listening
+              Nghe
             </button>
 
             <button className='p-2.5 bg-primary-surface cursor-pointer rounded-lg flex items-center gap-2.5 text-secondary-text hover:bg-secondary-surface' onClick={() => setShowMatching(true)}>
               <img src="https://cdn-icons-png.flaticon.com/512/3952/3952841.png" alt="" className='h-10' />
-              Matching
+              Ghép nối
             </button>
           </div>
           
-          <h1 className='text-xl text-primary-text mt-5 mb-2.5'>Settings</h1>
+          <h1 className='text-xl text-primary-text mt-5 mb-2.5'>Cài đặt</h1>
           
           
           <button className='p-2.5 rounded-lg bg-primary-surface cursor-pointer text-secondary-text block mb-2.5 hover:bg-secondary-surface' onClick={() => {
             setShowRenameFolderSection(true)
-          }}><FontAwesomeIcon icon={faPen} className='mr-1'/> Rename folder</button>
+          }}><FontAwesomeIcon icon={faPen} className='mr-1'/> Đổi tên thư mục</button>
           
           <button className='p-2.5 rounded-lg bg-primary-surface cursor-pointer block text-wrong hover:bg-secondary-surface' onClick={() => {
             setShowDeleteValid(true)
-          }}><FontAwesomeIcon icon={faTrash} className='mr-1'/> Delete folder</button>
+          }}><FontAwesomeIcon icon={faTrash} className='mr-1'/> Xóa thư mục</button>
         </div>
         
         
@@ -352,16 +352,16 @@ export default function WordSection({onClose, currentFolder, userID}) {
           <div className="word-list">
             <div className="word-list-header">
               <button onClick={() => setShowWordList(false)} className='quitSectionBtn'><FontAwesomeIcon icon={faArrowLeft}/></button>
-              <h2>My words</h2>
+              <h2>Từ của tôi</h2>
             </div>
             <div className="word-list-body">
-              <button className='add-word-btn mobile' onClick={() => setShowWordSectionLeft(true)}><FontAwesomeIcon icon={faPlus}/> Add word</button>
+              <button className='add-word-btn mobile' onClick={() => setShowWordSectionLeft(true)}><FontAwesomeIcon icon={faPlus}/> Thêm từ</button>
               <div className="word-list-content">
                 <div className="searchBox-section">
                   <input 
                     type="text" 
-                    className="searchBox" 
-                    placeholder='Find your word...'
+                    className="searchBox bg-bg text-primary-text w-full pl-10 mb-2.5" 
+                    placeholder='Tìm từ của bạn...'
                     onChange={searchWord}/>
                   <FontAwesomeIcon icon={faMagnifyingGlass} className='searchIcon'/>
                 </div>
@@ -385,8 +385,8 @@ export default function WordSection({onClose, currentFolder, userID}) {
                               </button>
                           </li>
                         )
-                    ) : (
-                      <p className='noWords mr-auto ml-auto text-secondary-text'>Nothing here!</p>
+                      ) : (
+                      <p className='noWords mr-auto ml-auto text-secondary-text'>Không có từ nào!</p>
                     )
                   }
                 </ul>
@@ -398,10 +398,10 @@ export default function WordSection({onClose, currentFolder, userID}) {
         <div className="word-section-right w-1/2 p-2.5 flex flex-col">
           
           <div className="searchBox-section relative">
-            <input 
+              <input 
               type="text" 
-              className="input-field w-full pl-10 mb-2.5" 
-              placeholder='Find your word...'
+              className="input-field w-full pl-10 mb-2.5 bg-primary-surface text-primary-text" 
+              placeholder='Tìm từ của bạn...'
               onChange={searchWord}/>
             <FontAwesomeIcon icon={faMagnifyingGlass} className='absolute left-4 top-3.5 text-secondary-text'/>
           </div>
@@ -430,7 +430,7 @@ export default function WordSection({onClose, currentFolder, userID}) {
                       </li>
                     )
                 ) : (
-                  <p className='mt-10 text-secondary-text mr-auto ml-auto'>Nothing here!</p>
+                  <p className='mt-10 text-secondary-text mr-auto ml-auto'>Không có từ nào!</p>
                 )
               }
             </ul>

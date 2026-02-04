@@ -102,7 +102,7 @@ export default function FillingSection({onClose, data}) {
             </div>
             <div className="meaning-suggestion-content">
               {showFailMeaningSuggestion && 
-                <p>No meaning found. Please try again!</p>
+                <p>Không tìm thấy nghĩa. Vui lòng thử lại!</p>
               }
               {
                 meaningList.length > 0 && (
@@ -146,7 +146,7 @@ export default function FillingSection({onClose, data}) {
         
         { clicked !== -1 && (
           <div className={'p-2.5 rounded-lg mt-5 overflow-hidden ' + explainClassName}>
-            <h3 className='text-primary-text font-semibold'>Answer:</h3>
+            <h3 className='text-primary-text font-semibold'>Đáp án:</h3>
             <p className='text-secondary-text'>{startQuestion}<span className='text-primary-text font-semibold underline'>{ans}</span>{endQuestion}</p>
             <button 
               onClick={() => {
@@ -176,7 +176,7 @@ export default function FillingSection({onClose, data}) {
                 }
               }}
               className='click-btn float-right'
-            >Next <FontAwesomeIcon icon={faArrowRight} /></button>
+            >Tiếp theo <FontAwesomeIcon icon={faArrowRight} /></button>
           </div>
         )}
       </div>
@@ -211,7 +211,7 @@ export default function FillingSection({onClose, data}) {
 
         {resultDisplay && (
             <div className="result-display pr-10 pl-10 pt-2.5 pb-2.5 bg-primary-surface rounded-lg text-center">
-              <p className='text-secondary-text'>You correct:</p>
+              <p className='text-secondary-text'>Tỷ lệ đúng:</p>
               <h1 className='text-3xl font-bold text-primary-text mt-5 mb-5'>{Math.round(100 - wrongAnswers.length / fillingQuestions.length * 100) + '%'}</h1>
               <div className='flex gap-2.5 items-center'>
                 <button 
@@ -220,10 +220,10 @@ export default function FillingSection({onClose, data}) {
                     onClose()
                   }}
                   className='click-btn bg-'
-                >Close</button>
+                >Đóng</button>
                 {wrongAnswers.length > 0 &&
                   <button className='click-btn'>
-                    Retake
+                    Làm lại
                   </button>
                 }
               </div>

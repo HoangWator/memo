@@ -121,7 +121,7 @@ function DictItem({data, handleSearch, folderList, userID}) {
         {
           addedNoti &&
           <div className="added-noti fixed bottom-5 right-5 bg-bg text-primary-text p-2.5 rounded-lg shadow-lg flex items-center gap-2.5 z-50">
-            "{word}" added successfully! <span className='bg-success text-white text-base w-5 h-5 rounded-full flex justify-center items-center'><FontAwesomeIcon icon={faCheck} /></span>
+            "{word}" đã thêm thành công! <span className='bg-success text-white text-base w-5 h-5 rounded-full flex justify-center items-center'><FontAwesomeIcon icon={faCheck} /></span>
           </div>
         }
         {meanings.map((meaning, index) => {
@@ -134,11 +134,11 @@ function DictItem({data, handleSearch, folderList, userID}) {
 
           
           return (
-            <div className="meaning-container flex items-baseline mt-5" key={index}>
-              <div className="meaning-number mr-2.5 text-xl text-primary font-extrabold">{index + 1}</div>
-              <div className="meaning-content">
+            <div className="meaning-container flex flex-col md:flex-row items-start md:items-baseline mt-5 gap-3" key={index}>
+              <div className="meaning-number mr-2.5 text-xl text-primary font-extrabold flex-none">{index + 1}</div>
+              <div className="meaning-content flex-1">
                 <div className="meaning-def text-primary-text flex items-center gap-2.5 mb-2">
-                  <span className={"bg-bg " + partOfSpeech}>{partOfSpeech === 'phverb' ? 'phrasal verb' : partOfSpeech}</span> 
+                  <span className={"bg-primary-surface " + partOfSpeech}>{partOfSpeech === 'phverb' ? 'phrasal verb' : partOfSpeech}</span> 
                   <div>
                     <p>{definitionEng}</p> 
                     <p className='italic'>{definitionVie}</p>
@@ -153,11 +153,11 @@ function DictItem({data, handleSearch, folderList, userID}) {
                     <FontAwesomeIcon className='' icon={faPlus}/>
                   </button>
                 </div>
-                <p className="font-medium text-primary-text">Example:</p>
+                <p className="font-medium text-primary-text">Ví dụ:</p>
                 {examples.map((ex, exIndex) => (
                   <li key={exIndex} className="example-list text-primary-text">{ex}</li>
                 ))}
-                <p className="font-medium mt-2.5 text-primary-text">Synonyms:</p>
+                <p className="font-medium mt-2.5 text-primary-text">Từ đồng nghĩa:</p>
                 <div className="flex flex-wrap gap-2.5 mb-2.5">
                   {synonyms.map((syn, synIndex) => 
                     <span 
@@ -167,7 +167,7 @@ function DictItem({data, handleSearch, folderList, userID}) {
                     >{syn}</span>
                   )}
                 </div>
-                <p className="font-medium text-primary-text">Antonyms:</p>
+                <p className="font-medium text-primary-text">Từ trái nghĩa:</p>
                 <div className="flex flex-wrap gap-2.5 mb-2.5">
                   {antonyms.map((ant, antIndex) => 
                     <span 
@@ -181,8 +181,8 @@ function DictItem({data, handleSearch, folderList, userID}) {
               
               {meaningIndex === index && showFolderList && 
               <div className="w-full h-screen fixed top-0 left-0 bg-black/50 flex justify-center items-center z-50">
-                <div className='bg-bg p-6 rounded-lg w-96 max-h-[80vh] overflow-y-auto relative'>
-                  <h2 className="mb-2.5 text-primary-text">Add to folder</h2>
+                <div className='bg-bg p-4 sm:p-6 rounded-lg w-full max-w-sm md:max-w-md max-h-[80vh] overflow-y-auto relative'>
+                  <h2 className="mb-2.5 text-primary-text">Thêm vào thư mục</h2>
                   <button className="quit-btn absolute right-2.5 top-2.5" onClick={() => setShowFolderList(false)}>
                     <FontAwesomeIcon icon={faXmark} />
                   </button>
@@ -201,8 +201,8 @@ function DictItem({data, handleSearch, folderList, userID}) {
                           </li>
                         ))}
                       </ul>
-                    ) : (
-                      <p className="no-folders-message">No folders available. Please create a folder first.</p>
+                      ) : (
+                      <p className="no-folders-message">Chưa có thư mục. Vui lòng tạo thư mục trước.</p>
                     )}
                   </div>
 
@@ -236,7 +236,7 @@ function DictItem({data, handleSearch, folderList, userID}) {
     }
     return (
       <div className="space-y-6">
-        <h1 className="text-2xl text-primary-text font-bold mb-2.5">Idioms</h1>
+        <h1 className="text-2xl text-primary-text font-bold mb-2.5">Thành ngữ</h1>
         {idioms.length > 0 ? (
           <div className="space-y-6">
             {idioms.map((idiom, index) => (
@@ -248,7 +248,7 @@ function DictItem({data, handleSearch, folderList, userID}) {
                   <h2 className="font-semibold text-lg mb-2 text-primary-text">{idiom.idiom}</h2>
                   <p className="text-primary-text">{idiom.definition_eng}</p>
                   <p className="mb-2 text-primary-text italic">{idiom.definition_vie}</p>
-                  <p className="font-medium text-primary-text">Example:</p>
+                  <p className="font-medium text-primary-text">Ví dụ:</p>
                   <li className="ml-4 italic text-primary-text">{idiom.example}</li>
                 </div>
                 <button 
@@ -260,8 +260,8 @@ function DictItem({data, handleSearch, folderList, userID}) {
                 ><FontAwesomeIcon icon={faPlus}/></button>
                 {meaningIndex === index && showFolderList && 
                   <div className="w-full h-screen fixed top-0 left-0 bg-black/50 flex justify-center items-center z-50">
-                    <div className='bg-bg p-6 rounded-lg w-96 max-h-[80vh] overflow-y-auto relative'>
-                      <h2 className="mb-2.5 text-primary-text">Add to folder</h2>
+                    <div className='bg-bg p-4 sm:p-6 rounded-lg w-full max-w-sm md:max-w-md max-h-[80vh] overflow-y-auto relative'>
+                      <h2 className="mb-2.5 text-primary-text">Thêm vào thư mục</h2>
                       <button className="quit-btn absolute right-2.5 top-2.5" onClick={() => setShowFolderList(false)}>
                         <FontAwesomeIcon icon={faXmark} />
                       </button>
@@ -281,7 +281,7 @@ function DictItem({data, handleSearch, folderList, userID}) {
                             ))}
                           </ul>
                         ) : (
-                          <p className="no-folders-message">No folders available. Please create a folder first.</p>
+                          <p className="no-folders-message">Chưa có thư mục. Vui lòng tạo thư mục trước.</p>
                         )}
                       </div>
 
@@ -291,7 +291,7 @@ function DictItem({data, handleSearch, folderList, userID}) {
               </div>
             ))}
           </div>
-        ) : <p className="text-gray-500">No idioms found.</p>}
+        ) : <p className="text-gray-500">Không tìm thấy thành ngữ.</p>}
 
         
       </div>
@@ -317,7 +317,7 @@ function DictItem({data, handleSearch, folderList, userID}) {
     }
     return (
       <div className="space-y-6">
-        <h1 className="text-2xl text-primary-text font-bold mb-2.5">Phrasal Verbs</h1>
+        <h1 className="text-2xl text-primary-text font-bold mb-2.5">Cụm động từ</h1>
         {phrasalVerbs.length > 0 ? (
           <div>
             {phrasalVerbs.map((phv, index) => (
@@ -328,7 +328,7 @@ function DictItem({data, handleSearch, folderList, userID}) {
               >{phv}</p>
             ))}
           </div>
-        ) : <p className="text-gray-500">No phrasal verbs found.</p>}
+        ) : <p className="text-gray-500">Không tìm thấy cụm động từ.</p>}
 
         
       </div>
@@ -396,7 +396,7 @@ function DictItem({data, handleSearch, folderList, userID}) {
             verbs.length === 0 &&
             adjectives.length === 0 &&
             adverbs.length === 0 && (
-            <p className="text-gray-500">No word family found.</p>
+            <p className="text-gray-500">Không tìm thấy họ từ.</p>
           )}
         </div>
       </div>
@@ -405,69 +405,79 @@ function DictItem({data, handleSearch, folderList, userID}) {
   }
 
   return (
-    <div id="dict-item" className="text-gray-500 w-5/6 p-4">
-      <h2 className='text-3xl text-primary-text font-semibold'>{word}</h2>
-      <p className="text-primary italic">{phonetics.text}</p>
-      <span className='text-primary bg-bg inline-block p-1 rounded-lg font-bold'>{CEFRlevel}</span>
-      <div className="flex gap-2.5 mb-5 border-b-muted border-b-1">
-        {nouns.length > 0 && 
-          <button 
-            className={"p-2.5 cursor-pointer " + (pageName === "noun" ? " border-b-2 border-b-primary text-primary" : "text-secondary-text hover:text-primary-text")}
-            onClick={() => setPageName("noun")}
-          >Noun
-          </button>
-        }
-        {verbs.length > 0 && 
-          <button 
-            className={"p-2.5 cursor-pointer " + (pageName === "verb" ? " border-b-2 border-b-primary text-primary" : "text-secondary-text hover:text-primary-text")}
-            onClick={() => setPageName("verb")}
-          >Verb</button>}
-        {adjectives.length > 0 && 
-          <button 
-            className={"p-2.5 cursor-pointer " + (pageName === "adj" ? " border-b-2 border-b-primary text-primary" : "text-secondary-text hover:text-primary-text")}
-            onClick={() => setPageName("adj")}
-          >Adjective</button>}
-        {adverbs.length > 0 && 
-          <button 
-            className={"p-2.5 cursor-pointer " + (pageName === "adv" ? " border-b-2 border-b-primary text-primary" : "text-secondary-text hover:text-primary-text")}
-            onClick={() => setPageName("adv")}
-          >Adverb</button>}
-        {phverb.length > 0 && 
-          <button 
-            className={"p-2.5 cursor-pointer " + (pageName === "phv" ? " border-b-2 border-b-primary text-primary" : "text-secondary-text hover:text-primary-text")}
-            onClick={() => setPageName("phv")}
-          >Phrasal verb</button>}
-        {idioms.length > 0 && 
-          <button 
-            className={"p-2.5 cursor-pointer " + (pageName === "idioms" ? " border-b-2 border-b-primary text-primary" : "text-secondary-text hover:text-primary-text")}
-            onClick={() => setPageName("idioms")}
-          >Idioms</button>}
-        {phrasalVerbs.length > 0 && 
-          <button 
-            className={"p-2.5 cursor-pointer " + (pageName === "phrasalVerbs" ? " border-b-2 border-b-primary text-primary" : "text-secondary-text hover:text-primary-text")}
-            onClick={() => setPageName("phrasalVerbs")}
-          >Phrasal Verbs</button>}
-        {wordFamily != null && 
-          <button 
-            className={"p-2.5 cursor-pointer " + (pageName === "wordFamily" ? " border-b-2 border-b-primary text-primary" : "text-secondary-text hover:text-primary-text")}
-            onClick={() => setPageName("wordFamily")}
-          >Word Family</button>}
-      </div>
+    <div id="dict-item" className="text-gray-500 w-full p-4">
+      <div className="dict-card bg-bg p-6 rounded-lg shadow-md w-full max-w-4xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div className="md:col-span-1">
+            <h2 className='text-3xl text-primary-text font-semibold'>{word}</h2>
+            <p className="text-primary italic mt-1">{phonetics.text}</p>
+            <div className="mt-3">
+              <span className='text-primary bg-bg inline-block p-1 rounded-lg font-bold'>{CEFRlevel}</span>
+            </div>
+          </div>
+          <div className="md:col-span-3">
+            <div className="flex gap-2.5 mb-5 border-b-muted border-b-1 overflow-x-auto whitespace-nowrap pb-2">
+              {nouns.length > 0 && 
+                <button 
+                  className={"p-2.5 cursor-pointer flex-none " + (pageName === "noun" ? " border-b-2 border-b-primary text-primary" : "text-secondary-text hover:text-primary-text")}
+                  onClick={() => setPageName("noun")}
+                >Noun
+                </button>
+              }
+              {verbs.length > 0 && 
+                <button 
+                  className={"p-2.5 cursor-pointer flex-none " + (pageName === "verb" ? " border-b-2 border-b-primary text-primary" : "text-secondary-text hover:text-primary-text")}
+                  onClick={() => setPageName("verb")}
+                >Verb</button>}
+              {adjectives.length > 0 && 
+                <button 
+                  className={"p-2.5 cursor-pointer flex-none " + (pageName === "adj" ? " border-b-2 border-b-primary text-primary" : "text-secondary-text hover:text-primary-text")}
+                  onClick={() => setPageName("adj")}
+                >Adjective</button>}
+              {adverbs.length > 0 && 
+                <button 
+                  className={"p-2.5 cursor-pointer flex-none " + (pageName === "adv" ? " border-b-2 border-b-primary text-primary" : "text-secondary-text hover:text-primary-text")}
+                  onClick={() => setPageName("adv")}
+                >Adverb</button>}
+              {phverb.length > 0 && 
+                <button 
+                  className={"p-2.5 cursor-pointer flex-none " + (pageName === "phv" ? " border-b-2 border-b-primary text-primary" : "text-secondary-text hover:text-primary-text")}
+                  onClick={() => setPageName("phv")}
+                >Phrasal Verb</button>}
+              {idioms.length > 0 && 
+                <button 
+                  className={"p-2.5 cursor-pointer flex-none " + (pageName === "idioms" ? " border-b-2 border-b-primary text-primary" : "text-secondary-text hover:text-primary-text")}
+                  onClick={() => setPageName("idioms")}
+                >Idioms</button>}
+              {phrasalVerbs.length > 0 && 
+                <button 
+                  className={"p-2.5 cursor-pointer flex-none " + (pageName === "phrasalVerbs" ? " border-b-2 border-b-primary text-primary" : "text-secondary-text hover:text-primary-text")}
+                  onClick={() => setPageName("phrasalVerbs")}
+                >Phrasal Verbs</button>}
+              {wordFamily != null && 
+                <button 
+                  className={"p-2.5 cursor-pointer flex-none " + (pageName === "wordFamily" ? " border-b-2 border-b-primary text-primary" : "text-secondary-text hover:text-primary-text")}
+                  onClick={() => setPageName("wordFamily")}
+                >Word Family</button>}
+            </div>
 
-      <div className="page-content">
-        {pageName === "noun" && nouns.length > 0 && <MeaningSection meanings={nouns} word={word} folderList={folderList} />}
-        {pageName === "verb" && verbs.length > 0 && <MeaningSection meanings={verbs} word={word} folderList={folderList}/>}
-        {pageName === "adj" && adjectives.length > 0 && <MeaningSection meanings={adjectives} word={word} folderList={folderList}/>}
-        {pageName === "adv" && adverbs.length > 0 && <MeaningSection meanings={adverbs} word={word} folderList={folderList}/>}
-        {pageName === "phv" && phverb.length > 0 && <MeaningSection meanings={phverb} word={word} folderList={folderList}/>}
-        {pageName === "idioms" && <IdiomsSection idioms={idioms} word={word} folderList={folderList} />}
-        {pageName === "phrasalVerbs" && <PhrasalVerbsSection phrasalVerbs={phrasalVerbs} folderList={folderList} />}
-        {pageName === "wordFamily" && <WordFamilySection 
-          nouns={wordFamilyNouns} 
-          verbs={wordFamilyVerbs} 
-          adjectives={wordFamilyAdjectives} 
-          adverbs={wordFamilyAdverbs} 
-        />}
+            <div className="page-content">
+              {pageName === "noun" && nouns.length > 0 && <MeaningSection meanings={nouns} word={word} folderList={folderList} />}
+              {pageName === "verb" && verbs.length > 0 && <MeaningSection meanings={verbs} word={word} folderList={folderList}/>}
+              {pageName === "adj" && adjectives.length > 0 && <MeaningSection meanings={adjectives} word={word} folderList={folderList}/>}
+              {pageName === "adv" && adverbs.length > 0 && <MeaningSection meanings={adverbs} word={word} folderList={folderList}/>}
+              {pageName === "phv" && phverb.length > 0 && <MeaningSection meanings={phverb} word={word} folderList={folderList}/>}
+              {pageName === "idioms" && <IdiomsSection idioms={idioms} word={word} folderList={folderList} />}
+              {/* {pageName === "phrasalVerbs" && <PhrasalVerbsSection phrasalVerbs={phrasalVerbs} folderList={folderList} />} */}
+              {pageName === "wordFamily" && <WordFamilySection 
+                nouns={wordFamilyNouns} 
+                verbs={wordFamilyVerbs} 
+                adjectives={wordFamilyAdjectives} 
+                adverbs={wordFamilyAdverbs} 
+              />}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   )
@@ -502,18 +512,18 @@ export function DictionarySection({folderList, userID}) {
             addWordToDictDB(jsonData);
           }
           else {
-            alert("Word not found in the dictionary.");
+            alert("Không tìm thấy từ trong từ điển.");
           }
           setSearchTerm('')
         }).catch((error) => {
           setShowLoader(false);
-          alert("An error occurred while fetching the definition. Please try again.");
+          alert("Đã xảy ra lỗi khi lấy định nghĩa. Vui lòng thử lại.");
           console.error("Error fetching definition:", error);
         })
       }
     }
     else {
-      alert("Please enter a word to search.");
+      alert("Vui lòng nhập từ để tìm kiếm.");
     }
   }
 
@@ -521,33 +531,35 @@ export function DictionarySection({folderList, userID}) {
   return (
     <div className="w-full h-screen overflow-auto">
       <div className={"w-full h-screen dict-container flex flex-col items-center pt-10 pb-10 " + (searchResults ? "justify-start" : "justify-center")}>
-        <div className="search-section">
-          <h1 className="text-primary text-4xl text-center mb-2.5 font-bold">Dictionary</h1>
-          <p className='text-secondary-text mb-6'>Search for definitions, examples, and word families.</p>
-          <div className="flex">
-            <input 
-              type="text" 
-              placeholder="Search dictionary..." 
-              className="input-field w-full bg-bg"
-              value={searchTerm}
-              onChange={e => setSearchTerm(e.target.value)}
-              onKeyDown={e => {
-                if (e.key === 'Enter') {
-                  handleSearch(searchTerm)
-                  
-                }
-              }}
-            />
-            <button 
-              className=" ml-2.5 pt-2.5 pb-2.5 text-bg text-base bg-primary rounded-full cursor-pointer hover:bg-primary pr-4 pl-4"
-              onClick={() => handleSearch(searchTerm)}
-            >
-              <FontAwesomeIcon icon={faMagnifyingGlass} />
-            </button>
+        <div className="search-section w-full flex flex-col items-center">
+          <div className="w-full max-w-2xl bg-bg p-6 rounded-lg shadow-sm">
+            <h1 className="text-primary text-3xl text-center mb-1 font-bold">Memo Dict</h1>
+            <p className='text-secondary-text mb-4 text-center'>Tra cứu như Oxford</p>
+            <div className="flex items-center gap-2">
+              <input 
+                type="text" 
+                placeholder="Tìm trong từ điển..." 
+                className="input-field w-full bg-bg text-primary-text transition-shadow focus:shadow-outline"
+                value={searchTerm}
+                onChange={e => setSearchTerm(e.target.value)}
+                onKeyDown={e => { if (e.key === 'Enter') handleSearch(searchTerm) }}
+                aria-label="Tìm từ"
+              />
+              {searchTerm && (
+                <button aria-label="clear-search" className="quit-btn" onClick={() => setSearchTerm('') }>
+                  <FontAwesomeIcon icon={faXmark} />
+                </button>
+              )}
+              <button 
+                className=" ml-2.5 pt-2.5 pb-2.5 text-bg text-base bg-primary rounded-full cursor-pointer hover:bg-primary pr-4 pl-4"
+                onClick={() => handleSearch(searchTerm)}
+                aria-label="search"
+              >
+                <FontAwesomeIcon icon={faMagnifyingGlass} />
+              </button>
+            </div>
+            {showLoader && <div className="mt-4"><LoaderDict /></div>}
           </div>
-
-          {showLoader && <LoaderDict />}
-
         </div>
         {searchResults && <DictItem data={searchResults} handleSearch={handleSearch} folderList={folderList} userID={userID}/>}
       </div>

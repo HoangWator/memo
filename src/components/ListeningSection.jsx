@@ -23,7 +23,7 @@ export default function ListeningSection({listeningWords, onClose}) {
           <div className="p-5 rounded-lg cursor-pointer text-secondary-text" onClick={speakWord}><FontAwesomeIcon icon={faVolumeHigh} className='text-4xl'/></div>
           <input 
             type="text" 
-            placeholder='Type what you hear...'
+            placeholder='Gõ những gì bạn nghe...'
             onKeyDown={e => {
               if (e.key === 'Enter') {
                 setUserInput(e.target.value)
@@ -42,7 +42,7 @@ export default function ListeningSection({listeningWords, onClose}) {
 
         { userInput && (
           <div className={'p-5 rounded-lg mt-2.5' + (userInput ? (userInput.toLowerCase() === word.toLowerCase() ? ' bg-success/10 border-l-4 border-success' : ' bg-wrong/10 border-l-4 border-wrong') : '')}>
-            <h4 className='text-secondary-text select-none'>Answer:</h4>
+            <h4 className='text-secondary-text select-none'>Đáp án:</h4>
             <p className='text-primary-text cursor-pointer'onClick={speakWord}>{word}<FontAwesomeIcon icon={faVolumeHigh} className='ml-2.5'/></p>
             <button onClick={() => {
               if (listeningCardIndex < listeningWords.length - 1) {

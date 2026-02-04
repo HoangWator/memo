@@ -298,19 +298,19 @@ function App() {
                 className={'p-2.5 rounded-lg cursor-pointer mb-1 flex gap-2.5 items-center hover:bg-primary-surface ' + (pageIndex === 0 ? 'text-primary bg-primary-surface border-l-4 border-primary' : 'text-secondary-text') + (expandSidebar ? '' : ' justify-center')} 
                 onClick={() => setPageIndex(0)}
               >
-                <FontAwesomeIcon icon={faBookOpen} className='pt-[5px] pb-[5px]'/>{expandSidebar && <span>Dictionary</span> }
+                <FontAwesomeIcon icon={faBookOpen} className='pt-[5px] pb-[5px]'/>{expandSidebar && <span>Từ điển</span> }
               </li>
               <li 
                 className={'p-2.5 rounded-lg cursor-pointer mb-1 flex gap-2.5 items-center hover:bg-primary-surface ' + (pageIndex === 1 ? 'text-primary bg-primary-surface border-l-4 border-primary' : 'text-secondary-text') + (expandSidebar ? '' : ' justify-center')} 
                 onClick={() => setPageIndex(1)}
               >
-                <FontAwesomeIcon icon={faFolder} className='pt-[5px] pb-[5px]' />{expandSidebar && <span>Vocabulary</span>}
+                <FontAwesomeIcon icon={faFolder} className='pt-[5px] pb-[5px]' />{expandSidebar && <span>Từ vựng</span>}
               </li>
               <li 
                 className={'p-2.5 rounded-lg cursor-pointer mb-1 flex gap-2.5 items-center hover:bg-primary-surface ' + (pageIndex === 3 ? 'text-primary bg-primary-surface border-l-4 border-primary' : 'text-secondary-text') + (expandSidebar ? '' : ' justify-center')} 
                 onClick={() => setPageIndex(3)}
               >
-                <FontAwesomeIcon icon={faTrophy} className='pt-[5px] pb-[5px]' />{expandSidebar && <span>Rank</span>}
+                <FontAwesomeIcon icon={faTrophy} className='pt-[5px] pb-[5px]' />{expandSidebar && <span>Xếp hạng</span>}
               </li>
             </ul>
           </div>
@@ -333,7 +333,7 @@ function App() {
                 style={{ width: 32, height: 32, borderRadius: "50%" }} 
               />
               {expandSidebar && (
-                userID ? userName : 'Sign in'
+                userID ? userName : 'Đăng nhập'
               )}
             </button>
             {/* <button 
@@ -347,7 +347,7 @@ function App() {
             <div className="sidebar-mobile" onClick={() => setShowMobileSidebar(false)}>
               <div className="sidebar" onClick={e => e.stopPropagation()}>
                 <div className="logo">
-                  <button className='mobile-sidebar-toggle'onClick={() => setShowMobileSidebar(false)}><FontAwesomeIcon icon={faBars} /></button>
+                  <button className='mobile-sidebar-toggle cursor-pointer' onClick={() => setShowMobileSidebar(false)}><FontAwesomeIcon icon={faBars} /></button>
                   {/* <h1>Memo</h1> */}
                 </div>
 
@@ -355,15 +355,15 @@ function App() {
                   <li className={pageIndex === 0 ? 'clicked' : ''} onClick={() => {
                     setShowMobileSidebar(false)
                     setPageIndex(0)
-                  }}><FontAwesomeIcon icon={faBookOpen} className='icon' /><span>Dictionary</span></li>
+                  }}><FontAwesomeIcon icon={faBookOpen} className='icon' /><span>Từ điển</span></li>
                   <li className={pageIndex === 1 ? 'clicked' : ''} onClick={() => {
                     setShowMobileSidebar(false)
                     setPageIndex(1)
-                  }}><FontAwesomeIcon icon={faFolder} className='icon' /><span>Vocabulary</span></li>
+                  }}><FontAwesomeIcon icon={faFolder} className='icon' /><span>Từ vựng</span></li>
                   <li className={pageIndex === 2 ? 'clicked' : ''} onClick={() => {
                     setShowMobileSidebar(false)
                     setPageIndex(2)
-                  }}><FontAwesomeIcon icon={faTrophy} className='icon' /><span>Rank</span></li>
+                  }}><FontAwesomeIcon icon={faTrophy} className='icon' /><span>Xếp hạng</span></li>
                 </ul>
               </div>
             </div>
@@ -373,7 +373,7 @@ function App() {
         <div className="bg-primary-surface relative" style={{width: expandSidebar ? '80%' : 'calc(100% - 80px)'}}>
           <div className="flex items-center justify-between absolute top-0 left-0 right-0">
             <div className="logo">
-              <button className='mobile-sidebar-toggle'onClick={() => setShowMobileSidebar(true)}><FontAwesomeIcon icon={faBars} /></button>
+              <button className='mobile-sidebar-toggle cursor-pointer' onClick={() => setShowMobileSidebar(true)}><FontAwesomeIcon icon={faBars} /></button>
             </div>
             <div className="flex items-center gap-2.5 p-2">
               
@@ -392,105 +392,124 @@ function App() {
           )}
           {/* Folder management */}
           {pageIndex === 1 && (
-            <div className="w-full h-screen pl-2.5 pr-2.5 overflow-auto">
-              <h1 className='text-2xl text-primary-text mt-2.5 font-bold'>Folder overview</h1>
-              <p className='text-base text-secondary-text'>Mange your words here.</p>
-              <div className='flex gap-2.5 pb-2.5 border-b-1 border-b-muted mb-2.5'>
-                <div className='bg-primary/10 flex flex-col items-center gap-2.5 p-4 rounded-lg mt-2.5 mb-2.5 border-l-4 border-l-primary'>
-                  <p className='text-secondary-text'>Total Folders</p>
-                  <h2 className='text-primary-text text-3xl font-bold'>{allFolders.length}</h2>
+            <div className="w-full pl-4 pr-4 pb-8">
+              <div className="flex items-start justify-between gap-4 mt-4 mb-6">
+                <div>
+                  <h1 className='text-2xl text-primary-text font-bold'>Quản lí bộ từ</h1>
+                  <p className='text-base text-secondary-text mt-1'>Quản lý từ của bạn ở đây.</p>
                 </div>
-                <div className='bg-success/10 flex flex-col items-center gap-2.5 p-4 rounded-lg mt-2.5 mb-2.5 border-l-4 border-l-success'>
-                  <p className='text-secondary-text'>Need to Review</p>
-                  <h2 className='text-primary-text text-3xl font-bold'>0</h2>
-                </div>
-              </div>
-              
-              {showCreateFolder && (
-                <div className="fixed top-0 bottom-0 right-0 left-0 bg-black/50 flex items-center justify-center z-1" onClick={() => setShowCreateFolder(false)}>
-                  <div className="w-100 bg-bg p-2.5 rounded-lg relative" onClick={e => e.stopPropagation()}>
-                    <button onClick={() => setShowCreateFolder(false)} className='quit-btn absolute right-2.5 top-2.5'><FontAwesomeIcon icon={faX} /></button>
-                    <h3 className='text-2xl text-primary-text text-center mt-4 mb-4'>Create a folder</h3>
-                    <input 
-                      type="text" 
-                      placeholder='Enter folder name...' 
-                      onChange={e => setFolderName(e.target.value)}
-                      onKeyDown={e => {
-                        if (e.key === 'Enter') {
-                          addFolder();
-                        }
-                      }}
-                      // className='mt-2.5 w-full pt-2.5 pb-2.5 pl-5 pr-5 outline-none border-none bg-bg text-primary-text text-base rounded-full'
-                      className='input-field w-full'
-                      value={folderName}
-                    />
-                    <div className='text-center'>
-                      <button 
-                        onClick={() => {
-                          if (folderName != '') {
-                            addFolder()
+
+                <div className="flex items-center gap-3">
+                  <div className='hidden sm:flex gap-3'>
+                    <div className='p-3 rounded-lg bg-primary/10 text-primary-text text-sm'>
+                      <div className='text-secondary-text text-xs'>Tổng số</div>
+                      <div className='text-lg font-semibold'>{allFolders.length}</div>
+                    </div>
+                    <div className='p-3 rounded-lg bg-success/10 text-primary-text text-sm'>
+                      <div className='text-secondary-text text-xs'>Cần ôn</div>
+                      <div className='text-lg font-semibold'>0</div>
+                    </div>
+                  </div>
+
+                  <div className='relative'>
+                    <div className='relative'>
+                      <FontAwesomeIcon icon={faMagnifyingGlass} className='absolute left-3 top-3.5 text-secondary-text' />
+                      <input
+                        className='pl-10 pr-4 py-2 rounded-lg bg-bg text-primary-text border border-transparent focus:border-muted focus:outline-none w-48 sm:w-64'
+                        type='text'
+                        placeholder='Search folder...'
+                        onChange={e => {
+                          const searchValue = e.target.value.toLowerCase();
+                          if (searchValue.length > 0) {
+                            const filteredFolders = allFolders.filter(folder =>
+                              folder.name.toLowerCase().includes(searchValue)
+                            );
+                            setFolders(filteredFolders);
+                          } else {
+                            setFolders(allFolders);
                           }
                         }}
-                        className={'mt-2.5 click-btn ' + (folderName == '' ? 'bg-primary-surface cursor-not-allowed' : '')}
-                      >
-                        <FontAwesomeIcon icon={faPlus} className='mr-2' />
-                        Add folder</button>
+                      />
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={createFolder}
+                    className='ml-2 inline-flex items-center gap-2 bg-primary text-bg px-4 py-2 rounded-lg shadow-sm hover:shadow-md transition cursor-pointer'
+                  >
+                    <FontAwesomeIcon icon={faPlus} />
+                    <span className='hidden sm:inline'>Thêm thư mục</span>
+                  </button>
+                </div>
+              </div>
+
+              {showCreateFolder && (
+                <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50" onClick={() => setShowCreateFolder(false)}>
+                  <div className="w-full max-w-md mx-4 bg-bg dark:bg-primary-surface rounded-xl shadow-xl p-6" onClick={e => e.stopPropagation()}>
+                    <div className='flex items-center justify-between mb-4'>
+                      <div>
+                        <h3 className='text-xl font-semibold text-primary-text'>Tạo thư mục</h3>
+                        <p className='text-sm text-secondary-text'>Đặt tên cho thư mục mới của bạn.</p>
+                      </div>
+                      <button onClick={() => setShowCreateFolder(false)} className='text-secondary-text hover:text-primary-text cursor-pointer'><FontAwesomeIcon icon={faX} /></button>
+                    </div>
+
+                    <label className='block text-sm text-secondary-text mb-1'>Tên thư mục</label>
+                    <input
+                      type='text'
+                      placeholder='Nhập tên thư mục...'
+                      value={folderName}
+                      onChange={e => setFolderName(e.target.value)}
+                      onKeyDown={e => { if (e.key === 'Enter' && folderName.trim() !== '') addFolder(); }}
+                      className='w-full mb-4 px-4 py-2 rounded-lg border border-muted bg-bg text-primary-text focus:outline-none'
+                    />
+
+                    <div className='flex items-center justify-end gap-2'>
+                      <button onClick={() => { setShowCreateFolder(false); setFolderName(''); }} className='px-4 py-2 rounded-lg text-secondary-text hover:text-primary-text cursor-pointer'>Hủy</button>
+                      <button
+                        onClick={() => { if (folderName.trim() !== '') addFolder(); }}
+                        className={'px-4 py-2 rounded-lg text-bg ' + (folderName.trim() === '' ? 'bg-primary/40 cursor-not-allowed' : 'bg-primary cursor-pointer')}
+                        disabled={folderName.trim() === ''}
+                      >Tạo</button>
                     </div>
                   </div>
                 </div>
               )}
-              <div className='flex items-center gap-2.5'>
-                <div className="search-folder">
-                  <div className="search-field relative">
-                    <FontAwesomeIcon icon={faMagnifyingGlass} className='absolute left-3 top-3.75 text-secondary-text' />
-                    <input 
-                    className='input-field pl-9 bg-bg'
-                      type="text" 
-                      placeholder='Search folder...'
-                      onChange={e => {
-                        const searchValue = e.target.value.toLowerCase();
-                        if (searchValue.length > 0) {
-                          const filteredFolders = allFolders.filter(folder =>
-                            folder.name.toLowerCase().includes(searchValue)
-                          );
-                          setFolders(filteredFolders);
-                        } else {
-                          setFolders(allFolders);
-                        }
-                      }}
-                    />
-                  </div>
-                </div>
-                <button className='click-btn px-6 py-3 flex items-center' onClick={createFolder}>
-                  <FontAwesomeIcon className='text-base mr-2' icon={faPlus} /><span>Create folder</span>
-                </button>
 
-              </div>
-              <div className="flex gap-2.5 flex-wrap mt-2.5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
                 {folders.length === 0 && (
-                  <div className="w-full pt-15">
-                    <p className='text-center text-secondary-text'>No folders yet.</p>
+                  <div className="col-span-full py-12">
+                    <p className='text-center text-secondary-text'>Chưa có thư mục nào.</p>
                   </div>
                 )}
-                {folders.map((folder, index) => {
-                  return (
-                    <div className="folder-item px-6 py-3 rounded-lg min-w-37.5 relative cursor-pointer shadow-lg hover:shadow-xl bg-bg" key={index}>
-                      <div className="" onClick={() => openWordSection(folder.name)}>
-                        <FontAwesomeIcon icon={faFolder} className='folder-icon text-primary text-2xl' />
-                        <h2 className='text-xl text-primary-text font-semibold mt-2.5'>{folder.name}</h2>
-                        <p className='text-secondary-text'><span className='text-secondary-text'>{folder.words.length} words</span></p>
-                        <ReviewWordsNums folder={folder}/>
+
+                {folders.map((folder, index) => (
+                  <div
+                    key={index}
+                    className='bg-bg rounded-xl p-4 shadow-sm hover:shadow-lg cursor-pointer transform hover:-translate-y-1 transition'
+                    onClick={() => openWordSection(folder.name)}
+                  >
+                    <div className='flex items-center gap-3'>
+                      <div className='h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary'>
+                        <FontAwesomeIcon icon={faFolder} />
+                      </div>
+                      <div className='flex-1'>
+                        <h3 className='text-lg text-primary-text font-semibold'>{folder.name}</h3>
+                        <p className='text-sm text-secondary-text'>{folder.words.length} words</p>
                       </div>
                     </div>
-                  )
-                })}
+                    <div className='mt-3'>
+                      <ReviewWordsNums folder={folder} />
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           )}
 
           {pageIndex === 3 && (
             <div className="w-full h-screen flex items-center justify-center">
-              <h2 className='text-secondary-text'>Comming soon!</h2>
+              <h2 className='text-secondary-text'>Sắp ra mắt!</h2>
             </div>
           )}
 
@@ -506,13 +525,13 @@ function App() {
       {showLoginSection && (
         <div className="fixed top-0 bottom-0 right-0 left-0 bg-black/50 flex items-center justify-center" onClick={() => setShowLoginSection(false)}>
           <div className="p-5 bg-bg rounded-lg relative"  onClick={e => e.stopPropagation()}>
-            <button className='quit-btn absolute top-2.5 right-2.5' onClick={() => setShowLoginSection(false)}><FontAwesomeIcon icon={faXmark} /></button>
-            <h1 className='text-center text-2xl mb-2.5 text-secondary-text'>Sign in</h1>
+            <button className='quit-btn absolute top-2.5 right-2.5 cursor-pointer' onClick={() => setShowLoginSection(false)}><FontAwesomeIcon icon={faXmark} /></button>
+            <h1 className='text-center text-2xl mb-2.5 text-secondary-text'>Đăng nhập</h1>
             <div className="login-options">
               <button 
                 onClick={loginWithGoogle}
                 className='flex items-center gap-2.5 bg-primary-surface p-2.5 rounded-lg w-full justify-center text-secondary-text cursor-pointer'
-              ><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/800px-Google_%22G%22_logo.svg.png" alt="" className='h-10'/>Continue with Google</button>
+              ><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/800px-Google_%22G%22_logo.svg.png" alt="" className='h-10'/>Tiếp tục với Google</button>
               {/* <button><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Facebook_Logo_%282019%29.png/500px-Facebook_Logo_%282019%29.png" alt="" />Continue with Facebook</button> */}
             </div>
           </div>
@@ -522,13 +541,13 @@ function App() {
       {showLogoutSection && (
         <div className="logout-section" onClick={() => setShowLogoutSection(false)}>
           <div className="logout-container" onClick={e => e.stopPropagation()}>
-            <h2>Do you want to log out?</h2>
+            <h2>Bạn có muốn đăng xuất không?</h2>
             <div className="logout-options">
               <button onClick={() => {
                 exitAccount()
                 setShowLogoutSection(false)
-              }}>Yes, log out</button>
-              <button onClick={() => setShowLogoutSection(false)} className='goBack'>No, come back</button>
+              }} className='cursor-pointer'>Có, đăng xuất</button>
+              <button onClick={() => setShowLogoutSection(false)} className='goBack cursor-pointer'>Không, quay lại</button>
             </div>
           </div>
         </div>
