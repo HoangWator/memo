@@ -182,9 +182,9 @@ export default function WordSection({onClose, currentFolder, userID}) {
     if (searchValue.length > 0) {
       const filteredWords = allWords.filter(word => {
         const name = word.name.toLowerCase()
-        const mean = word.mean.toLowerCase()
-
-        return name.includes(searchValue) || mean.includes(searchValue)
+        const defEng = word.definition_eng.toLowerCase()
+        const defVie = word.definition_vie.toLowerCase()
+        return name.includes(searchValue) || defEng.includes(searchValue) || defVie.includes(searchValue)
       });
       setWords(filteredWords);
     }
@@ -273,7 +273,7 @@ export default function WordSection({onClose, currentFolder, userID}) {
 
 
   return (
-    <div className="fixed top-0 bottom-0 left-0 right-0 bg-bg" onClick={() => {
+    <div className="fixed top-0 bottom-0 left-0 right-0 bg-bg flex flex-col z-100" onClick={() => {
       if (showRemindSuggestion) {
         setShowRemindSuggestion(false)
       }
@@ -297,13 +297,16 @@ export default function WordSection({onClose, currentFolder, userID}) {
           userID={userID}
         />
       )}
-      <div className="p-2.5 flex items-center gap-2.5">
+      <div className="p-3 sm:p-4 flex items-center gap-3 bg-primary-surface">
         <button onClick={onClose} className='quit-btn'><FontAwesomeIcon icon={faArrowLeft} /></button>
-        <h2 className='text-xl text-secondary-text'>{currentFolder}</h2>
+        <h2 className='text-lg sm:text-xl text-secondary-text font-semibold'>{currentFolder}</h2>
+        <div className='ml-auto flex items-center gap-2'>
+        </div>
       </div>
-      <div className="word-section-body flex">
 
-        <div className="w-1/2 p-2.5">
+      <div className="word-section-body flex flex-1 flex-col md:flex-row overflow-hidden bg-bg">
+
+        <div className="md:w-1/3 w-full p-4 overflow-auto border-r-0 md:border-r-1 border-r-muted">
           {wordsToReview.length > 0 && 
             <ReviewSection 
               data={wordsToReview} 
@@ -311,70 +314,67 @@ export default function WordSection({onClose, currentFolder, userID}) {
               currentFolder={currentFolder}  
             />
           }
-          <h1 className='text-xl text-primary-text'>Chế độ học</h1>
-          <div className="learning-modes flex gap-2.5 mt-2.5 flex-wrap">
-              <button className='p-2.5 bg-primary-surface cursor-pointer rounded-lg flex items-center gap-2.5 text-secondary-text hover:bg-secondary-surface' onClick={() => learnBtn(words)}>
+          <h3 className='text-lg text-primary-text font-semibold mb-3'>Chế độ học</h3>
+          <div className="learning-modes grid grid-cols-2 sm:grid-cols-3 gap-3">
+            <button className='p-3 bg-primary-surface cursor-pointer rounded-lg flex flex-col items-center gap-2 text-secondary-text transform transition duration-150 hover:scale-105' onClick={() => learnBtn(words)}>
               <img src="https://cdn-icons-png.freepik.com/512/9100/9100957.png" alt="" className='h-10' />
-              Thẻ nhớ
+              <span className='text-sm font-medium'>Thẻ nhớ</span>
             </button>
 
-            <button className='p-2.5 bg-primary-surface cursor-pointer rounded-lg flex items-center gap-2.5 text-secondary-text hover:bg-secondary-surface' onClick={() => generateFilling(words)}>
+            <button className='p-3 bg-primary-surface cursor-pointer rounded-lg flex flex-col items-center gap-2 text-secondary-text transform transition duration-150 hover:scale-105' onClick={() => generateFilling(words)}>
               <img src="https://cdn-icons-png.flaticon.com/512/6559/6559624.png" alt="" className='h-10' />
-              Điền từ
+              <span className='text-sm font-medium'>Điền từ</span>
             </button>
 
-            <button className='p-2.5 bg-primary-surface cursor-pointer rounded-lg flex items-center gap-2.5 text-secondary-text hover:bg-secondary-surface' onClick={() => generateListening(words)}>
+            <button className='p-3 bg-primary-surface cursor-pointer rounded-lg flex flex-col items-center gap-2 text-secondary-text transform transition duration-150 hover:scale-105' onClick={() => generateListening(words)}>
               <img src="https://cdn-icons-png.flaticon.com/512/8805/8805242.png" alt="" className='h-10' />
-              Nghe
+              <span className='text-sm font-medium'>Nghe</span>
             </button>
 
-            <button className='p-2.5 bg-primary-surface cursor-pointer rounded-lg flex items-center gap-2.5 text-secondary-text hover:bg-secondary-surface' onClick={() => setShowMatching(true)}>
+            <button className='p-3 bg-primary-surface cursor-pointer rounded-lg flex flex-col items-center gap-2 text-secondary-text transform transition duration-150 hover:scale-105' onClick={() => setShowMatching(true)}>
               <img src="https://cdn-icons-png.flaticon.com/512/3952/3952841.png" alt="" className='h-10' />
-              Ghép nối
+              <span className='text-sm font-medium'>Ghép nối</span>
             </button>
           </div>
-          
-          <h1 className='text-xl text-primary-text mt-5 mb-2.5'>Cài đặt</h1>
-          
-          
-          <button className='p-2.5 rounded-lg bg-primary-surface cursor-pointer text-secondary-text block mb-2.5 hover:bg-secondary-surface' onClick={() => {
-            setShowRenameFolderSection(true)
-          }}><FontAwesomeIcon icon={faPen} className='mr-1'/> Đổi tên thư mục</button>
-          
-          <button className='p-2.5 rounded-lg bg-primary-surface cursor-pointer block text-wrong hover:bg-secondary-surface' onClick={() => {
-            setShowDeleteValid(true)
-          }}><FontAwesomeIcon icon={faTrash} className='mr-1'/> Xóa thư mục</button>
+
+          <div className='mt-6'>
+            <h4 className='text-base text-primary-text font-semibold mb-2'>Quản lý thư mục</h4>
+            <button className='w-full p-3 rounded-lg bg-primary-surface text-secondary-text mb-2 cursor-pointer transform transition duration-150 hover:scale-105' onClick={() => setShowRenameFolderSection(true)}><FontAwesomeIcon icon={faPen} className='mr-2'/> Đổi tên thư mục</button>
+            <button className='w-full p-3 rounded-lg bg-primary-surface text-secondary-text mb-2 cursor-pointer transform transition duration-150 hover:scale-105' onClick={() => setShowDeleteValid(true)}><FontAwesomeIcon icon={faTrash} className='mr-2'/> Xóa thư mục</button>
+          </div>
         </div>
-        
-        
-        
+
         {showWordList && (
-          <div className="word-list">
-            <div className="word-list-header">
+          <div className="word-list md:w-1/3 w-full">
+            <div className="word-list-header p-3 flex items-center gap-3">
               <button onClick={() => setShowWordList(false)} className='quitSectionBtn'><FontAwesomeIcon icon={faArrowLeft}/></button>
-              <h2>Từ của tôi</h2>
+              <h2 className='text-lg'>Từ của tôi</h2>
             </div>
-            <div className="word-list-body">
-              <button className='add-word-btn mobile' onClick={() => setShowWordSectionLeft(true)}><FontAwesomeIcon icon={faPlus}/> Thêm từ</button>
+            <div className="word-list-body p-3">
+              <div className='mb-3'>
+                <button className='add-word-btn mobile w-full p-3 rounded-lg bg-primary text-bg' onClick={() => setShowWordSectionLeft(true)}><FontAwesomeIcon icon={faPlus}/> Thêm từ</button>
+              </div>
               <div className="word-list-content">
-                <div className="searchBox-section">
+                <div className="searchBox-section mb-3">
                   <input 
                     type="text" 
-                    className="searchBox bg-bg text-primary-text w-full pl-10 mb-2.5" 
+                    className="searchBox bg-bg text-primary-text w-full pl-10 mb-2.5 rounded-md" 
                     placeholder='Tìm từ của bạn...'
                     onChange={searchWord}/>
                   <FontAwesomeIcon icon={faMagnifyingGlass} className='searchIcon'/>
                 </div>
-                <ul>
+                <ul className='space-y-3'>
                   {
                     words.length > 0 ? (
                         words.map((word, index) => 
-                          <li key={index}>
-                            <MeaningDisplay word={word}/>
-                            <p>{word.mean.toLowerCase()}</p>
+                          <li key={index} className='p-3 rounded-lg bg-primary-surface flex items-start justify-between'>
+                            <div className='flex-1'>
+                              <MeaningDisplay word={word}/>
+                              <p className='text-secondary-text text-base'>{word.mean.toLowerCase()}</p>
+                            </div>
 
                             <button 
-                              className='deleteBtn'
+                              className='deleteBtn ml-3'
                               onClick={() => {
                                 const newWords = words.filter((words, i) => i !== index)
                                 setAllWords(newWords)
@@ -386,7 +386,7 @@ export default function WordSection({onClose, currentFolder, userID}) {
                           </li>
                         )
                       ) : (
-                      <p className='noWords mr-auto ml-auto text-secondary-text'>Không có từ nào!</p>
+                      <p className='noWords text-center text-secondary-text'>Không có từ nào!</p>
                     )
                   }
                 </ul>
@@ -394,47 +394,49 @@ export default function WordSection({onClose, currentFolder, userID}) {
             </div>
           </div>
         )}
-        
-        <div className="word-section-right w-1/2 p-2.5 flex flex-col">
-          
-          <div className="searchBox-section relative">
-              <input 
-              type="text" 
-              className="input-field w-full pl-10 mb-2.5 bg-primary-surface text-primary-text" 
-              placeholder='Tìm từ của bạn...'
-              onChange={searchWord}/>
-            <FontAwesomeIcon icon={faMagnifyingGlass} className='absolute left-4 top-3.5 text-secondary-text'/>
-          </div>
-          <div className="flex flex-1 overflow-auto max-h-[75vh]">
-            <ul className='flex flex-col items-center w-full'>
-              {
-                words.length > 0 ? (
-                    words.map((word, index) => 
-                      <li key={index} className='p-2.5 rounded-lg flex items-center justify-between w-full'>
-                        <div>
-                          <MeaningDisplay word={word}/>
-                          <p className='text-secondary-text text-base '>{word.definition_eng}</p>
-                          <p className='text-secondary-text text-base '>{word.definition_vie}</p>
-                        </div>
 
-                        <button 
-                          className='text-primary-surface cursor-pointer rounded-lg hover:text-wrong'
-                          onClick={() => {
-                            const newWords = words.filter((words, i) => i !== index)
-                            setAllWords(newWords)
-                            setWords(newWords)
-                            deleteWordDB(userID, currentFolder, word)
-                          }}>
-                            <FontAwesomeIcon icon={faTrash} />
-                          </button>
-                      </li>
-                    )
-                ) : (
-                  <p className='mt-10 text-secondary-text mr-auto ml-auto'>Không có từ nào!</p>
-                )
-              }
-            </ul>
+        <div className="md:w-2/3 w-full pr-4 pl-4 flex flex-col overflow-auto">
+          <div className='sticky top-0 bg-bg z-10 p-2 -mx-4 mb-3'>
+            <div className='relative'>
+              <input 
+                type="text" 
+                className="input-field w-full pl-10 pr-3 py-2 rounded-md border border-transparent bg-primary-surface text-primary-text" 
+                placeholder='Tìm từ của bạn...'
+                onChange={searchWord}/>
+              <FontAwesomeIcon icon={faMagnifyingGlass} className='absolute left-3 top-3 text-secondary-text'/>
+            </div>
           </div>
+
+          <ul className='flex-1 flex-col gap-2 overflow-y-scroll overflow-x-hidden pr-2 pl-2 pb-2'>
+            {
+              words.length > 0 ? (
+                words.map((word, index) => (
+                  <li key={index} className='p-4 mb-2 rounded-lg bg-bg flex flex-col sm:flex-row items-start sm:items-center justify-between transform transition duration-150 hover:scale-101 shadow-md'>
+                    <div className='flex-1'>
+                      <MeaningDisplay word={word}/>
+                      <p className='text-secondary-text text-sm mt-1'>{word.definition_eng}</p>
+                      <p className='text-secondary-text text-sm'>{word.definition_vie}</p>
+                    </div>
+                    <div className='mt-3 sm:mt-0 sm:ml-4 flex gap-2'>
+                      <button className='px-3 py-1 rounded-md bg-primary-surface text-secondary-text cursor-pointer transform transition duration-150 hover:scale-105' onClick={() => {/* edit placeholder */}}>Sửa</button>
+                      <button 
+                        className='px-3 py-1 rounded-md bg-warn text-bg cursor-pointer transform transition duration-150 hover:scale-105'
+                        onClick={() => {
+                          const newWords = words.filter((words, i) => i !== index)
+                          setAllWords(newWords)
+                          setWords(newWords)
+                          deleteWordDB(userID, currentFolder, word)
+                        }}>
+                        Xóa
+                      </button>
+                    </div>
+                  </li>
+                ))
+              ) : (
+                <li className='mt-6 text-secondary-text text-center'>Không có từ nào!</li>
+              )
+            }
+          </ul>
         </div>
       </div>
 
