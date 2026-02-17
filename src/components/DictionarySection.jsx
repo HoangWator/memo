@@ -5,6 +5,7 @@ import LoaderDict from './LoaderDict';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus,faBookOpen,faBars,faArrowLeft,faArrowRight,faArrowDown,faArrowUp,faTrash,faXmark,faMagnifyingGlass,faCheck,faVolumeHigh,faFolder,faDumbbell,faTrophy,faChartSimple,faEllipsis,faPenToSquare,faX,faArrowRightFromBracket,faArrowsLeftRight } from '@fortawesome/free-solid-svg-icons'
 import { addWordDB } from '../components/handleData';
+import { extractData } from './extractData';
 import { addWordToDictDB,searchWordInDictDB,checkWordInDictDB } from '../components/handleData';
 
 function createReviewDates(startDate) {
@@ -493,6 +494,7 @@ export function DictionarySection({folderList, userID}) {
   const handleSearch = async (word) => {
     if (word.trim() !== "") {
       setShowLoader(true);
+
       const isInDict = await checkWordInDictDB(word);
 
       if (isInDict) {
@@ -502,14 +504,11 @@ export function DictionarySection({folderList, userID}) {
         setSearchTerm('');
       }
       else {
-        dictEngine(word).then((datas) => {
-          const processedData = datas.slice(datas.indexOf('{'), datas.lastIndexOf('}') + 1);
+        extractData(word).then((data) => {
           setShowLoader(false);
-          if (processedData.length > 0) {
-            const jsonData = JSON.parse(processedData)
-            console.log(jsonData)
-            setSearchResults(jsonData);
-            addWordToDictDB(jsonData);
+          if (data.meanings.length > 0) {
+            setSearchResults(data);
+            addWordToDictDB(data);
           }
           else {
             alert("Không tìm thấy từ trong từ điển.");
@@ -520,6 +519,24 @@ export function DictionarySection({folderList, userID}) {
           alert("Đã xảy ra lỗi khi lấy định nghĩa. Vui lòng thử lại.");
           console.error("Error fetching definition:", error);
         })
+        // dictEngine(word).then((datas) => {
+        //   const processedData = datas.slice(datas.indexOf('{'), datas.lastIndexOf('}') + 1);
+        //   setShowLoader(false);
+        //   if (processedData.length > 0) {
+        //     const jsonData = JSON.parse(processedData)
+        //     console.log(jsonData)
+        //     setSearchResults(jsonData);
+        //     addWordToDictDB(jsonData);
+        //   }
+        //   else {
+        //     alert("Không tìm thấy từ trong từ điển.");
+        //   }
+        //   setSearchTerm('')
+        // }).catch((error) => {
+        //   setShowLoader(false);
+        //   alert("Đã xảy ra lỗi khi lấy định nghĩa. Vui lòng thử lại.");
+        //   console.error("Error fetching definition:", error);
+        // })
       }
     }
     else {

@@ -12,6 +12,7 @@ import ReviewSection from './ReviewSection.jsx'
 import MatchingSection from './MatchingSection.jsx'
 import DeleteValid from './modals/DeleteValid.jsx'
 import RenameFolder from './modals/RenameFolder.jsx'
+import AddWordModal from './modals/AddWordModal.jsx'
 
 import { addWordDB,deleteWordDB } from './handleData.js'
 import { getFolderDataDB } from './handleData.js'
@@ -270,6 +271,7 @@ export default function WordSection({onClose, currentFolder, userID}) {
 
   const [showDeleteValid, setShowDeleteValid] = useState(false)
   const [showRenameFolderSection, setShowRenameFolderSection] = useState(false)
+  const [showAddWordModal, setShowAddWordModal] = useState(false)
 
 
   return (
@@ -297,6 +299,27 @@ export default function WordSection({onClose, currentFolder, userID}) {
           userID={userID}
         />
       )}
+
+      {showAddWordModal && (
+        <AddWordModal 
+          onClose={() => setShowAddWordModal(false)}
+          userID={userID}
+          currentFolder={currentFolder}
+          onWordAdded={() => {
+            // Refresh the word list
+            getFolderDataDB(userID, currentFolder).then((data) => {
+              if (data) {
+                setWords(data.words);
+                setAllWords(data.words);
+                setWordsToReview(getWordsToReview(data.words).wordsToReview);
+              }
+            }).catch((error) => {
+              console.error("Error fetching folder data:", error);
+            });
+          }}
+        />
+      )}
+
       <div className="p-3 sm:p-4 flex items-center gap-3 bg-primary-surface">
         <button onClick={onClose} className='quit-btn'><FontAwesomeIcon icon={faArrowLeft} /></button>
         <h2 className='text-lg sm:text-xl text-secondary-text font-semibold'>{currentFolder}</h2>
@@ -314,6 +337,12 @@ export default function WordSection({onClose, currentFolder, userID}) {
               currentFolder={currentFolder}  
             />
           }
+          <button 
+            onClick={() => setShowAddWordModal(true)}
+            className='w-full p-3 rounded-lg bg-primary text-bg mb-4 cursor-pointer transform transition duration-150 hover:scale-105 font-semibold'
+          >
+            <FontAwesomeIcon icon={faPlus} className='mr-2'/> Thêm từ
+          </button>
           <h3 className='text-lg text-primary-text font-semibold mb-3'>Chế độ học</h3>
           <div className="learning-modes grid grid-cols-2 sm:grid-cols-3 gap-3">
             <button className='p-3 bg-primary-surface cursor-pointer rounded-lg flex flex-col items-center gap-2 text-secondary-text transform transition duration-150 hover:scale-105' onClick={() => learnBtn(words)}>
@@ -411,7 +440,7 @@ export default function WordSection({onClose, currentFolder, userID}) {
             {
               words.length > 0 ? (
                 words.map((word, index) => (
-                  <li key={index} className='p-4 mb-2 rounded-lg bg-bg flex flex-col sm:flex-row items-start sm:items-center justify-between transform transition duration-150 hover:scale-101 shadow-md'>
+                  <li key={index} className='p-4 mb-2 rounded-lg bg-bg flex flex-col sm:flex-row items-start sm:items-center justify-between transform transition duration-150 hover:scale-101 shadow-md cursor-pointer'>
                     <div className='flex-1'>
                       <MeaningDisplay word={word}/>
                       <p className='text-secondary-text text-sm mt-1'>{word.definition_eng}</p>
@@ -420,7 +449,7 @@ export default function WordSection({onClose, currentFolder, userID}) {
                     <div className='mt-3 sm:mt-0 sm:ml-4 flex gap-2'>
                       <button className='px-3 py-1 rounded-md bg-primary-surface text-secondary-text cursor-pointer transform transition duration-150 hover:scale-105' onClick={() => {/* edit placeholder */}}>Sửa</button>
                       <button 
-                        className='px-3 py-1 rounded-md bg-warn text-bg cursor-pointer transform transition duration-150 hover:scale-105'
+                        className='px-3 py-1 rounded-md bg-warn text-wrong cursor-pointer transform transition duration-150 hover:scale-105'
                         onClick={() => {
                           const newWords = words.filter((words, i) => i !== index)
                           setAllWords(newWords)
