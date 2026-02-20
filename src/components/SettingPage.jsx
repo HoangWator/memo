@@ -4,16 +4,18 @@ import { useRef } from 'react';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus,faBookOpen,faBars,faArrowLeft,faArrowRight,faArrowDown,faArrowUp,faTrash,faXmark,faMagnifyingGlass,faVolumeHigh,faFolder,faDumbbell,faTrophy,faChartSimple,faEllipsis,faPenToSquare,faX,faArrowRightFromBracket,faArrowsLeftRight } from '@fortawesome/free-solid-svg-icons'
 
-function AccountPage({userAvatar, userName}) {
+function AccountPage({userAvatar, userName, openLogoutSection}) {
   return (
     <div className='p-2.5'>
       <div className='w-full flex flex-col items-center'>
         <img src={userAvatar} alt="" className='rounded-full'/>
         <h2 className='text-primary-text mt-2.5'>{userName}</h2>
-        <button className='click-btn text-primary-text mt-2.5 bg-secondary-surface hover:text-wrong' onClick={() => {
-          // setShowLogoutSection(true)
-          // setShowLogoutBtn(false)
-        }}>Đăng xuất<FontAwesomeIcon icon={faArrowRightFromBracket} className='ml-2.5' /></button>
+        <button 
+          className='click-btn text-primary-text mt-2.5 bg-secondary-surface hover:text-wrong' 
+          onClick={() => {
+            openLogoutSection()
+          }}
+        >Đăng xuất<FontAwesomeIcon icon={faArrowRightFromBracket} className='ml-2.5' /></button>
       </div>
     </div>
   )
@@ -39,7 +41,7 @@ function AccountPage({userAvatar, userName}) {
 
   return (
     <div className='p-2.5'>
-      <h1 className='text-primary-text'>Tùy chọn giao diện:</h1>
+      <h1 className='text-primary-text'>Giao diện</h1>
       <div className='mt-4 theme-toggle'>
         <div className={'theme-switch ' + (theme === 'dark' ? 'dark' : 'light')} onClick={() => setTheme(t => t === 'dark' ? 'light' : 'dark')} role="button" aria-label="Toggle theme">
           <div className='theme-thumb' />
@@ -56,14 +58,11 @@ function AccountPage({userAvatar, userName}) {
   function LanguagePage() {
   return (
     <div className='p-2.5'>
-      <h1 className='font-semibold'>Hiển thị từ điển</h1>
-      {/* Select language display on dictionary */}
-
-
+      <h1 className='text-primary-text'>Ngôn ngữ</h1>
     </div>
   )
 }
-export function SettingPage({onClose, userAvatar, userName}) {
+export function SettingPage({onClose, userAvatar, userName, openLogoutSection}) {
   const [selectedPage, setSelectedPage] = useState(0);
 
   return (
@@ -95,7 +94,11 @@ export function SettingPage({onClose, userAvatar, userName}) {
             >Ngôn ngữ</li>
           </ul>
 
-          {selectedPage === 0 && <AccountPage userAvatar={userAvatar} userName={userName}/>}
+          {selectedPage === 0 && 
+            <AccountPage 
+              userAvatar={userAvatar} 
+              userName={userName} 
+              openLogoutSection={openLogoutSection}/>}
           {selectedPage === 1 && <ThemePage />}
           {selectedPage === 2 && <LanguagePage />}
         </div>

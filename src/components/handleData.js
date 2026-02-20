@@ -129,6 +129,46 @@ export async function deleteWordDB(uid, folderName, word) {
   }
 }
 
+export async function updateWordDB(uid, folderName, oldWord, updatedWord) {
+  try {
+    const docRef = doc(db, "users", uid);
+
+    // 1. Get the current data
+    const snapshot = await getDoc(docRef);
+    const data = snapshot.data();
+
+    // 2. Find the folder
+    const folderIndex = data.folders.findIndex(folder => folder.name === folderName);
+    if (folderIndex !== -1) {
+      const words = data.folders[folderIndex].words;
+      
+      // 3. Find the word by matching the old word's properties
+      const wordIndex = words.findIndex(word => 
+        word.name === oldWord.name && 
+        word.definition_eng === oldWord.definition_eng && 
+        word.definition_vie === oldWord.definition_vie
+      );
+      
+      if (wordIndex !== -1) {
+        // 4. Update the word with new values while preserving other properties
+        words[wordIndex] = {
+          ...words[wordIndex],
+          name: updatedWord.name,
+          definition_eng: updatedWord.definition_eng,
+          definition_vie: updatedWord.definition_vie
+        };
+
+        // 5. Write the WHOLE folders array back
+        await updateDoc(docRef, {
+          folders: data.folders
+        });
+      }
+    }
+  } catch (e) {
+    console.error("Error updating word: ", e);
+  }
+}
+
 export async function getFolderDataDB(uid, folderName) {
   try {
     const docRef = doc(db, "users", uid);

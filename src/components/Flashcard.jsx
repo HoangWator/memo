@@ -21,7 +21,7 @@ export default function Flashcard({data, onClose}) {
           <div className="flip-card-front">
             <div className="w-full h-full p-5 bg-primary-surface rounded-lg text-primary-text flex items-center justify-center flex-col">
               <h1 className='text-3xl text-center'>{word.name}</h1>
-              <p className='text-base text-secondary-text mt-2'>({word.type})</p>
+              <p className={'text-base mt-2 ' + word.type}>{word.type == 'phverb' ? 'Phrasal Verb' : word.type}</p>
               <span className='absolute bottom-5 right-5'><FontAwesomeIcon icon={faArrowsLeftRight} /></span>
             </div>
           </div>

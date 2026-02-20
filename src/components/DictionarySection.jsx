@@ -547,7 +547,11 @@ export function DictionarySection({folderList, userID}) {
 
   return (
     <div className="w-full h-screen overflow-auto">
-      <div className={"w-full h-screen dict-container flex flex-col items-center pt-10 pb-10 " + (searchResults ? "justify-start" : "justify-center")}>
+      <div className='text-muted w-full h-screen flex justify-center items-center'>
+        <img src="../assets/imgs/time.png" alt="" />
+        Sắp ra mắt!
+      </div>
+      {/* <div className={"w-full h-screen dict-container flex flex-col items-center pt-10 pb-10 " + (searchResults ? "justify-start" : "justify-center")}>
         <div className="search-section w-full flex flex-col items-center">
           <div className="w-full max-w-2xl bg-bg p-6 rounded-lg shadow-sm">
             <h1 className="text-primary text-3xl text-center mb-1 font-bold">Memo Dict</h1>
@@ -579,7 +583,7 @@ export function DictionarySection({folderList, userID}) {
           </div>
         </div>
         {searchResults && <DictItem data={searchResults} handleSearch={handleSearch} folderList={folderList} userID={userID}/>}
-      </div>
+      </div> */}
     </div>
   )
 }

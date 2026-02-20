@@ -1,5 +1,5 @@
 :root {
-	--bg: #ffffff;
+	--bg: #fff;
 	--primary-text: #0f1720;
 	--secondary-text: #6b7280;
 	--primary-surface: #F6F6F6;
@@ -41,7 +41,7 @@ body { background-color: var(--bg); }
 	width: 48px; height: 28px; border-radius: 9999px; display:inline-flex; align-items:center; padding:4px; cursor:pointer; transition: background-color .2s;
 }
 .theme-thumb { width:20px; height:20px; background:white; border-radius:9999px; transform:translateX(0); transition: transform .2s; }
-.theme-switch.dark { background: #334155; }
+.theme-switch.dark { background: var(--accent); }
 .theme-switch.light { background: #e6e6e6; }
 .theme-switch.dark .theme-thumb { transform: translateX(20px); }
 
@@ -57,3 +57,16 @@ body { background-color: var(--bg); }
 
 .hover\:text-primary-text { transition: color .12s; }
 .hover\:text-primary-text:hover { color: var(--primary-text); }
+
+/* Change color of scrollbar for better visibility in dark mode */
+::-webkit-scrollbar {
+	width: 8px;
+	height: 8px;
+}
+::-webkit-scrollbar-track {
+	background: transparent;
+}
+::-webkit-scrollbar-thumb {
+	background: var(--muted);
+	border-radius: 4px;
+}

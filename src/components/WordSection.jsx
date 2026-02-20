@@ -14,7 +14,7 @@ import DeleteValid from './modals/DeleteValid.jsx'
 import RenameFolder from './modals/RenameFolder.jsx'
 import AddWordModal from './modals/AddWordModal.jsx'
 
-import { addWordDB,deleteWordDB } from './handleData.js'
+import { addWordDB,deleteWordDB,updateWordDB } from './handleData.js'
 import { getFolderDataDB } from './handleData.js'
 import meaningSuggestion from './gemini.js'
 
@@ -272,6 +272,8 @@ export default function WordSection({onClose, currentFolder, userID}) {
   const [showDeleteValid, setShowDeleteValid] = useState(false)
   const [showRenameFolderSection, setShowRenameFolderSection] = useState(false)
   const [showAddWordModal, setShowAddWordModal] = useState(false)
+  const [editingWordIndex, setEditingWordIndex] = useState(null)
+  const [editWordForm, setEditWordForm] = useState({ name: '', definition_eng: '', definition_vie: '', type: '' })
 
 
   return (
@@ -347,7 +349,7 @@ export default function WordSection({onClose, currentFolder, userID}) {
           <div className="learning-modes grid grid-cols-2 sm:grid-cols-3 gap-3">
             <button className='p-3 bg-primary-surface cursor-pointer rounded-lg flex flex-col items-center gap-2 text-secondary-text transform transition duration-150 hover:scale-105' onClick={() => learnBtn(words)}>
               <img src="https://cdn-icons-png.freepik.com/512/9100/9100957.png" alt="" className='h-10' />
-              <span className='text-sm font-medium'>Thẻ nhớ</span>
+              <span className='text-sm font-medium'>Flashcard</span>
             </button>
 
             <button className='p-3 bg-primary-surface cursor-pointer rounded-lg flex flex-col items-center gap-2 text-secondary-text transform transition duration-150 hover:scale-105' onClick={() => generateFilling(words)}>
@@ -362,7 +364,7 @@ export default function WordSection({onClose, currentFolder, userID}) {
 
             <button className='p-3 bg-primary-surface cursor-pointer rounded-lg flex flex-col items-center gap-2 text-secondary-text transform transition duration-150 hover:scale-105' onClick={() => setShowMatching(true)}>
               <img src="https://cdn-icons-png.flaticon.com/512/3952/3952841.png" alt="" className='h-10' />
-              <span className='text-sm font-medium'>Ghép nối</span>
+              <span className='text-sm font-medium'>Matching</span>
             </button>
           </div>
 
@@ -440,23 +442,25 @@ export default function WordSection({onClose, currentFolder, userID}) {
             {
               words.length > 0 ? (
                 words.map((word, index) => (
-                  <li key={index} className='p-4 mb-2 rounded-lg bg-bg flex flex-col sm:flex-row items-start sm:items-center justify-between transform transition duration-150 hover:scale-101 shadow-md cursor-pointer'>
+                  <li key={index} className='p-4 mb-2 rounded-lg bg-bg flex flex-col sm:flex-row items-start sm:items-center justify-between transform transition duration-150 hover:scale-101 shadow-md'>
                     <div className='flex-1'>
                       <MeaningDisplay word={word}/>
                       <p className='text-secondary-text text-sm mt-1'>{word.definition_eng}</p>
                       <p className='text-secondary-text text-sm'>{word.definition_vie}</p>
                     </div>
-                    <div className='mt-3 sm:mt-0 sm:ml-4 flex gap-2'>
-                      <button className='px-3 py-1 rounded-md bg-primary-surface text-secondary-text cursor-pointer transform transition duration-150 hover:scale-105' onClick={() => {/* edit placeholder */}}>Sửa</button>
+                    <div className='mt-3 sm:mt-0 sm:ml-4'>
                       <button 
-                        className='px-3 py-1 rounded-md bg-warn text-wrong cursor-pointer transform transition duration-150 hover:scale-105'
+                        className='px-3 py-2 rounded-md bg-primary-surface text-secondary-text cursor-pointer transform transition duration-150 hover:scale-105'
                         onClick={() => {
-                          const newWords = words.filter((words, i) => i !== index)
-                          setAllWords(newWords)
-                          setWords(newWords)
-                          deleteWordDB(userID, currentFolder, word)
+                          setEditingWordIndex(index)
+                          setEditWordForm({ 
+                            name: word.name, 
+                            definition_eng: word.definition_eng, 
+                            definition_vie: word.definition_vie,
+                            type: word.type
+                          })
                         }}>
-                        Xóa
+                        <FontAwesomeIcon icon={faEllipsis} />
                       </button>
                     </div>
                   </li>
@@ -493,6 +497,104 @@ export default function WordSection({onClose, currentFolder, userID}) {
           userID={userID}
           currentFolder={currentFolder}
         />
+      )}
+
+      {editingWordIndex !== null && (
+        <div className="fixed top-0 bottom-0 right-0 left-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setEditingWordIndex(null)}>
+          <div className="w-full max-w-md mx-4 bg-bg dark:bg-primary-surface rounded-xl shadow-xl p-6" onClick={e => e.stopPropagation()}>
+            <div className='flex items-center justify-between mb-6'>
+              <div>
+                <h2 className='text-xl font-semibold text-primary-text'>Chỉnh sửa từ</h2>
+                <p className='text-sm text-secondary-text mt-1'>Cập nhật thông tin từ vựng</p>
+              </div>
+              <button onClick={() => setEditingWordIndex(null)} className='text-secondary-text hover:text-primary-text cursor-pointer'><FontAwesomeIcon icon={faX} /></button>
+            </div>
+
+            <div className='space-y-4 mb-6'>
+              <div>
+                <label className='block text-sm text-secondary-text mb-2 font-medium'>Tên từ</label>
+                <input
+                  type='text'
+                  value={editWordForm.name}
+                  onChange={(e) => setEditWordForm({...editWordForm, name: e.target.value})}
+                  className='w-full px-4 py-2 rounded-lg border border-muted bg-bg text-primary-text focus:outline-none focus:border-primary'
+                  placeholder='Nhập tên từ...'
+                />
+              </div>
+
+              <div>
+                <label className='block text-sm text-secondary-text mb-2 font-medium'>Định nghĩa (Tiếng Anh)</label>
+                <textarea
+                  value={editWordForm.definition_eng}
+                  onChange={(e) => setEditWordForm({...editWordForm, definition_eng: e.target.value})}
+                  className='w-full px-4 py-2 rounded-lg border border-muted bg-bg text-primary-text focus:outline-none focus:border-primary resize-none'
+                  placeholder='Nhập định nghĩa tiếng Anh...'
+                  rows='3'
+                />
+              </div>
+
+              <div>
+                <label className='block text-sm text-secondary-text mb-2 font-medium'>Định nghĩa (Tiếng Việt)</label>
+                <textarea
+                  value={editWordForm.definition_vie}
+                  onChange={(e) => setEditWordForm({...editWordForm, definition_vie: e.target.value})}
+                  className='w-full px-4 py-2 rounded-lg border border-muted bg-bg text-primary-text focus:outline-none focus:border-primary resize-none'
+                  placeholder='Nhập định nghĩa tiếng Việt...'
+                  rows='3'
+                />
+              </div>
+            </div>
+
+            <div className='flex items-center justify-between gap-3'>
+              <button 
+                onClick={() => {
+                  const newWords = words.filter((w, i) => i !== editingWordIndex)
+                  setAllWords(newWords)
+                  setWords(newWords)
+                  deleteWordDB(userID, currentFolder, words[editingWordIndex])
+                  setEditingWordIndex(null)
+                }}
+                className='px-4 py-2 rounded-lg bg-wrong hover:bg-wrong/90 text-white cursor-pointer transition-colors font-medium'
+              >
+                <FontAwesomeIcon icon={faTrash} className='mr-2'/>
+                Xóa
+              </button>
+              <div className='flex gap-2 ml-auto'>
+                <button 
+                  onClick={() => setEditingWordIndex(null)} 
+                  className='px-4 py-2 rounded-lg text-secondary-text hover:text-primary-text hover:bg-primary-surface cursor-pointer transition-colors'
+                >
+                  Hủy
+                </button>
+                <button 
+                  onClick={() => {
+                    // Update the word in the database
+                    const originalWord = words[editingWordIndex];
+                    updateWordDB(userID, currentFolder, originalWord, editWordForm).then(() => {
+                      // Update the word in the local state
+                      const updatedWords = [...words];
+                      updatedWords[editingWordIndex] = {
+                        ...updatedWords[editingWordIndex],
+                        name: editWordForm.name,
+                        definition_eng: editWordForm.definition_eng,
+                        definition_vie: editWordForm.definition_vie
+                      };
+                      setWords(updatedWords);
+                      setAllWords(updatedWords);
+                      setEditingWordIndex(null);
+                    }).catch((error) => {
+                      console.error("Error updating word: ", error);
+                      alert("Failed to update word. Please try again.");
+                    });
+                  }}
+                  className='px-4 py-2 rounded-lg bg-primary hover:bg-primary/90 text-bg cursor-pointer transition-colors font-medium'
+                >
+                  Lưu
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
 
       

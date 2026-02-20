@@ -36,7 +36,7 @@ export default function ListeningSection({listeningWords, onClose}) {
                 }
               }
             }}
-            className={'input-field rounded-lg' + (userInput ? (userInput.toLowerCase() === word.toLowerCase() ? ' bg-success/10 border-l-4 border-success' : ' bg-wrong/10 border-l-4 border-wrong') : '')}
+            className={'input-field rounded-lg' + (userInput ? (userInput.toLowerCase() === word.toLowerCase() ? ' bg-success/10 border-l-4 border-success text-primary-text' : ' bg-wrong/10 border-l-4 border-wrong text-primary-text') : 'bg-primary-surface')}
           />
         </div>
 

@@ -11,7 +11,14 @@ export default function AddWordModal({ onClose, userID, currentFolder, onWordAdd
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const wordTypes = ['noun', 'verb', 'adjective', 'adverb', 'idiom', 'phverb'];
+  const wordTypes = [
+    { id: 'noun', label: 'Noun', color: 'from-blue-500 to-blue-600' },
+    { id: 'verb', label: 'Verb', color: 'from-green-500 to-green-600' },
+    { id: 'adjective', label: 'Adjective', color: 'from-orange-500 to-orange-600' },
+    { id: 'adverb', label: 'Adverb', color: 'from-yellow-500 to-yellow-600' },
+    { id: 'idiom', label: 'Idiom', color: 'from-purple-500 to-purple-600' },
+    { id: 'phverb', label: 'Phrasal Verb', color: 'from-indigo-500 to-indigo-600' }
+  ];
 
   const handleAddWord = async () => {
     setError('');
@@ -47,12 +54,34 @@ export default function AddWordModal({ onClose, userID, currentFolder, onWordAdd
 
       // Create word object with proper structure
       const newWord = {
-        name: wordName.trim(),
+        name: wordName.trim().toLowerCase(),
         type: wordType,
         definition_eng: definitionEng.trim(),
         definition_vie: definitionVie.trim(),
-        mean: definitionEng.trim() || definitionVie.trim(),
-        scheduleReview: []
+        scheduleReview: [
+          {
+            mode: 'matching',
+            reviewCount: 0,
+            lastReview: null,
+            rateAccuracy: null,
+            reviewDates: [new Date()]
+          },
+          {
+            mode: 'filling',
+            reviewCount: 0,
+            lastReview: null,
+            rateAccuracy: null,
+            reviewDates: [new Date()]
+          },
+          {
+            mode: 'listening',
+            reviewCount: 0,
+            lastReview: null,
+            rateAccuracy: null,
+            reviewDates: [new Date()]
+          }
+        ],
+        dateAdded: new Date(),
       };
 
       // Add to Firebase
@@ -98,7 +127,7 @@ export default function AddWordModal({ onClose, userID, currentFolder, onWordAdd
         {/* Word Name Input */}
         <div className="mb-4">
           <label className="text-secondary-text text-sm font-medium block mb-1">
-            Tên từ *
+            Tên từ
           </label>
           <input
             type="text"
@@ -111,34 +140,26 @@ export default function AddWordModal({ onClose, userID, currentFolder, onWordAdd
 
         {/* Word Type Dropdown */}
         <div className="mb-4">
-          <label className="text-secondary-text text-sm font-medium block mb-1">
+          <label className="text-secondary-text text-sm font-medium block mb-3">
             Loại từ
           </label>
-          <select
-            value={wordType}
-            onChange={(e) => setWordType(e.target.value)}
-            className="input-field w-full px-3 py-2 rounded-md border border-transparent bg-primary-surface text-primary-text cursor-pointer"
-          >
+          <div className="grid grid-cols-3 gap-2">
             {wordTypes.map((type) => (
-              <option key={type} value={type}>
-                {type === 'phverb' ? 'Phrasal verb' : type.charAt(0).toUpperCase() + type.slice(1)}
-              </option>
+              <button
+                key={type.id}
+                onClick={() => setWordType(type.id)}
+                className={`p-3 rounded-lg transition-all duration-200 flex items-center justify-center cursor-pointer ${
+                  wordType === type.id
+                    ? `bg-gradient-to-br ${type.color} text-white shadow-lg scale-105`
+                    : 'bg-primary-surface text-secondary-text hover:bg-opacity-80 border border-transparent hover:border-primary'
+                }`}
+              >
+                <span className="text-sm font-medium text-center">
+                  {type.label}
+                </span>
+              </button>
             ))}
-          </select>
-        </div>
-
-        {/* English Definition Input */}
-        <div className="mb-4">
-          <label className="text-secondary-text text-sm font-medium block mb-1">
-            Định nghĩa tiếng Anh
-          </label>
-          <textarea
-            value={definitionEng}
-            onChange={(e) => setDefinitionEng(e.target.value)}
-            placeholder="Nhập định nghĩa tiếng Anh..."
-            className="input-field w-full px-3 py-2 rounded-md border border-transparent bg-primary-surface text-primary-text resize-none"
-            rows="3"
-          />
+          </div>
         </div>
 
         {/* Vietnamese Definition Input */}
@@ -150,6 +171,20 @@ export default function AddWordModal({ onClose, userID, currentFolder, onWordAdd
             value={definitionVie}
             onChange={(e) => setDefinitionVie(e.target.value)}
             placeholder="Nhập định nghĩa tiếng Việt..."
+            className="input-field w-full px-3 py-2 rounded-md border border-transparent bg-primary-surface text-primary-text resize-none"
+            rows="3"
+          />
+        </div>
+
+        {/* English Definition Input */}
+        <div className="mb-4">
+          <label className="text-secondary-text text-sm font-medium block mb-1">
+            Định nghĩa tiếng Anh
+          </label>
+          <textarea
+            value={definitionEng}
+            onChange={(e) => setDefinitionEng(e.target.value)}
+            placeholder="Nhập định nghĩa tiếng Anh..."
             className="input-field w-full px-3 py-2 rounded-md border border-transparent bg-primary-surface text-primary-text resize-none"
             rows="3"
           />

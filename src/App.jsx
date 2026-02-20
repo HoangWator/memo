@@ -125,6 +125,8 @@ function App() {
     });
   }
 
+  
+
   // Directing page
   const [pageIndex, setPageIndex] = useState(0)
 
@@ -317,7 +319,7 @@ function App() {
 
           <div className='m-2.5 border-t-1 border-t-muted'>
             <button 
-              className='hidden sm:flex items-center font-semibold justify-start gap-2.5 text-primary-text hover:bg-primary-surface rounded-lg w-full p-2 mt-2.5'
+              className='cursor-pointer hidden sm:flex items-center font-semibold justify-start gap-2.5 text-primary-text hover:bg-primary-surface rounded-lg w-full p-2 mt-2.5'
               onClick={() => {
                 if (userID == '') {
                   setShowLoginSection(true)
@@ -413,7 +415,7 @@ function App() {
           {pageIndex === 1 && (
             <div className="w-full h-full flex flex-col overflow-auto">
               {/* Header */}
-              <div className="bg-gradient-to-r from-primary/10 to-primary/5 px-4 sm:px-6 py-6 border-b border-muted">
+              <div className="bg-gradient-to-r from-primary/10 to-primary/5 px-4 sm:px-6 py-6">
                 <div className="flex items-start justify-between gap-4">
                   <div>
                     <h1 className='text-3xl sm:text-4xl text-primary-text font-bold'>Quản lí bộ từ</h1>
@@ -430,31 +432,23 @@ function App() {
 
                 {/* Stats Row */}
                 <div className='grid grid-cols-2 sm:grid-cols-4 gap-2 mt-4'>
-                  <div className='bg-bg rounded-lg p-2 border border-primary/20'>
+                  <div className='bg-bg rounded-lg p-2'>
                     <div className='text-secondary-text text-xs font-medium'>TỔNG SỐ</div>
                     <div className='text-lg font-bold text-primary-text mt-0.5'>{allFolders.length}</div>
                   </div>
-                  <div className='bg-bg rounded-lg p-2 border border-success/20'>
+                  <div className='bg-bg rounded-lg p-2'>
                     <div className='text-secondary-text text-xs font-medium'>CẦN ÔN</div>
                     <div className='text-lg font-bold text-success mt-0.5'>0</div>
-                  </div>
-                  <div className='hidden sm:block bg-bg rounded-lg p-2 border border-muted/20'>
-                    <div className='text-secondary-text text-xs font-medium'>ĐÃ HỌC</div>
-                    <div className='text-lg font-bold text-primary-text mt-0.5'>0</div>
-                  </div>
-                  <div className='hidden sm:block bg-bg rounded-lg p-2 border border-muted/20'>
-                    <div className='text-secondary-text text-xs font-medium'>NGÔN NGỮ</div>
-                    <div className='text-sm font-bold text-primary-text mt-0.5'>EN/VI</div>
                   </div>
                 </div>
               </div>
 
               {/* Search Bar */}
-              <div className="px-4 sm:px-6 py-4 border-b border-muted/30">
+              <div className="px-4 sm:px-6 py-4">
                 <div className='relative max-w-md'>
                   <FontAwesomeIcon icon={faMagnifyingGlass} className='absolute left-3 top-3 text-secondary-text text-sm' />
                   <input
-                    className='w-full pl-10 pr-4 py-2 rounded-lg bg-bg text-primary-text border border-muted/30 focus:border-primary focus:outline-none transition-colors'
+                    className='w-full pl-10 pr-4 py-2 rounded-lg bg-bg text-primary-text transition-colors outline-none'
                     type='text'
                     placeholder='Tìm kiếm thư mục...'
                     onChange={e => {
@@ -473,7 +467,7 @@ function App() {
               </div>
 
               {/* Folder Grid */}
-              <div className="flex-1 overflow-auto px-4 sm:px-6 py-6">
+              <div className="flex-1 overflow-auto px-4 sm:px-6">
                 {folders.length === 0 && (
                   <div className="h-full flex items-center justify-center">
                     <div className='text-center'>
@@ -517,7 +511,7 @@ function App() {
                         <div
                           key={index}
                           onClick={() => openWordSection(folder.name)}
-                          className='bg-bg border border-muted/30 hover:border-primary/50 rounded-lg p-4 cursor-pointer transition-all duration-200 hover:shadow-md transform hover:scale-102'
+                          className='bg-bg rounded-lg p-4 cursor-pointer transition-all duration-200 shadow-md transform hover:scale-102'
                         >
                           {/* Folder Header */}
                           <div className='flex items-center gap-3 mb-3'>
@@ -597,37 +591,133 @@ function App() {
       />}
 
       {showLoginSection && (
-        <div className="fixed top-0 bottom-0 right-0 left-0 bg-black/50 flex items-center justify-center" onClick={() => setShowLoginSection(false)}>
-          <div className="p-5 bg-bg rounded-lg relative"  onClick={e => e.stopPropagation()}>
-            <button className='quit-btn absolute top-2.5 right-2.5 cursor-pointer' onClick={() => setShowLoginSection(false)}><FontAwesomeIcon icon={faXmark} /></button>
-            <h1 className='text-center text-2xl mb-2.5 text-secondary-text'>Đăng nhập</h1>
-            <div className="login-options">
+        <div className="fixed top-0 bottom-0 right-0 left-0 bg-gradient-to-br from-primary via-primary/80 to-primary/60 flex items-center justify-center z-50">
+          {/* Left Side - Branding & Features (Hidden on Mobile) */}
+          <div className='hidden lg:flex lg:w-1/2 flex-col justify-center items-start px-12 text-white'>
+            <div className='mb-12'>
+              <h1 className='text-5xl font-bold mb-4'>Memo</h1>
+              <p className='text-xl text-white/80'>Học từ vựng một cách hiệu quả với hệ thống luyện tập thông minh</p>
+            </div>
+
+            <div className='space-y-6'>
+              <div className='flex items-start gap-4'>
+                <div className='h-12 w-12 rounded-lg bg-white/20 flex items-center justify-center flex-shrink-0'>
+                  <FontAwesomeIcon icon={faBookOpen} className='text-white text-xl' />
+                </div>
+                <div>
+                  <h3 className='text-lg font-semibold mb-1'>Học Vocab Hiệu Quả</h3>
+                  <p className='text-white/70'>Sử dụng các phương pháp học tập khoa học giúp ghi nhớ lâu dài</p>
+                </div>
+              </div>
+
+              <div className='flex items-start gap-4'>
+                <div className='h-12 w-12 rounded-lg bg-white/20 flex items-center justify-center flex-shrink-0'>
+                  <FontAwesomeIcon icon={faDumbbell} className='text-white text-xl' />
+                </div>
+                <div>
+                  <h3 className='text-lg font-semibold mb-1'>Luyện Tập Đa Dạng</h3>
+                  <p className='text-white/70'>Flashcards, matching, listening và nhiều hình thức luyện tập khác</p>
+                </div>
+              </div>
+
+              <div className='flex items-start gap-4'>
+                <div className='h-12 w-12 rounded-lg bg-white/20 flex items-center justify-center flex-shrink-0'>
+                  <FontAwesomeIcon icon={faChartSimple} className='text-white text-xl' />
+                </div>
+                <div>
+                  <h3 className='text-lg font-semibold mb-1'>Theo Dõi Tiến Độ</h3>
+                  <p className='text-white/70'>Xem thống kê chi tiết về tiến độ học tập của bạn</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Side - Login Form */}
+          <div className='w-full lg:w-1/2 flex items-center justify-center px-4'>
+            <div className='w-full max-w-md bg-bg dark:bg-primary-surface rounded-2xl shadow-2xl p-8'>
+              <div className='text-center mb-8'>
+                <h2 className='text-3xl font-bold text-primary-text mb-2'>Chào mừng trở lại</h2>
+                <p className='text-secondary-text'>Đăng nhập để tiếp tục hành trình học tập của bạn</p>
+              </div>
+
               <button 
                 onClick={loginWithGoogle}
-                className='flex items-center gap-2.5 bg-primary-surface p-2.5 rounded-lg w-full justify-center text-secondary-text cursor-pointer'
-              ><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/800px-Google_%22G%22_logo.svg.png" alt="" className='h-10'/>Tiếp tục với Google</button>
-              {/* <button><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Facebook_Logo_%282019%29.png/500px-Facebook_Logo_%282019%29.png" alt="" />Continue with Facebook</button> */}
+                className='w-full flex items-center justify-center gap-3 bg-primary hover:bg-primary/90 text-white px-6 py-3 rounded-lg font-semibold cursor-pointer transition-all transform hover:scale-105 shadow-lg mb-6'
+              >
+                <img 
+                  src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSWIl8zC8WAMHi5JVmKUb3YVvZd5gvoCdy-NQ&s" 
+                  alt="Google" 
+                  className='h-5 w-5 rounded-full bg-white p-1' 
+                />
+                Đăng nhập với Google
+              </button>
+
+              <div className='relative mb-6'>
+                <div className='absolute inset-0 flex items-center'>
+                  <div className='w-full border-t border-muted'></div>
+                </div>
+                <div className='relative flex justify-center text-sm'>
+                  <span className='px-2 bg-bg text-secondary-text'>hoặc</span>
+                </div>
+              </div>
+
+              <button 
+                onClick={() => setShowLoginSection(false)}
+                className='w-full flex items-center justify-center gap-2 bg-secondary-surface hover:bg-secondary-surface/80 text-primary-text px-6 py-3 rounded-lg font-semibold cursor-pointer transition-all'
+              >
+                <FontAwesomeIcon icon={faArrowRight} />
+                Tiếp tục dưới dạng khách
+              </button>
+
+              <div className='mt-8 pt-6 border-t border-muted text-center'>
+                <p className='text-xs text-secondary-text'>
+                  Bằng cách đăng nhập, bạn đồng ý với <a href="#" className='text-primary hover:underline font-semibold'>Điều khoản sử dụng</a> và <a href="#" className='text-primary hover:underline font-semibold'>Chính sách bảo mật</a>
+                </p>
+              </div>
             </div>
           </div>
         </div>
       )}
 
       {showLogoutSection && (
-        <div className="logout-section" onClick={() => setShowLogoutSection(false)}>
-          <div className="logout-container" onClick={e => e.stopPropagation()}>
-            <h2>Bạn có muốn đăng xuất không?</h2>
-            <div className="logout-options">
-              <button onClick={() => {
-                exitAccount()
-                setShowLogoutSection(false)
-              }} className='cursor-pointer'>Có, đăng xuất</button>
-              <button onClick={() => setShowLogoutSection(false)} className='goBack cursor-pointer'>Không, quay lại</button>
+        <div className="fixed top-0 bottom-0 right-0 left-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowLogoutSection(false)}>
+          <div className="w-full max-w-md mx-4 bg-bg dark:bg-primary-surface rounded-xl shadow-xl p-6" onClick={e => e.stopPropagation()}>
+            <div className='flex items-center justify-between mb-4'>
+              <div>
+                <h2 className='text-xl font-semibold text-primary-text'>Đăng xuất</h2>
+                <p className='text-sm text-secondary-text mt-1'>Bạn có chắc chắn muốn đăng xuất không?</p>
+              </div>
+              <button onClick={() => setShowLogoutSection(false)} className='text-secondary-text hover:text-primary-text cursor-pointer'><FontAwesomeIcon icon={faX} /></button>
+            </div>
+
+            <div className='flex items-center justify-end gap-3 mt-6'>
+              <button 
+                onClick={() => setShowLogoutSection(false)} 
+                className='px-4 py-2 rounded-lg text-secondary-text hover:text-primary-text hover:bg-primary-surface cursor-pointer transition-colors'
+              >
+                Hủy
+              </button>
+              <button 
+                onClick={() => {
+                  exitAccount()
+                  setShowLogoutSection(false)
+                }} 
+                className='px-4 py-2 rounded-lg bg-wrong hover:bg-wrong/90 text-white cursor-pointer transition-colors font-medium'
+              >
+                Đăng xuất
+              </button>
             </div>
           </div>
         </div>
       )}
 
-      {showSettingPage && <SettingPage onClose={() => setShowSettingPage(false)} userAvatar={avatarUrl} userName={userName}/>}
+      {showSettingPage && 
+        <SettingPage 
+          onClose={() => setShowSettingPage(false)} 
+          userAvatar={avatarUrl} 
+          userName={userName}
+          openLogoutSection={() => setShowLogoutSection(true)}  
+        />}
       
     </div>
   )
