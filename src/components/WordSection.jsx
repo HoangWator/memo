@@ -229,13 +229,8 @@ export default function WordSection({onClose, currentFolder, userID}) {
   }
 
   const generateListening = (words) => {
-    if (words.length > 0) {
-      setShowListening(true)
-      setListeningWords(shuffleArray(words))
-    }
-    else {
-      alert("Please enter at least 4 words!")
-    }
+    setShowListening(true)
+    setListeningWords(shuffleArray(words))
   }
 
   //Matching 

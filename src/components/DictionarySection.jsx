@@ -548,7 +548,10 @@ export function DictionarySection({folderList, userID}) {
   return (
     <div className="w-full h-screen overflow-auto">
       <div className='text-muted w-full h-screen flex justify-center items-center'>
-        <img src="../assets/imgs/time.png" alt="" />
+        <img 
+          src="../assets/imgs/image-removebg-preview.png" 
+          alt="" 
+        />
         Sắp ra mắt!
       </div>
       {/* <div className={"w-full h-screen dict-container flex flex-col items-center pt-10 pb-10 " + (searchResults ? "justify-start" : "justify-center")}>

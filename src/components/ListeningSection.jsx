@@ -74,7 +74,23 @@ export default function ListeningSection({listeningWords, onClose}) {
         </div>
       </div>
       <div className="listening-content">
-        <ListeningCard key={listeningCardIndex} word={listeningWords[listeningCardIndex].name} order={listeningCardIndex}/>
+        {
+          listeningWords.length >= 2 ? 
+            <ListeningCard 
+              key={listeningCardIndex} 
+              word={listeningWords[listeningCardIndex].name} 
+              order={listeningCardIndex}
+            /> 
+          : <div className='text-center'>
+            <img 
+              src="https://png.pngtree.com/png-vector/20250116/ourmid/pngtree-folder-empty-vector-png-image_15213864.png" 
+              alt="" 
+              className='w-48 h-48 mx-auto' 
+            />
+            <p className='text-xl text-primary-text'>Không đủ từ để luyện tập</p>
+            <p className='text-sm text-secondary-text'>Vui lòng thêm ít nhất 2 từ vào thư mục</p>
+          </div>
+        }
       </div>
     </div>
   )

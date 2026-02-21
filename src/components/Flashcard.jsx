@@ -78,27 +78,42 @@ export default function Flashcard({data, onClose}) {
       
       <div className="fixed top-0 bottom-0 left-0 right-0 bg-bg flex flex-col items-center justify-center p-4 z-50">
       <button onClick={onClose} className='quit-btn absolute top-2.5 left-2.5'><FontAwesomeIcon icon={faArrowLeft} /></button>
-
-      <div className="card-list flex flex-col items-center">
-        <p className="text-secondary-text">
-          {indexLearn + 1} / {data.length}
-        </p>
-
-        <Card word={data[indexLearn]} />
-
-        <div className="nav-btns">
-          <button className="p-2.5 bg-primary-surface rounded-lg cursor-pointer text-secondary-text mr-2.5 hover:bg-secondary-surface" onClick={() => {
-            if (indexLearn > 0) {
-              setIndexLearn(indexLearn - 1)
-            }
-          }}><FontAwesomeIcon icon={faArrowLeft} /></button>
-          <button className="p-2.5 bg-primary-surface rounded-lg cursor-pointer text-secondary-text hover:bg-secondary-surface" onClick={() => {
-            if (indexLearn < data.length - 1) {
-              setIndexLearn(indexLearn + 1)
-            }
-          }}><FontAwesomeIcon icon={faArrowRight} /></button>
+      
+      {data.length < 2 ?
+        <div className='text-center'>
+          <img 
+            src="https://png.pngtree.com/png-vector/20250116/ourmid/pngtree-folder-empty-vector-png-image_15213864.png" 
+            alt="" 
+            className='w-48 h-48 mx-auto' 
+          />
+          <p className='text-xl text-primary-text'>Không đủ từ để luyện tập</p>
+          <p className='text-sm text-secondary-text'>Vui lòng thêm ít nhất 2 từ vào thư mục</p>
         </div>
-      </div>
+      : (
+        <div className="card-list flex flex-col items-center">
+          <p className="text-secondary-text">
+            {indexLearn + 1} / {data.length}
+          </p>
+
+          <Card word={data[indexLearn]} />
+
+          <div className="nav-btns">
+            <button className="p-2.5 bg-primary-surface rounded-lg cursor-pointer text-secondary-text mr-2.5 hover:bg-secondary-surface" onClick={() => {
+              if (indexLearn > 0) {
+                setIndexLearn(indexLearn - 1)
+              }
+            }}><FontAwesomeIcon icon={faArrowLeft} /></button>
+            <button className="p-2.5 bg-primary-surface rounded-lg cursor-pointer text-secondary-text hover:bg-secondary-surface" onClick={() => {
+              if (indexLearn < data.length - 1) {
+                setIndexLearn(indexLearn + 1)
+              }
+            }}><FontAwesomeIcon icon={faArrowRight} /></button>
+          </div>
+        </div>
+      )}
+
+
+      
     </div>
     </>
   )

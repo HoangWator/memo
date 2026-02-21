@@ -34,15 +34,14 @@ export default function FillingSection({onClose, data}) {
     let words = []
     data.forEach(item => words.push(item.name))
     data.forEach(item => wordDetails.push(`${item.name} (${item.type}: ${item.mean})`))
-    console.log(words)
-    setShowLoader(true)
-    geneAI(wordDetails, words).then((value) => {
-      console.log(value)
-      setFillingQuestions(shuffleArray(value))
-      setShowLoader(false)
-    }).catch((error) => {
-      console.error(error)
-    })
+    // setShowLoader(true)
+    // geneAI(wordDetails, words).then((value) => {
+    //   console.log(value)
+    //   setFillingQuestions(shuffleArray(value))
+    //   setShowLoader(false)
+    // }).catch((error) => {
+    //   console.error(error)
+    // })
   }, [])
   
   // console.log(fillingQuestions)
@@ -188,8 +187,9 @@ export default function FillingSection({onClose, data}) {
       {showLoader && 
         <div className='w-full h-screen flex items-center justify-center'>
           <LoaderDict />
-        </div>}
-      <div className="header p-2.5 fixed top-0 left-0 w-full flex items-center justify-center bg-bg z-50">
+        </div>
+      }
+      {/* <div className="header p-2.5 fixed top-0 left-0 w-full flex items-center justify-center bg-bg z-50">
         <button className='quit-btn absolute top-2.5 left-2.5' onClick={() => {
           setFillingIndex(0)
           setNumberQuestionDone(0)
@@ -201,13 +201,25 @@ export default function FillingSection({onClose, data}) {
         </div>
       </div>
       <div className="filling-content flex items-center justify-center h-full">
-        {fillingQuestions.length > 0 && showFillingCard && 
-          <FillingCard 
-            data={fillingQuestions[fillingIndex]} 
-            order={fillingIndex}
-            onWrongAnswer={addWrongAnswer}
-          />
-        }
+            {data.length < 2 ?
+              <div className='text-center'>
+                <img 
+                  src="https://png.pngtree.com/png-vector/20250116/ourmid/pngtree-folder-empty-vector-png-image_15213864.png" 
+                  alt="" 
+                  className='w-48 h-48 mx-auto' 
+                />
+                <p className='text-xl text-primary-text'>Không đủ từ để luyện tập</p>
+                <p className='text-sm text-secondary-text'>Vui lòng thêm ít nhất 2 từ vào thư mục</p>
+              </div>
+            : 
+              fillingQuestions.length > 0 && showFillingCard && 
+                <FillingCard 
+                  data={fillingQuestions[fillingIndex]} 
+                  order={fillingIndex}
+                  onWrongAnswer={addWrongAnswer}
+                />
+            }
+        
 
         {resultDisplay && (
             <div className="result-display pr-10 pl-10 pt-2.5 pb-2.5 bg-primary-surface rounded-lg text-center">
@@ -230,8 +242,10 @@ export default function FillingSection({onClose, data}) {
             </div>
           )
         }
+      </div> */}
+      <div>
+        <p>Sắp ra mắt</p>
       </div>
-
     </div>
   )
 }

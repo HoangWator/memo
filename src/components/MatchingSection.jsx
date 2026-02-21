@@ -133,40 +133,42 @@ function MatchingSection({onClose, data, reviewMode, userID, currentFolder}) {
   }
 
   useEffect(() => {
-    const questions = [] 
-    data.forEach(item => {
-      const otherOptions = data.filter(opt => opt.definition_eng !== item.definition_eng || opt.definition_vie !== item.definition_vie)
-      
-      let shuffleOptions;
-      if (otherOptions.length > 3) {
-        shuffleOptions = shuffleArray(otherOptions).slice(0,3)
-      }
-      else {
-        shuffleOptions = shuffleArray(otherOptions)
-      }
+    if (data.length >= 2) {
+      const questions = [] 
+      data.forEach(item => {
+        const otherOptions = data.filter(opt => opt.definition_eng !== item.definition_eng || opt.definition_vie !== item.definition_vie)
+        
+        let shuffleOptions;
+        if (otherOptions.length > 3) {
+          shuffleOptions = shuffleArray(otherOptions).slice(0,3)
+        }
+        else {
+          shuffleOptions = shuffleArray(otherOptions)
+        }
 
-      const options = []
-      options.push({
-        definition_eng: item.definition_eng,
-        definition_vie: item.definition_vie,
-        type: item.type
-      })
-      shuffleOptions.forEach(opt => {
+        const options = []
         options.push({
-          definition_eng: opt.definition_eng,
-          definition_vie: opt.definition_vie,
-          type: opt.type
+          definition_eng: item.definition_eng,
+          definition_vie: item.definition_vie,
+          type: item.type
+        })
+        shuffleOptions.forEach(opt => {
+          options.push({
+            definition_eng: opt.definition_eng,
+            definition_vie: opt.definition_vie,
+            type: opt.type
+          })
+        })
+        questions.push({
+          question: item.name, 
+          answer_eng: item.definition_eng,
+          answer_vie: item.definition_vie,
+          answer_type: item.type,
+          options: shuffleArray(options)
         })
       })
-      questions.push({
-        question: item.name, 
-        answer_eng: item.definition_eng,
-        answer_vie: item.definition_vie,
-        answer_type: item.type,
-        options: shuffleArray(options)
-      })
-    })
-    setQuestions(shuffleArray(questions))
+      setQuestions(shuffleArray(questions))
+    }
   }, [])
 
 
@@ -186,6 +188,17 @@ function MatchingSection({onClose, data, reviewMode, userID, currentFolder}) {
             onNext={handleNextCard}
             addToHistory={addToHistory}
           />
+        }
+        {data.length < 2 &&
+          <div className='text-center'>
+            <img 
+              src="https://png.pngtree.com/png-vector/20250116/ourmid/pngtree-folder-empty-vector-png-image_15213864.png" 
+              alt="" 
+              className='w-48 h-48 mx-auto' 
+            />
+            <p className='text-xl text-primary-text'>Không đủ từ để luyện tập</p>
+            <p className='text-sm text-secondary-text'>Vui lòng thêm ít nhất 2 từ vào thư mục</p>
+          </div>
         }
       </div>
     </div>
