@@ -50,10 +50,10 @@ body { background-color: var(--bg); }
 	`hover:bg-primary-surface` and `hover:bg-secondary-surface`.
 	They rely on the CSS variables in :root / .dark so they adapt to theme. */
 .hover\:bg-primary-surface { transition: background-color .12s, color .12s; }
-.hover\:bg-primary-surface:hover { background-color: var(--primary-surface); color: var(--primary-text); }
+.hover\:bg-primary-surface:hover { background-color: var(--primary-surface); }
 
 .hover\:bg-secondary-surface { transition: background-color .12s, color .12s; }
-.hover\:bg-secondary-surface:hover { background-color: var(--secondary-surface); color: var(--primary-text); }
+.hover\:bg-secondary-surface:hover { background-color: var(--secondary-surface)}
 
 .hover\:text-primary-text { transition: color .12s; }
 .hover\:text-primary-text:hover { color: var(--primary-text); }

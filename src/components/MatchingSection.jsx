@@ -9,11 +9,14 @@ function MatchingCard({data, onNext, addToHistory}) {
   const options = data.options
 
   const checkAnswer = (selectedOption, index) => {
+    console.log(selectedOption)
+    console.log(data)
     if (isCorrect !== null) return
     setSelectedIndex(index)
-    let isSameDefEng = selectedOption.definition_eng === data.answer_eng && selectedOption.type === data.answer_type
-    let isSameDefVie = selectedOption.definition_vie === data.answer_vie && selectedOption.type === data.answer_type
+    let isSameDefEng = selectedOption.definition_eng === data.answer_eng && selectedOption.type === data.answer_type && selectedOption.definition_eng !== ""
+    let isSameDefVie = selectedOption.definition_vie === data.answer_vie && selectedOption.type === data.answer_type && selectedOption.definition_vie !== ""
     if ( isSameDefEng || isSameDefVie) {
+      console.log("Correct")
       addToHistory({
         word: data.question, 
         answer_eng: data.answer_eng, 
@@ -22,6 +25,7 @@ function MatchingCard({data, onNext, addToHistory}) {
       })
       setIsCorrect(true)
     } else {
+      console.log("Wrong")
       addToHistory({
         word: data.question, 
         answer_eng: data.answer_eng, 
@@ -39,10 +43,10 @@ function MatchingCard({data, onNext, addToHistory}) {
         {options.map((option, index) => (
           <button 
             key={index} 
-            className={'w-9/20 bg-primary-surface rounded-lg text-secondary-text p-2.5 cursor-pointer relative ' + 
-            (isCorrect && selectedIndex === index ? "border-2 border-success bg-success/10" : '') +
-            (isCorrect === false && selectedIndex === index ? "border-2 border-wrong bg-wrong/10" : '')
-            }
+            className={'max-sm:w-full w-9/20 bg-primary-surface rounded-lg text-secondary-text p-2.5 cursor-pointer relative ' + 
+            (isCorrect && selectedIndex === index ? "border-2 border-success bg-success/10 " : '') +
+            (!isCorrect && isCorrect !== null && selectedIndex === index ? "border-2 border-wrong bg-wrong/10 " : '')
+          }
             onClick={() => checkAnswer(option, index)}
           >
             {option.definition_eng} 

@@ -346,26 +346,31 @@ function App() {
         </div>
         {
           showMobileSidebar && (
-            <div className="sidebar-mobile" onClick={() => setShowMobileSidebar(false)}>
-              <div className="sidebar" onClick={e => e.stopPropagation()}>
-                <div className="logo">
-                  <button className='mobile-sidebar-toggle cursor-pointer' onClick={() => setShowMobileSidebar(false)}><FontAwesomeIcon icon={faBars} /></button>
-                  {/* <h1>Memo</h1> */}
+            <div className="fixed inset-0 bg-black/50 z-50" onClick={() => setShowMobileSidebar(false)}>
+              <div className="absolute left-0 top-0 bottom-0 w-64 bg-bg" onClick={e => e.stopPropagation()}>
+                <div className="flex items-center justify-between p-4 ">
+                  <button className='text-primary cursor-pointer' onClick={() => setShowMobileSidebar(false)}><FontAwesomeIcon icon={faBars} /></button>
                 </div>
 
-                <ul>
-                  <li className={pageIndex === 0 ? 'clicked' : ''} onClick={() => {
-                    setShowMobileSidebar(false)
-                    setPageIndex(0)
-                  }}><FontAwesomeIcon icon={faBookOpen} className='icon' /><span>Từ điển</span></li>
-                  <li className={pageIndex === 1 ? 'clicked' : ''} onClick={() => {
-                    setShowMobileSidebar(false)
-                    setPageIndex(1)
-                  }}><FontAwesomeIcon icon={faFolder} className='icon' /><span>Từ vựng</span></li>
-                  <li className={pageIndex === 2 ? 'clicked' : ''} onClick={() => {
-                    setShowMobileSidebar(false)
-                    setPageIndex(2)
-                  }}><FontAwesomeIcon icon={faTrophy} className='icon' /><span>Xếp hạng</span></li>
+                <ul className='p-4'>
+                  <li 
+                    className={'p-2.5 rounded-lg cursor-pointer mb-1 flex gap-2.5 items-center hover:bg-primary-surface ' + (pageIndex === 0 ? 'text-primary bg-primary-surface border-l-4 border-primary ' : 'text-secondary-text') + (expandSidebar ? '' : ' justify-center')} 
+                    onClick={() => {
+                      setShowMobileSidebar(false)
+                      setPageIndex(0)
+                    }}><FontAwesomeIcon icon={faBookOpen} className='icon' /><span>Từ điển</span></li>
+                  <li 
+                    className={'p-2.5 rounded-lg cursor-pointer mb-1 flex gap-2.5 items-center hover:bg-primary-surface ' + (pageIndex === 1 ? 'text-primary bg-primary-surface border-l-4 border-primary ' : 'text-secondary-text') + (expandSidebar ? '' : ' justify-center')} 
+                    onClick={() => {
+                      setShowMobileSidebar(false)
+                      setPageIndex(1)
+                    }}><FontAwesomeIcon icon={faFolder} className='icon' /><span>Từ vựng</span></li>
+                  <li 
+                    className={'p-2.5 rounded-lg cursor-pointer mb-1 flex gap-2.5 items-center hover:bg-primary-surface ' + (pageIndex === 2 ? 'text-primary bg-primary-surface border-l-4 border-primary ' : 'text-secondary-text') + (expandSidebar ? '' : ' justify-center')} 
+                    onClick={() => {
+                      setShowMobileSidebar(false)
+                      setPageIndex(2)
+                    }}><FontAwesomeIcon icon={faTrophy} className='icon' /><span>Xếp hạng</span></li>
                 </ul>
               </div>
             </div>
@@ -373,38 +378,31 @@ function App() {
         }
 
         <div className="bg-primary-surface relative flex-1">
-          <div className="flex items-center justify-between absolute top-0 left-0 right-0">
+          <div className="sm:hidden flex items-center justify-between bg-gradient-to-r from-primary/10 to-primary/5">
             <div className="logo">
-              <button className='mobile-sidebar-toggle cursor-pointer' onClick={() => setShowMobileSidebar(true)}><FontAwesomeIcon icon={faBars} /></button>
+              <button 
+                className='text-primary cursor-pointer sm:hidden p-4'
+                onClick={() => setShowMobileSidebar(true)}
+              ><FontAwesomeIcon icon={faBars} /></button>
             </div>
             <div className="flex items-center gap-2.5 p-2 cursor-pointer">
-              
-              
-
-              {pageIndex === 0 && (
-                <button
-                  onClick={() => {
-                    if (userID == '') {
-                      setShowLoginSection(true)
-                    } else {
-                      setShowLogoutBtn(!showLogoutBtn)
-                      setShowSettingPage(true)
-                    }
-                  }}
-                  className='flex sm:hidden items-center gap-2.5 text-primary-text hover:bg-primary-surface rounded-lg p-2'
-                >
-                  <img
-                    src={avatarUrl || 'https://sbcf.fr/wp-content/uploads/2018/03/sbcf-default-avatar.png'}
-                    alt=""
-                    style={{ width: 32, height: 32, borderRadius: '50%' }}
-                  />
-                </button>
-              )}
-              {showLogoutBtn && 
-                <div></div>
-              }
-              
-              
+              <button
+                onClick={() => {
+                  if (userID == '') {
+                    setShowLoginSection(true)
+                  } else {
+                    setShowLogoutBtn(!showLogoutBtn)
+                    setShowSettingPage(true)
+                  }
+                }}
+                className='cursor-pointer flex sm:hidden items-center gap-2.5 text-primary-text hover:bg-primary-surface rounded-lg p-2'
+              >
+                <img
+                  src={avatarUrl || 'https://sbcf.fr/wp-content/uploads/2018/03/sbcf-default-avatar.png'}
+                  alt=""
+                  style={{ width: 32, height: 32, borderRadius: '50%' }}
+                />
+              </button>
             </div>
           </div>
           
@@ -413,7 +411,7 @@ function App() {
           )}
           {/* Folder management */}
           {pageIndex === 1 && (
-            <div className="w-full h-full flex flex-col overflow-auto">
+            <div className="w-full h-full flex flex-col overflow-auto bg-primary-surface">
               {/* Header */}
               <div className="bg-gradient-to-r from-primary/10 to-primary/5 px-4 sm:px-6 py-6">
                 <div className="flex items-start justify-between gap-4">

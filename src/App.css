@@ -18,6 +18,7 @@
   --color-muted: #e1e1e1;     /* borders and dividers */
 }
 
+
 @layer components {
   .input-field {
     @apply py-2 pl-4 pr-4 sm:py-2.5 sm:pl-5 sm:pr-5 outline-none text-base rounded-full;

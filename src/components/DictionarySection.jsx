@@ -546,7 +546,7 @@ export function DictionarySection({folderList, userID}) {
 
 
   return (
-    <div className="w-full h-screen overflow-auto">
+    <div className="w-full h-screen overflow-auto bg-primary-surface">
       <div className='text-muted w-full h-screen flex justify-center items-center'>
         <img 
           src="../assets/imgs/image-removebg-preview.png" 

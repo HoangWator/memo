@@ -335,6 +335,12 @@ export default function WordSection({onClose, currentFolder, userID}) {
             />
           }
           <button 
+            onClick={() => setShowWordList(true)} 
+            className='sm:hidden w-full p-3 rounded-lg bg-primary-surface text-secondary-text mb-2 cursor-pointer transform transition duration-150 hover:scale-105'
+          >
+            View All Words {`(${words.length})`}
+          </button>
+          <button 
             onClick={() => setShowAddWordModal(true)}
             className='w-full p-3 rounded-lg bg-primary text-bg mb-4 cursor-pointer transform transition duration-150 hover:scale-105 font-semibold'
           >
@@ -370,58 +376,9 @@ export default function WordSection({onClose, currentFolder, userID}) {
           </div>
         </div>
 
-        {showWordList && (
-          <div className="word-list md:w-1/3 w-full">
-            <div className="word-list-header p-3 flex items-center gap-3">
-              <button onClick={() => setShowWordList(false)} className='quitSectionBtn'><FontAwesomeIcon icon={faArrowLeft}/></button>
-              <h2 className='text-lg'>Từ của tôi</h2>
-            </div>
-            <div className="word-list-body p-3">
-              <div className='mb-3'>
-                <button className='add-word-btn mobile w-full p-3 rounded-lg bg-primary text-bg' onClick={() => setShowWordSectionLeft(true)}><FontAwesomeIcon icon={faPlus}/> Thêm từ</button>
-              </div>
-              <div className="word-list-content">
-                <div className="searchBox-section mb-3">
-                  <input 
-                    type="text" 
-                    className="searchBox bg-bg text-primary-text w-full pl-10 mb-2.5 rounded-md" 
-                    placeholder='Tìm từ của bạn...'
-                    onChange={searchWord}/>
-                  <FontAwesomeIcon icon={faMagnifyingGlass} className='searchIcon'/>
-                </div>
-                <ul className='space-y-3'>
-                  {
-                    words.length > 0 ? (
-                        words.map((word, index) => 
-                          <li key={index} className='p-3 rounded-lg bg-primary-surface flex items-start justify-between'>
-                            <div className='flex-1'>
-                              <MeaningDisplay word={word}/>
-                              <p className='text-secondary-text text-base'>{word.mean.toLowerCase()}</p>
-                            </div>
-
-                            <button 
-                              className='deleteBtn ml-3'
-                              onClick={() => {
-                                const newWords = words.filter((words, i) => i !== index)
-                                setAllWords(newWords)
-                                setWords(newWords)
-                                deleteWordDB(userID, currentFolder, word)
-                              }}>
-                                <FontAwesomeIcon icon={faTrash} />
-                              </button>
-                          </li>
-                        )
-                      ) : (
-                      <p className='noWords text-center text-secondary-text'>Không có từ nào!</p>
-                    )
-                  }
-                </ul>
-              </div>
-            </div>
-          </div>
-        )}
-
-        <div className="md:w-2/3 w-full pr-4 pl-4 flex flex-col overflow-auto">
+        
+        <div className={"max-sm:fixed top-0 bottom-0 bg-bg w-full pr-4 pl-4 sm:w-2/3 sm:flex flex-col overflow-auto " + (showWordList ? "block" : "hidden")} >
+          <button className=' p-2 text-secondary-text cursor-pointer -mx-3 sm:hidden' onClick={() => setShowWordList(false)}><FontAwesomeIcon icon={faX}/></button>
           <div className='sticky top-0 bg-bg z-10 p-2 -mx-4 mb-3'>
             <div className='relative'>
               <input 
@@ -437,27 +394,25 @@ export default function WordSection({onClose, currentFolder, userID}) {
             {
               words.length > 0 ? (
                 words.map((word, index) => (
-                  <li key={index} className='p-4 mb-2 rounded-lg bg-bg flex flex-col sm:flex-row items-start sm:items-center justify-between transform transition duration-150 hover:scale-101 shadow-md'>
+                  <li 
+                    key={index} 
+                    className='cursor-pointer p-4 mb-2 rounded-lg bg-bg flex flex-col sm:flex-row items-start sm:items-center justify-between transform transition duration-150 hover:scale-101 shadow-md'
+                    onClick={() => {
+                      setEditingWordIndex(index)
+                      setEditWordForm({ 
+                        name: word.name, 
+                        definition_eng: word.definition_eng, 
+                        definition_vie: word.definition_vie,
+                        type: word.type
+                      })
+                    }}
+                  >
                     <div className='flex-1'>
                       <MeaningDisplay word={word}/>
                       <p className='text-secondary-text text-sm mt-1'>{word.definition_eng}</p>
                       <p className='text-secondary-text text-sm'>{word.definition_vie}</p>
                     </div>
-                    <div className='mt-3 sm:mt-0 sm:ml-4'>
-                      <button 
-                        className='px-3 py-2 rounded-md bg-primary-surface text-secondary-text cursor-pointer transform transition duration-150 hover:scale-105'
-                        onClick={() => {
-                          setEditingWordIndex(index)
-                          setEditWordForm({ 
-                            name: word.name, 
-                            definition_eng: word.definition_eng, 
-                            definition_vie: word.definition_vie,
-                            type: word.type
-                          })
-                        }}>
-                        <FontAwesomeIcon icon={faEllipsis} />
-                      </button>
-                    </div>
+                    
                   </li>
                 ))
               ) : (
@@ -496,7 +451,7 @@ export default function WordSection({onClose, currentFolder, userID}) {
 
       {editingWordIndex !== null && (
         <div className="fixed top-0 bottom-0 right-0 left-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setEditingWordIndex(null)}>
-          <div className="w-full max-w-md mx-4 bg-bg dark:bg-primary-surface rounded-xl shadow-xl p-6" onClick={e => e.stopPropagation()}>
+          <div className="w-full max-sm:h-screen max-w-md sm:max-h-9/10 overflow-scroll sm:mx-4 bg-bg dark:bg-primary-surface sm:rounded-xl shadow-xl p-6" onClick={e => e.stopPropagation()}>
             <div className='flex items-center justify-between mb-6'>
               <div>
                 <h2 className='text-xl font-semibold text-primary-text'>Chỉnh sửa từ</h2>
