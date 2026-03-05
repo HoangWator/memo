@@ -327,13 +327,13 @@ export default function WordSection({onClose, currentFolder, userID}) {
       <div className="word-section-body flex flex-1 flex-col md:flex-row overflow-hidden bg-bg">
 
         <div className="md:w-1/3 w-full p-4 overflow-auto border-r-0 md:border-r-1 border-r-muted">
-          {wordsToReview.length > 0 && 
+          {/* {wordsToReview.length > 0 && 
             <ReviewSection 
               data={wordsToReview} 
               userID={userID}
               currentFolder={currentFolder}  
             />
-          }
+          } */}
           <button 
             onClick={() => setShowWordList(true)} 
             className='sm:hidden w-full p-3 rounded-lg bg-primary-surface text-secondary-text mb-2 cursor-pointer transform transition duration-150 hover:scale-105'
