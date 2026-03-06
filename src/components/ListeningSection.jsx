@@ -36,7 +36,7 @@ export default function ListeningSection({listeningWords, onClose}) {
                 }
               }
             }}
-            className={'input-field rounded-lg' + (userInput ? (userInput.toLowerCase() === word.toLowerCase() ? ' bg-success/10 border-l-4 border-success text-primary-text' : ' bg-wrong/10 border-l-4 border-wrong text-primary-text') : 'bg-primary-surface')}
+            className={'input-field bg-bg text-secondary-text rounded-lg' + (userInput ? (userInput.toLowerCase() === word.toLowerCase() ? ' bg-success/10 border-l-4 border-success text-primary-text' : ' bg-wrong/10 border-l-4 border-wrong text-primary-text') : 'bg-primary-surface')}
           />
         </div>
 
@@ -74,6 +74,7 @@ export default function ListeningSection({listeningWords, onClose}) {
         </div>
       </div>
       <div className="listening-content">
+        <p className='text-primary-text text-xl text-center mb-5'>{listeningCardIndex + 1}/{listeningWords.length}</p>
         {
           listeningWords.length >= 2 ? 
             <ListeningCard 

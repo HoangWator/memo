@@ -67,7 +67,7 @@ export function SettingPage({onClose, userAvatar, userName, openLogoutSection}) 
 
   return (
     <div className="fixed top-0 bottom-0 right-0 left-0 bg-black/50 flex items-center justify-center">
-      <div className="bg-bg w-full h-screen sm:w-1/2 relative sm:rounded-lg sm:h-[80vh] flex flex-col">
+      <div className="bg-bg w-9/10 sm:w-1/2 relative rounded-lg sm:h-[80vh] flex flex-col">
         <h1 className="text-2xl text-primary-text text-center mt-5 mb-5">Cài đặt</h1>
         <button 
           onClick={() => {

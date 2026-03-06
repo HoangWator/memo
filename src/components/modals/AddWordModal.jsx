@@ -106,7 +106,7 @@ export default function AddWordModal({ onClose, userID, currentFolder, onWordAdd
 
   return (
     <div
-      className="fixed top-0 left-0 w-full h-screen bg-black/50 z-50 flex justify-center items-center"
+      className="fixed top-0 left-0 w-full h-screen bg-black/50 z-50 flex justify-center sm:items-center"
       onClick={onClose}
     >
       <div
