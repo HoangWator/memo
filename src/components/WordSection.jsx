@@ -32,6 +32,16 @@ export default function WordSection({onClose, currentFolder, userID}) {
   
   const [wordsToReview, setWordsToReview] = useState('')
   
+  // Date sort 
+  const sortWordsByDate = (wordsArray) => {
+    // Sort by createdAt date, newest first. "dateAdded" is a property of each word object that stores the timestamp of when the word was added.
+    return wordsArray.slice().sort((a, b) => {
+      const dateA = a.dateAdded ? new Date(a.dateAdded.seconds * 1000) : new Date(0);
+      const dateB = b.dateAdded ? new Date(b.dateAdded.seconds * 1000) : new Date(0);
+      return dateB - dateA; // Newest first
+    });
+  };
+
   function getWordsToReview(words) {
     const currentDay = new Date()
     let wordsToReview = []
@@ -122,8 +132,8 @@ export default function WordSection({onClose, currentFolder, userID}) {
         if (data) {
           console.log(getWordsToReview(data.words))
           setWordsToReview(getWordsToReview(data.words).wordsToReview)
-          setWords(data.words);
-          setAllWords(data.words);
+          setWords(sortWordsByDate(data.words));
+          setAllWords(sortWordsByDate(data.words));
           setLoader(false);
         }
     }).catch((error) => {
@@ -187,10 +197,10 @@ export default function WordSection({onClose, currentFolder, userID}) {
         const defVie = word.definition_vie.toLowerCase()
         return name.includes(searchValue) || defEng.includes(searchValue) || defVie.includes(searchValue)
       });
-      setWords(filteredWords);
+      setWords(sortWordsByDate(filteredWords));
     }
     else {
-      setWords(allWords);
+      setWords(sortWordsByDate(allWords));
     }
   }
 
@@ -306,9 +316,9 @@ export default function WordSection({onClose, currentFolder, userID}) {
             // Refresh the word list
             getFolderDataDB(userID, currentFolder).then((data) => {
               if (data) {
-                setWords(data.words);
-                setAllWords(data.words);
-                setWordsToReview(getWordsToReview(data.words).wordsToReview);
+                setWords(sortWordsByDate(data.words));
+                setAllWords(sortWordsByDate(data.words));
+                setWordsToReview(getWordsToReview(sortWordsByDate(data.words)).wordsToReview);
               }
             }).catch((error) => {
               console.error("Error fetching folder data:", error);
@@ -326,7 +336,7 @@ export default function WordSection({onClose, currentFolder, userID}) {
 
       <div className="word-section-body flex flex-1 flex-col md:flex-row overflow-hidden bg-bg">
 
-        <div className="md:w-1/3 w-full p-4 overflow-auto border-r-0 md:border-r-1 border-r-muted">
+        <div className="md:w-1/2 w-full p-4 overflow-auto border-r-0 md:border-r-1 border-r-muted">
           {/* {wordsToReview.length > 0 && 
             <ReviewSection 
               data={wordsToReview} 
@@ -342,7 +352,7 @@ export default function WordSection({onClose, currentFolder, userID}) {
           </button>
           <button 
             onClick={() => setShowAddWordModal(true)}
-            className='w-full p-3 rounded-lg bg-primary text-bg mb-4 cursor-pointer transform transition duration-150 hover:scale-105 font-semibold'
+            className='w-full sm:w-3/10 p-3 rounded-lg bg-primary text-bg mb-4 cursor-pointer transform transition duration-150 hover:scale-105 font-semibold'
           >
             <FontAwesomeIcon icon={faPlus} className='mr-2'/> Thêm từ
           </button>
@@ -371,13 +381,23 @@ export default function WordSection({onClose, currentFolder, userID}) {
 
           <div className='mt-6'>
             <h4 className='text-base text-primary-text font-semibold mb-2'>Quản lý thư mục</h4>
-            <button className='w-full p-3 rounded-lg bg-primary-surface text-secondary-text mb-2 cursor-pointer transform transition duration-150 hover:scale-105' onClick={() => setShowRenameFolderSection(true)}><FontAwesomeIcon icon={faPen} className='mr-2'/> Đổi tên thư mục</button>
-            <button className='w-full p-3 rounded-lg bg-primary-surface text-secondary-text mb-2 cursor-pointer transform transition duration-150 hover:scale-105' onClick={() => setShowDeleteValid(true)}><FontAwesomeIcon icon={faTrash} className='mr-2'/> Xóa thư mục</button>
+            <button 
+              className='w-full block sm:w-1/2 p-3 rounded-lg bg-primary-surface text-secondary-text mb-2 cursor-pointer transform transition duration-150 hover:scale-105' 
+              onClick={() => setShowRenameFolderSection(true)}
+            >
+              <FontAwesomeIcon icon={faPen} className='mr-2'/> Đổi tên thư mục
+            </button>
+            <button 
+              className='w-full block sm:w-1/2 p-3 rounded-lg bg-primary-surface text-secondary-text mb-2 cursor-pointer transform transition duration-150 hover:scale-105 hover:text-wrong' 
+              onClick={() => setShowDeleteValid(true)}
+            >
+              <FontAwesomeIcon icon={faTrash} className='mr-2'/> Xóa thư mục
+            </button>
           </div>
         </div>
 
         
-        <div className={"max-sm:fixed top-0 bottom-0 bg-bg w-full pr-4 pl-4 sm:w-2/3 sm:flex flex-col overflow-auto " + (showWordList ? "block" : "hidden")} >
+        <div className={"max-sm:fixed top-0 bottom-0 bg-bg w-full pr-4 pl-4 sm:w-1/2 sm:flex flex-col overflow-auto " + (showWordList ? "block" : "hidden")} >
           <button className=' p-2 text-secondary-text cursor-pointer -mx-3 sm:hidden' onClick={() => setShowWordList(false)}><FontAwesomeIcon icon={faX}/></button>
           <div className='sticky top-0 bg-bg z-10 p-2 -mx-4 mb-3'>
             <div className='relative'>
@@ -467,7 +487,7 @@ export default function WordSection({onClose, currentFolder, userID}) {
                   type='text'
                   value={editWordForm.name}
                   onChange={(e) => setEditWordForm({...editWordForm, name: e.target.value})}
-                  className='w-full px-4 py-2 rounded-lg border border-muted bg-bg text-primary-text focus:outline-none focus:border-primary'
+                  className='w-full px-4 py-2 rounded-lg bg-primary-surface text-primary-text focus:outline-none focus:border-primary'
                   placeholder='Nhập tên từ...'
                 />
               </div>
@@ -477,7 +497,7 @@ export default function WordSection({onClose, currentFolder, userID}) {
                 <textarea
                   value={editWordForm.definition_eng}
                   onChange={(e) => setEditWordForm({...editWordForm, definition_eng: e.target.value})}
-                  className='w-full px-4 py-2 rounded-lg border border-muted bg-bg text-primary-text focus:outline-none focus:border-primary resize-none'
+                  className='w-full px-4 py-2 rounded-lg bg-primary-surface text-primary-text focus:outline-none focus:border-primary resize-none'
                   placeholder='Nhập định nghĩa tiếng Anh...'
                   rows='3'
                 />
@@ -488,7 +508,7 @@ export default function WordSection({onClose, currentFolder, userID}) {
                 <textarea
                   value={editWordForm.definition_vie}
                   onChange={(e) => setEditWordForm({...editWordForm, definition_vie: e.target.value})}
-                  className='w-full px-4 py-2 rounded-lg border border-muted bg-bg text-primary-text focus:outline-none focus:border-primary resize-none'
+                  className='w-full px-4 py-2 rounded-lg bg-primary-surface text-primary-text focus:outline-none focus:border-primary resize-none'
                   placeholder='Nhập định nghĩa tiếng Việt...'
                   rows='3'
                 />
@@ -499,8 +519,8 @@ export default function WordSection({onClose, currentFolder, userID}) {
               <button 
                 onClick={() => {
                   const newWords = words.filter((w, i) => i !== editingWordIndex)
-                  setAllWords(newWords)
-                  setWords(newWords)
+                  setAllWords(sortWordsByDate(newWords));
+                  setWords(sortWordsByDate(newWords))
                   deleteWordDB(userID, currentFolder, words[editingWordIndex])
                   setEditingWordIndex(null)
                 }}
@@ -529,8 +549,8 @@ export default function WordSection({onClose, currentFolder, userID}) {
                         definition_eng: editWordForm.definition_eng,
                         definition_vie: editWordForm.definition_vie
                       };
-                      setWords(updatedWords);
-                      setAllWords(updatedWords);
+                      setWords(sortWordsByDate(updatedWords));
+                      setAllWords(sortWordsByDate(updatedWords));
                       setEditingWordIndex(null);
                     }).catch((error) => {
                       console.error("Error updating word: ", error);
