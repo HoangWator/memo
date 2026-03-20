@@ -60,4 +60,8 @@
     @apply text-purple p-1 rounded-lg;
     background-color: var(--primary-surface);
   }
+  .other {
+    @apply text-amber-800 p-1 rounded-lg;
+    background-color: var(--primary-surface);
+  }
 }

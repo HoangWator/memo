@@ -17,7 +17,8 @@ export default function AddWordModal({ onClose, userID, currentFolder, onWordAdd
     { id: 'adjective', label: 'Adjective', color: 'from-orange-500 to-orange-600' },
     { id: 'adverb', label: 'Adverb', color: 'from-yellow-500 to-yellow-600' },
     { id: 'idiom', label: 'Idiom', color: 'from-purple-500 to-purple-600' },
-    { id: 'phverb', label: 'Phrasal Verb', color: 'from-indigo-500 to-indigo-600' }
+    { id: 'phverb', label: 'Phrasal Verb', color: 'from-indigo-500 to-indigo-600' },
+    { id: 'other', label: 'Other', color: 'from-amber-500 to-amber-600' }
   ];
 
   const handleAddWord = async () => {

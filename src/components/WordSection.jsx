@@ -267,6 +267,9 @@ export default function WordSection({onClose, currentFolder, userID}) {
     else if (word.type === 'idiom') {
       meaningCln = 'idiom'
     }
+    else if (word.type === 'other') {
+      meaningCln = 'other'
+    }
     return (
       <h3 className='text-primary-text font-bold text-xl'>{word.name.toLowerCase()}<span className={'ml-2.5 font-normal text-base ' + meaningCln}>{word.type === 'phverb' ? 'phrasal verb' : word.type}</span></h3>
     )
@@ -280,6 +283,18 @@ export default function WordSection({onClose, currentFolder, userID}) {
   const [editingWordIndex, setEditingWordIndex] = useState(null)
   const [editWordForm, setEditWordForm] = useState({ name: '', definition_eng: '', definition_vie: '', type: '' })
 
+  const wordTypes = [
+    { id: 'noun', label: 'Noun', color: 'from-blue-500 to-blue-600' },
+    { id: 'verb', label: 'Verb', color: 'from-green-500 to-green-600' },
+    { id: 'adjective', label: 'Adjective', color: 'from-orange-500 to-orange-600' },
+    { id: 'adverb', label: 'Adverb', color: 'from-yellow-500 to-yellow-600' },
+    { id: 'idiom', label: 'Idiom', color: 'from-purple-500 to-purple-600' },
+    { id: 'phverb', label: 'Phrasal Verb', color: 'from-indigo-500 to-indigo-600' },
+    { id: 'other', label: 'Other', color: 'from-amber-500 to-amber-600' }
+  ];
+
+  const [wordType, setWordType] = useState('noun')
+  const [editingLoad, setEditingLoad] = useState(false)
 
   return (
     <div className="fixed top-0 bottom-0 left-0 right-0 bg-bg flex flex-col z-100" onClick={() => {
@@ -425,6 +440,7 @@ export default function WordSection({onClose, currentFolder, userID}) {
                         definition_vie: word.definition_vie,
                         type: word.type
                       })
+                      setWordType(word.type)
                     }}
                   >
                     <div className='flex-1'>
@@ -492,6 +508,33 @@ export default function WordSection({onClose, currentFolder, userID}) {
                 />
               </div>
 
+              {/* Word Type  */}
+              <div className="mb-4">
+                <label className="text-secondary-text text-sm font-medium block mb-3">
+                  Loại từ
+                </label>
+                <div className="grid grid-cols-3 gap-2">
+                  {wordTypes.map((type) => (
+                    <button
+                      key={type.id}
+                      onClick={() => {
+                        setEditWordForm({...editWordForm, type: type.id})
+                        setWordType(type.id)
+                      }}
+                      className={`p-3 rounded-lg transition-all duration-200 flex items-center justify-center cursor-pointer ${
+                        wordType === type.id
+                          ? `bg-gradient-to-br ${type.color} text-white shadow-lg scale-105`
+                          : 'bg-primary-surface text-secondary-text hover:bg-opacity-80 border border-transparent hover:border-primary'
+                      }`}
+                    >
+                      <span className="text-sm font-medium text-center">
+                        {type.label}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               <div>
                 <label className='block text-sm text-secondary-text mb-2 font-medium'>Định nghĩa (Tiếng Anh)</label>
                 <textarea
@@ -539,6 +582,7 @@ export default function WordSection({onClose, currentFolder, userID}) {
                 <button 
                   onClick={() => {
                     // Update the word in the database
+                    setEditingLoad(true)
                     const originalWord = words[editingWordIndex];
                     updateWordDB(userID, currentFolder, originalWord, editWordForm).then(() => {
                       // Update the word in the local state
@@ -547,11 +591,13 @@ export default function WordSection({onClose, currentFolder, userID}) {
                         ...updatedWords[editingWordIndex],
                         name: editWordForm.name,
                         definition_eng: editWordForm.definition_eng,
-                        definition_vie: editWordForm.definition_vie
+                        definition_vie: editWordForm.definition_vie,
+                        type: editWordForm.type
                       };
                       setWords(sortWordsByDate(updatedWords));
                       setAllWords(sortWordsByDate(updatedWords));
                       setEditingWordIndex(null);
+                      setEditingLoad(false);
                     }).catch((error) => {
                       console.error("Error updating word: ", error);
                       alert("Failed to update word. Please try again.");
@@ -559,7 +605,7 @@ export default function WordSection({onClose, currentFolder, userID}) {
                   }}
                   className='px-4 py-2 rounded-lg bg-primary hover:bg-primary/90 text-bg cursor-pointer transition-colors font-medium'
                 >
-                  Lưu
+                  {editingLoad ? 'Đang lưu...' : 'Lưu'}
                 </button>
               </div>
             </div>
