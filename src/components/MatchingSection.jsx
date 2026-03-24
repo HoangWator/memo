@@ -49,7 +49,7 @@ function MatchingCard({data, onNext, addToHistory}) {
           }
             onClick={() => checkAnswer(option, index)}
           >
-            {option.definition_eng} 
+            <span className='italic'>{option.definition_eng}</span> 
             <span className='italic'>{option.definition_vie}</span> 
             <span className={option.type}>{option.type === 'phverb' ? 'phrasal verb' : option.type}</span>
             {isCorrect && selectedIndex === index && (
