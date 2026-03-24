@@ -3,16 +3,25 @@ import { useEffect } from 'react';
 import { faPlus,faBars,faArrowLeft,faArrowRight,faArrowDown,faArrowUp,faTrash,faXmark,faMagnifyingGlass,faVolumeHigh,faFolder,faDumbbell,faTrophy,faChartSimple,faEllipsis,faPenToSquare,faX,faArrowRightFromBracket,faArrowsLeftRight } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import ProgressBar from './ProgressBar'
+import { puter } from "@heyputer/puter.js";
 
 export default function ListeningSection({listeningWords, onClose}) {
   const [listeningCardIndex, setListeningCardIndex] = useState(0)
   const [doneQuestions, setDoneQuestions] = useState(0)
 
   function ListeningCard({word, order}) {
-    const speakWord = () =>  {
-      const utterance = new SpeechSynthesisUtterance(word);
-      utterance.lang = 'en-US'
-      speechSynthesis.speak(utterance);
+    const speakWord = () => {
+      // const utterance = new SpeechSynthesisUtterance(word);
+      // utterance.lang = 'en-US'
+      // speechSynthesis.speak(utterance);
+
+      puter.ai.txt2speech(word, {
+        voice: "Joanna",
+        engine: "generative",
+        language: "en-US"
+      })
+      .then((audio)=> audio.play());
+
     }
 
     const [userInput, setUserInput] = useState('')
