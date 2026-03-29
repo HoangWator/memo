@@ -18,7 +18,8 @@ import { addWordDB,deleteWordDB,updateWordDB } from './handleData.js'
 import { getFolderDataDB } from './handleData.js'
 import meaningSuggestion from './gemini.js'
 
-export default function WordSection({onClose, currentFolder, userID}) {
+export default function WordSection({userID, currentFolder, onClose }) {
+  console.log("It worked!", userID, currentFolder)
   const [word, setWord] = useState('')
   const [meaning, setMeaning] = useState('')
   const [words, setWords] = useState([])
@@ -297,7 +298,7 @@ export default function WordSection({onClose, currentFolder, userID}) {
   const [editingLoad, setEditingLoad] = useState(false)
 
   return (
-    <div className="fixed top-0 bottom-0 left-0 right-0 bg-bg flex flex-col z-100" onClick={() => {
+    <div className="fixed top-0 bottom-0 left-0 right-0 bg-bg flex flex-col z-1000" onClick={() => {
       if (showRemindSuggestion) {
         setShowRemindSuggestion(false)
       }
@@ -342,16 +343,16 @@ export default function WordSection({onClose, currentFolder, userID}) {
         />
       )}
 
-      <div className="p-3 sm:p-4 flex items-center gap-3 bg-primary-surface">
+      <div className="p-3 sm:p-4 flex items-center gap-3 bg-transparent">
         <button onClick={onClose} className='quit-btn'><FontAwesomeIcon icon={faArrowLeft} /></button>
         <h2 className='text-lg sm:text-xl text-secondary-text font-semibold'>{currentFolder}</h2>
         <div className='ml-auto flex items-center gap-2'>
         </div>
       </div>
 
-      <div className="word-section-body flex flex-1 flex-col md:flex-row overflow-hidden bg-bg">
+      <div className="word-section-body p-4 flex flex-1 flex-col md:flex-row overflow-auto bg-bg">
 
-        <div className="md:w-1/2 w-full p-4 overflow-auto border-r-0 md:border-r-1 border-r-muted">
+        <div className="md:w-1/2 w-full border-r-0 ">
           {/* {wordsToReview.length > 0 && 
             <ReviewSection 
               data={wordsToReview} 
@@ -373,22 +374,22 @@ export default function WordSection({onClose, currentFolder, userID}) {
           </button>
           <h3 className='text-lg text-primary-text font-semibold mb-3'>Chế độ học</h3>
           <div className="learning-modes grid grid-cols-2 sm:grid-cols-3 gap-3">
-            <button className='p-3 bg-primary-surface cursor-pointer rounded-lg flex flex-col items-center gap-2 text-secondary-text transform transition duration-150 hover:scale-105' onClick={() => learnBtn(words)}>
+            <button className='p-3 bg-primary-surface cursor-pointer rounded-lg flex items-center gap-2 text-secondary-text transform transition duration-150 hover:scale-105' onClick={() => learnBtn(words)}>
               <img src="https://cdn-icons-png.freepik.com/512/9100/9100957.png" alt="" className='h-10' />
               <span className='text-sm font-medium'>Flashcard</span>
             </button>
 
-            <button className='p-3 bg-primary-surface cursor-pointer rounded-lg flex flex-col items-center gap-2 text-secondary-text transform transition duration-150 hover:scale-105' onClick={() => generateFilling(words)}>
+            <button className='p-3 bg-primary-surface cursor-pointer rounded-lg flex items-center gap-2 text-secondary-text transform transition duration-150 hover:scale-105' onClick={() => generateFilling(words)}>
               <img src="https://cdn-icons-png.flaticon.com/512/6559/6559624.png" alt="" className='h-10' />
               <span className='text-sm font-medium'>Điền từ</span>
             </button>
 
-            <button className='p-3 bg-primary-surface cursor-pointer rounded-lg flex flex-col items-center gap-2 text-secondary-text transform transition duration-150 hover:scale-105' onClick={() => generateListening(words)}>
+            <button className='p-3 bg-primary-surface cursor-pointer rounded-lg flex items-center gap-2 text-secondary-text transform transition duration-150 hover:scale-105' onClick={() => generateListening(words)}>
               <img src="https://cdn-icons-png.flaticon.com/512/8805/8805242.png" alt="" className='h-10' />
               <span className='text-sm font-medium'>Nghe</span>
             </button>
 
-            <button className='p-3 bg-primary-surface cursor-pointer rounded-lg flex flex-col items-center gap-2 text-secondary-text transform transition duration-150 hover:scale-105' onClick={() => setShowMatching(true)}>
+            <button className='p-3 bg-primary-surface cursor-pointer rounded-lg flex items-center gap-2 text-secondary-text transform transition duration-150 hover:scale-105' onClick={() => setShowMatching(true)}>
               <img src="https://cdn-icons-png.flaticon.com/512/3952/3952841.png" alt="" className='h-10' />
               <span className='text-sm font-medium'>Matching</span>
             </button>
