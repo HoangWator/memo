@@ -19,7 +19,7 @@ import { getFolderDataDB } from './handleData.js'
 import meaningSuggestion from './gemini.js'
 
 export default function WordSection({userID, currentFolder, onClose }) {
-  console.log("It worked!", userID, currentFolder)
+  // console.log("It worked!", userID, currentFolder)
   const [word, setWord] = useState('')
   const [meaning, setMeaning] = useState('')
   const [words, setWords] = useState([])
@@ -131,7 +131,7 @@ export default function WordSection({userID, currentFolder, onClose }) {
     setLoader(true)
     getFolderDataDB(userID, currentFolder).then((data) =>  {
         if (data) {
-          console.log(getWordsToReview(data.words))
+          // console.log(getWordsToReview(data.words))
           setWordsToReview(getWordsToReview(data.words).wordsToReview)
           setWords(sortWordsByDate(data.words));
           setAllWords(sortWordsByDate(data.words));

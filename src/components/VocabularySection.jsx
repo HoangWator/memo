@@ -65,7 +65,7 @@ export function VocabularySection({ userID, folders, allFolders }) {
     navigate('/vocabulary');
   }
 
-  console.log('Current Folder:', currentFolder);
+  // console.log('Current Folder:', currentFolder);
   return (
     <div className="w-full h-full flex flex-col overflow-auto bg-primary-surface">
       <Routes>

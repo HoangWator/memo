@@ -7,6 +7,27 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 export default function Flashcard({data, onClose}) {
   const [indexLearn, setIndexLearn] = useState(0)
   
+  useEffect(() => {
+    const handleArrowKeys = (e) => {
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault()
+        if (indexLearn > 0) {
+          setIndexLearn(indexLearn - 1)
+        }
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault()
+        if (indexLearn < data.length - 1) {
+          setIndexLearn(indexLearn + 1)
+        }
+      } else if (e.key === 'Escape') {
+        e.preventDefault()
+        onClose()
+      }
+    }
+
+    window.addEventListener('keydown', handleArrowKeys)
+    return () => window.removeEventListener('keydown', handleArrowKeys)
+  }, [indexLearn, data.length, onClose])
 
   function Card({word}) {
     const [isFlipped, setIsFlipped] = useState(false)
@@ -14,8 +35,30 @@ export default function Flashcard({data, onClose}) {
     const handleFlip = () => {
       setIsFlipped(!isFlipped)
     }
+
+    useEffect(() => {
+      const handleKeyDown = (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault()
+          handleFlip()
+        }
+      }
+
+      window.addEventListener('keydown', handleKeyDown)
+      return () => window.removeEventListener('keydown', handleKeyDown)
+    }, [isFlipped])
     return (
-      <div className="flip-card w-90 h-90 mt-2.5 mb-2.5" onClick={handleFlip}>
+      <div 
+        className="flip-card w-90 h-90 mt-2.5 mb-2.5" 
+        onClick={handleFlip}
+        onKeyDown={e => {
+          if (e.key == 'Enter') {
+            e.preventDefault()
+            handleFlip()
+          }
+        }}
+        tabIndex={0}
+      >
         <div className={`flip-card-inner ${isFlipped ? 'flipped' : ''}`}>
           {/* Front of card */}
           <div className="flip-card-front">
