@@ -108,23 +108,32 @@ function MatchingCard({data, onNext, addToHistory}) {
 function MatchingSection({onClose, data, reviewMode, userID, currentFolder}) {
   const [questions, setQuestions] = useState([])
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
-
   const [historyData, setHistoryData] = useState([])
+  const [questionLength, setQuestionLength] = useState(10)
+  const [showMatchingCard, setShowMatchingCard] = useState(false)
+  const [doneQuestions, setDoneQuestions] = useState(0)
+  const [showContinueModal, setShowContinueModal] = useState(false)
 
   const addToHistory = (item) => {
     setHistoryData([...historyData, item])
   }
 
   const handleNextCard = () => {
-    if (currentQuestionIndex < questions.length - 1) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1)
+    if (doneQuestions === questionLength - 1) {
+        setShowContinueModal(true)
     }
     else {
-      onClose()
-      if (reviewMode && userID && currentFolder) {
-        updateReviewSchedule(userID, currentFolder, historyData, 'matching')
+      if (currentQuestionIndex < questions.length - 1) {
+        setDoneQuestions(doneQuestions + 1)
+        setCurrentQuestionIndex(currentQuestionIndex + 1)
       }
     }
+    // else {
+    //   // onClose()
+    //   // if (reviewMode && userID && currentFolder) {
+    //   //   updateReviewSchedule(userID, currentFolder, historyData, 'matching')
+    //   // }
+    // }
   }
 
   // Shuffle options
@@ -140,15 +149,10 @@ function MatchingSection({onClose, data, reviewMode, userID, currentFolder}) {
     if (data.length >= 2) {
       const questions = [] 
       data.forEach(item => {
+        console.log(item.type)
         const otherOptions = data.filter(opt => opt.definition_eng !== item.definition_eng || opt.definition_vie !== item.definition_vie)
-        
-        let shuffleOptions;
-        if (otherOptions.length > 3) {
-          shuffleOptions = shuffleArray(otherOptions).slice(0,3)
-        }
-        else {
-          shuffleOptions = shuffleArray(otherOptions)
-        }
+        const sameTypeOptions = otherOptions.filter(opt => opt.type === item.type)
+        const othersTypeOptions = data.filter(opt => opt.type !== item.type)
 
         const options = []
         options.push({
@@ -156,13 +160,20 @@ function MatchingSection({onClose, data, reviewMode, userID, currentFolder}) {
           definition_vie: item.definition_vie,
           type: item.type
         })
-        shuffleOptions.forEach(opt => {
-          options.push({
-            definition_eng: opt.definition_eng,
-            definition_vie: opt.definition_vie,
-            type: opt.type
-          })
-        })
+        if (sameTypeOptions.length > 3) {
+          options.push(...sameTypeOptions.slice(0, 3))
+        }
+        else {
+          let remainingSlots = 3 - sameTypeOptions.length
+          if (remainingSlots > 0) {
+            options.push(...sameTypeOptions)
+            options.push(...othersTypeOptions.slice(0, remainingSlots))
+          }
+          else {
+            options.push(...sameTypeOptions)
+          }
+        }
+        
         questions.push({
           question: item.name, 
           answer_eng: item.definition_eng,
@@ -175,7 +186,7 @@ function MatchingSection({onClose, data, reviewMode, userID, currentFolder}) {
     }
   }, [])
 
-
+  console.log(doneQuestions)
   return (
     <div className='fixed top-0 left-0 w-full h-screen bg-bg z-10'>
       <div className='p-4 absolute top-0 left-0 flex items-center gap-4'>
@@ -184,9 +195,65 @@ function MatchingSection({onClose, data, reviewMode, userID, currentFolder}) {
           onClick={onClose}
         ><FontAwesomeIcon icon={faArrowLeft} /></button>
       </div>
-
+      {
+        !showMatchingCard && 
+        <div className='w-full h-full flex flex-col items-center justify-center gap-8'>
+          <div className='p-4'>
+            <h1 className='text-primary-text text-2xl mb-2.5'>Enter questions length:</h1>
+            <input 
+              className="input-field w-full pl-10 pr-3 py-2 rounded-md border border-transparent bg-primary-surface text-primary-text mb-2.5" 
+              type="number"
+              value={questionLength}
+              onChange={e => setQuestionLength(e.target.value)}
+              placeholder='Enter questions length'
+            />
+            <button 
+              className='px-4 py-2 rounded-lg bg-primary text-primary-text cursor-pointer hover:scale-105'
+              onClick={() => {
+                if (questionLength > 0 && questionLength <= questions.length) {
+                  setShowMatchingCard(true)
+                }
+              }}
+            >
+              Learn now!
+            </button>
+          </div>
+        </div>
+      }
+      {
+        showContinueModal &&
+        <div className='bg-black/50 w-full h-full fixed top-0 left-0 flex items-center justify-center z-20'>
+          <div className='bg-primary-surface p-6 rounded-lg shadow-lg'>
+            <h2 className='text-xl text-primary-text mb-4'>Bạn đã hoàn thành {doneQuestions + 1}/{questionLength} câu hỏi. Tiếp tục học ?</h2>
+            <div className='flex justify-end gap-4'>
+              <button 
+                className='px-4 py-2 rounded-lg bg-primary text-primary-text cursor-pointer hover:scale-105'
+                onClick={() => {
+                  setShowContinueModal(false)
+                  setDoneQuestions(0)
+                  setCurrentQuestionIndex(currentQuestionIndex + 1)
+                }}
+              >
+                Yes
+              </button>
+              <button 
+                className='px-4 py-2 rounded-lg bg-primary-surface/10 text-primary-text cursor-pointer hover:scale-105'
+                onClick={() => {
+                  setShowContinueModal(false)
+                  onClose()
+                  if (reviewMode && userID && currentFolder) {
+                    updateReviewSchedule(userID, currentFolder, historyData, 'matching')
+                  }
+                }}
+              >
+                No
+              </button>
+            </div>
+          </div>
+        </div>
+      }
       <div className='w-full h-full flex flex-col items-center justify-center gap-8'>
-        {questions.length > 0 &&
+        {questions.length > 0 && showMatchingCard &&
           <MatchingCard 
             data={questions[currentQuestionIndex]}
             onNext={handleNextCard}
