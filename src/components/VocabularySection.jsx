@@ -225,7 +225,7 @@ export function VocabularySection({ userID, folders, allFolders }) {
               value={folderName}
               onChange={e => setFolderName(e.target.value)}
               onKeyDown={e => { if (e.key === 'Enter' && folderName.trim() !== '') addFolder(); }}
-              className='w-full mb-4 px-4 py-2 rounded-lg border border-muted bg-bg text-primary-text focus:outline-none'
+              className='w-full mb-4 px-4 py-2 rounded-lg bg-primary-surface text-primary-text focus:outline-none'
             />
 
             <div className='flex items-center justify-end gap-2'>
