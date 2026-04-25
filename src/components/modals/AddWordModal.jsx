@@ -59,29 +59,6 @@ export default function AddWordModal({ onClose, userID, currentFolder, onWordAdd
         type: wordType,
         definition_eng: definitionEng.trim(),
         definition_vie: definitionVie.trim(),
-        scheduleReview: [
-          {
-            mode: 'matching',
-            reviewCount: 0,
-            lastReview: null,
-            rateAccuracy: null,
-            reviewDates: [new Date()]
-          },
-          {
-            mode: 'filling',
-            reviewCount: 0,
-            lastReview: null,
-            rateAccuracy: null,
-            reviewDates: [new Date()]
-          },
-          {
-            mode: 'listening',
-            reviewCount: 0,
-            lastReview: null,
-            rateAccuracy: null,
-            reviewDates: [new Date()]
-          }
-        ],
         dateAdded: new Date(),
       };
 

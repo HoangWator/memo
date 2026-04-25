@@ -45,85 +45,23 @@ export default function WordSection({userID, currentFolder, onClose }) {
 
   function getWordsToReview(words) {
     const currentDay = new Date()
+    let currentYear = currentDay.getFullYear()
+    let currentMonth = currentDay.getMonth()
+    let currentDate = currentDay.getDate()
     let wordsToReview = []
-    let matchingReviewItems = []
-    let fillingReviewItems = []
-    let listeningReviewItems = []
     words.forEach(word => {
-      let scheduleReview = word.scheduleReview
-      let currentYear = currentDay.getFullYear()
-      let currentMonth = currentDay.getMonth()
-      let currentDate = currentDay.getDate()
-
-      for (const item of scheduleReview) {
-        let reviewDates = item.reviewDates
-
-        if (item.lastReview === null) {
-          let isReviewDay = reviewDates.some(date => {
-            const reviewDate = new Date(date.seconds * 1000)
-            return (
-              reviewDate.getFullYear() === currentYear &&
-              reviewDate.getMonth() === currentMonth && 
-              reviewDate.getDate() === currentDate
-            )
-          })
-          
-          if (isReviewDay) {
-            wordsToReview.push(word)
-            if (item.mode === 'matching') {
-              matchingReviewItems.push(word)
-            }
-            else if (item.mode === 'filling') {
-              fillingReviewItems.push(word)
-            }
-            else if (item.mode === 'listening') {
-              listeningReviewItems.push(word)
-            }
-            break
-          }
-        }
-        else if (item.lastReview) {
-          let lastReviewDate = new Date(item.lastReview.seconds * 1000)
-          if (
-            lastReviewDate.getFullYear() !== currentYear &&
-            lastReviewDate.getMonth() !== currentMonth && 
-            lastReviewDate.getDate() !== currentDate
-          ) {
-            let isReviewDay = reviewDates.some(date => {
-              const reviewDate = new Date(date.seconds * 1000)
-              return (
-                reviewDate.getFullYear() === currentYear &&
-                reviewDate.getMonth() === currentMonth && 
-                reviewDate.getDate() === currentDate
-              )
-            })
-            
-            if (isReviewDay) {
-              wordsToReview.push(word)
-              if (item.mode === 'matching') {
-                matchingReviewItems.push(word)
-              }
-              else if (item.mode === 'filling') {
-                fillingReviewItems.push(word)
-              }
-              else if (item.mode === 'listening') {
-                listeningReviewItems.push(word)
-              }
-              break
-            }
-          }
-        }
-        
-        
+      // let scheduleReview = word.scheduleReview
+      const nextReviewDate = word.nextReviewDate
+      const nextReviewDateDigit = new Date(nextReviewDate.seconds * 1000)
+      if (
+        nextReviewDateDigit.getFullYear() === currentYear &&
+        nextReviewDateDigit.getMonth() === currentMonth && 
+        nextReviewDateDigit.getDate() === currentDate
+      ) {
+        wordsToReview.push(word)
       }
-      
     })
-    return {
-      wordsToReview: wordsToReview,
-      matchingReviewItems: matchingReviewItems,
-      fillingReviewItems: fillingReviewItems,
-      listeningReviewItems: listeningReviewItems
-    };
+    return wordsToReview
   }
   
   
@@ -132,7 +70,7 @@ export default function WordSection({userID, currentFolder, onClose }) {
     getFolderDataDB(userID, currentFolder).then((data) =>  {
         if (data) {
           // console.log(getWordsToReview(data.words))
-          setWordsToReview(getWordsToReview(data.words).wordsToReview)
+          setWordsToReview(getWordsToReview(data.words))
           setWords(sortWordsByDate(data.words));
           setAllWords(sortWordsByDate(data.words));
           setLoader(false);
@@ -378,11 +316,14 @@ export default function WordSection({userID, currentFolder, onClose }) {
               <img src="https://cdn-icons-png.freepik.com/512/9100/9100957.png" alt="" className='h-10' />
               <span className='text-sm font-medium'>Flashcard</span>
             </button>
-
-            <button className='p-3 bg-primary-surface cursor-pointer rounded-lg flex items-center gap-2 text-secondary-text transform transition duration-150 hover:scale-105' onClick={() => generateFilling(words)}>
-              <img src="https://cdn-icons-png.flaticon.com/512/6559/6559624.png" alt="" className='h-10' />
-              <span className='text-sm font-medium'>Điền từ</span>
-            </button>
+            {
+              /* 
+              <button className='p-3 bg-primary-surface cursor-pointer rounded-lg flex items-center gap-2 text-secondary-text transform transition duration-150 hover:scale-105' onClick={() => generateFilling(words)}>
+                <img src="https://cdn-icons-png.flaticon.com/512/6559/6559624.png" alt="" className='h-10' />
+                <span className='text-sm font-medium'>Điền từ</span>
+              </button>
+              */
+            }
 
             <button className='p-3 bg-primary-surface cursor-pointer rounded-lg flex items-center gap-2 text-secondary-text transform transition duration-150 hover:scale-105' onClick={() => generateListening(words)}>
               <img src="https://cdn-icons-png.flaticon.com/512/8805/8805242.png" alt="" className='h-10' />
@@ -415,7 +356,7 @@ export default function WordSection({userID, currentFolder, onClose }) {
         
         <div className={"max-sm:fixed top-0 bottom-0 bg-bg w-full pr-4 pl-4 sm:w-1/2 sm:flex flex-col overflow-auto " + (showWordList ? "block" : "hidden")} >
           <button className=' p-2 text-secondary-text cursor-pointer -mx-3 sm:hidden' onClick={() => setShowWordList(false)}><FontAwesomeIcon icon={faX}/></button>
-          <div className='sticky top-0 bg-bg z-10 p-2 -mx-4 mb-3'>
+          <div className='sticky top-0 left-0 bg-bg z-10 p-2'>
             <div className='relative'>
               <input 
                 type="text" 
@@ -436,6 +377,12 @@ export default function WordSection({userID, currentFolder, onClose }) {
                     onClick={() => {
                       setEditingWordIndex(index)
                       setEditWordForm({ 
+                        name: word.name, 
+                        definition_eng: word.definition_eng, 
+                        definition_vie: word.definition_vie,
+                        type: word.type
+                      })
+                      console.log({ 
                         name: word.name, 
                         definition_eng: word.definition_eng, 
                         definition_vie: word.definition_vie,
@@ -595,6 +542,8 @@ export default function WordSection({userID, currentFolder, onClose }) {
                         definition_vie: editWordForm.definition_vie,
                         type: editWordForm.type
                       };
+                      
+
                       setWords(sortWordsByDate(updatedWords));
                       setAllWords(sortWordsByDate(updatedWords));
                       setEditingWordIndex(null);

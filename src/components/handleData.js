@@ -37,6 +37,16 @@ export async function getUserData(uid) {
 
 }
 
+export async function updateUserFolders(uid, updatedFolders) {
+  try {
+    await updateDoc(doc(db, "users", uid), {
+      folders: updatedFolders
+    });
+  } catch (e) {
+    console.error("Error updating document: ", e);
+  }
+}
+
 export async function addFolderDB(uid, folderName) {
   try {
     await updateDoc(doc(db, "users", uid), {
@@ -155,7 +165,8 @@ export async function updateWordDB(uid, folderName, oldWord, updatedWord) {
           ...words[wordIndex],
           name: updatedWord.name,
           definition_eng: updatedWord.definition_eng,
-          definition_vie: updatedWord.definition_vie
+          definition_vie: updatedWord.definition_vie,
+          type: updatedWord.type
         };
 
         // 5. Write the WHOLE folders array back

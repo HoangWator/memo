@@ -199,7 +199,7 @@ function MatchingSection({onClose, data, reviewMode, userID, currentFolder}) {
         !showMatchingCard && 
         <div className='w-full h-full flex flex-col items-center justify-center gap-8'>
           <div className='p-4'>
-            <h1 className='text-primary-text text-2xl mb-2.5'>Enter questions length:</h1>
+            <h1 className='text-primary-text text-2xl mb-2.5'>Số từ muốn học:</h1>
             <input 
               className="input-field w-full pl-10 pr-3 py-2 rounded-md border border-transparent bg-primary-surface text-primary-text mb-2.5" 
               type="number"

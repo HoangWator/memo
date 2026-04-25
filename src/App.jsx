@@ -16,7 +16,7 @@ import { auth, db, googleProvider } from './firebase-config.js'
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
 import { isAlreadyLogin } from './components/handleData.js'
 import { addUser } from './components/handleData.js'
-import { getUserData } from './components/handleData.js'
+import { getUserData, updateUserFolders } from './components/handleData.js'
 import { addFolderDB, deleteFolderDB, renameFolderDB } from './components/handleData.js'
 
 
@@ -43,6 +43,9 @@ function App() {
   const [wordsToReview, setWordsToReview] = useState('')
 
   const [showLoginSection, setShowLoginSection] = useState(false)
+
+  
+
   // Sign in with Google
   const loginWithGoogle = async () => {
     try {
@@ -97,6 +100,39 @@ function App() {
             setFolders(data.folders);
             setAllFolders(data.folders)
             setUserData(data);
+
+            const folders = data.folders;
+            const currentTime = new Date();
+            let updatedFolders = folders.map(folder => {
+
+              // const folder = folders[folderName];
+              const wordsFolder = folder.words
+              const updatedWords = wordsFolder.map(word => {
+                // Change old dateAdded to today time
+                if (word.dateAdded) {
+                  word.dateAdded = currentTime;
+                }
+                let diffInDays = 0;
+                let noSpaceWord = word.name.replace(/\s/g, '');
+                if (noSpaceWord.length <= 7) {
+                  diffInDays = 3;
+                }
+                else if (noSpaceWord.length >= 14) {
+                  diffInDays = 1;
+                }
+                else {
+                  diffInDays = 2;
+                }
+                // Remove scheduleReview property in each word
+                delete word.scheduleReview;
+                return {...word, diff: diffInDays, count: 0, nextReviewDate: currentTime};
+              });
+              return { ...folder, words: updatedWords };
+            })
+            updateUserFolders(user.uid, updatedFolders)
+            .then(() => alert("User folders updated successfully!"))
+            .catch(() => alert("Error updating user folders. Please try again later."))
+
           } else {
             setFolders([]);
           }
@@ -312,6 +348,44 @@ function App() {
     )
   }
 
+  function MobileSidebar({onClose}) {
+    const location = useLocation();
+    const currentPath = location.pathname;
+    return (
+      <div className="fixed inset-0 bg-black/50 z-50" onClick={onClose}>
+        <div className="absolute left-0 top-0 bottom-0 w-64 bg-bg" onClick={e => e.stopPropagation()}>
+          <div className="flex items-center justify-between p-4">
+            <button className='text-primary cursor-pointer' onClick={onClose}><FontAwesomeIcon icon={faBars} /></button>
+          </div>
+
+          <ul className='p-4'>
+            <Link 
+              className={'p-2.5 rounded-lg cursor-pointer mb-1 flex gap-2.5 items-center hover:bg-primary-surface ' + (currentPath === '/dictionary' || currentPath === '/' ? 'text-primary bg-primary-surface border-l-4 border-primary' : 'text-secondary-text')} 
+              to='/dictionary'
+              onClick={onClose}
+            >
+              <FontAwesomeIcon icon={faBookOpen} className='icon' /><span>Từ điển</span>
+            </Link>
+            <Link 
+              className={'p-2.5 rounded-lg cursor-pointer mb-1 flex gap-2.5 items-center hover:bg-primary-surface ' + (currentPath === '/vocabulary' ? 'text-primary bg-primary-surface border-l-4 border-primary' : 'text-secondary-text')} 
+              to='/vocabulary'
+              onClick={onClose}
+            >
+              <FontAwesomeIcon icon={faFolder} className='icon' /><span>Từ vựng</span>
+            </Link>
+            <Link 
+              className={'p-2.5 rounded-lg cursor-pointer mb-1 flex gap-2.5 items-center hover:bg-primary-surface ' + (currentPath === '/rank' ? 'text-primary bg-primary-surface border-l-4 border-primary' : 'text-secondary-text')} 
+              to='/rank'
+              onClick={onClose}
+            >
+              <FontAwesomeIcon icon={faTrophy} className='icon' /><span>Xếp hạng</span>
+            </Link>
+          </ul>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <BrowserRouter>
       <div className="main">
@@ -323,34 +397,7 @@ function App() {
           <Sidebar />
           {
             showMobileSidebar && (
-              <div className="fixed inset-0 bg-black/50 z-50" onClick={() => setShowMobileSidebar(false)}>
-                <div className="absolute left-0 top-0 bottom-0 w-64 bg-bg" onClick={e => e.stopPropagation()}>
-                  <div className="flex items-center justify-between p-4 ">
-                    <button className='text-primary cursor-pointer' onClick={() => setShowMobileSidebar(false)}><FontAwesomeIcon icon={faBars} /></button>
-                  </div>
-
-                  <ul className='p-4'>
-                    <li 
-                      className={'p-2.5 rounded-lg cursor-pointer mb-1 flex gap-2.5 items-center hover:bg-primary-surface ' + (pageIndex === 0 ? 'text-primary bg-primary-surface border-l-4 border-primary ' : 'text-secondary-text') + (expandSidebar ? '' : ' justify-center')} 
-                      onClick={() => {
-                        setShowMobileSidebar(false)
-                        setPageIndex(0)
-                      }}><FontAwesomeIcon icon={faBookOpen} className='icon' /><span>Từ điển</span></li>
-                    <li 
-                      className={'p-2.5 rounded-lg cursor-pointer mb-1 flex gap-2.5 items-center hover:bg-primary-surface ' + (pageIndex === 1 ? 'text-primary bg-primary-surface border-l-4 border-primary ' : 'text-secondary-text') + (expandSidebar ? '' : ' justify-center')} 
-                      onClick={() => {
-                        setShowMobileSidebar(false)
-                        setPageIndex(1)
-                      }}><FontAwesomeIcon icon={faFolder} className='icon' /><span>Từ vựng</span></li>
-                    <li 
-                      className={'p-2.5 rounded-lg cursor-pointer mb-1 flex gap-2.5 items-center hover:bg-primary-surface ' + (pageIndex === 2 ? 'text-primary bg-primary-surface border-l-4 border-primary ' : 'text-secondary-text') + (expandSidebar ? '' : ' justify-center')} 
-                      onClick={() => {
-                        setShowMobileSidebar(false)
-                        setPageIndex(2)
-                      }}><FontAwesomeIcon icon={faTrophy} className='icon' /><span>Xếp hạng</span></li>
-                  </ul>
-                </div>
-              </div>
+              <MobileSidebar onClose={() => setShowMobileSidebar(false)} />
             )
           }
 
