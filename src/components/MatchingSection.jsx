@@ -9,14 +9,14 @@ function MatchingCard({data, onNext, addToHistory}) {
   const options = data.options
 
   const checkAnswer = (selectedOption, index) => {
-    console.log(selectedOption)
-    console.log(data)
+    // console.log(selectedOption)
+    // console.log(data)
     if (isCorrect !== null) return
     setSelectedIndex(index)
     let isSameDefEng = selectedOption.definition_eng === data.answer_eng && selectedOption.type === data.answer_type && selectedOption.definition_eng !== ""
     let isSameDefVie = selectedOption.definition_vie === data.answer_vie && selectedOption.type === data.answer_type && selectedOption.definition_vie !== ""
     if ( isSameDefEng || isSameDefVie) {
-      console.log("Correct")
+      // console.log("Correct")
       addToHistory({
         word: data.question, 
         answer_eng: data.answer_eng, 
@@ -25,7 +25,7 @@ function MatchingCard({data, onNext, addToHistory}) {
       })
       setIsCorrect(true)
     } else {
-      console.log("Wrong")
+      // console.log("Wrong")
       addToHistory({
         word: data.question, 
         answer_eng: data.answer_eng, 
@@ -113,6 +113,7 @@ function MatchingSection({onClose, data, reviewMode, userID, currentFolder}) {
   const [showMatchingCard, setShowMatchingCard] = useState(false)
   const [doneQuestions, setDoneQuestions] = useState(0)
   const [showContinueModal, setShowContinueModal] = useState(false)
+  const [showResult, setShowResult] = useState(null)
 
   const addToHistory = (item) => {
     setHistoryData([...historyData, item])
@@ -126,6 +127,10 @@ function MatchingSection({onClose, data, reviewMode, userID, currentFolder}) {
       if (currentQuestionIndex < questions.length - 1) {
         setDoneQuestions(doneQuestions + 1)
         setCurrentQuestionIndex(currentQuestionIndex + 1)
+      }
+      else {
+        onClose()
+        
       }
     }
     // else {
@@ -149,7 +154,7 @@ function MatchingSection({onClose, data, reviewMode, userID, currentFolder}) {
     if (data.length >= 2) {
       const questions = [] 
       data.forEach(item => {
-        console.log(item.type)
+        // console.log(item.type)
         const otherOptions = data.filter(opt => opt.definition_eng !== item.definition_eng || opt.definition_vie !== item.definition_vie)
         const sameTypeOptions = otherOptions.filter(opt => opt.type === item.type)
         const othersTypeOptions = data.filter(opt => opt.type !== item.type)
@@ -184,9 +189,13 @@ function MatchingSection({onClose, data, reviewMode, userID, currentFolder}) {
       })
       setQuestions(shuffleArray(questions))
     }
+    if (reviewMode) {
+      setQuestionLength(questions.length)
+      setShowMatchingCard(true)
+    }
   }, [])
 
-  console.log(doneQuestions)
+  // console.log(doneQuestions)
   return (
     <div className='fixed top-0 left-0 w-full h-screen bg-bg z-10'>
       <div className='p-4 absolute top-0 left-0 flex items-center gap-4'>
@@ -196,7 +205,7 @@ function MatchingSection({onClose, data, reviewMode, userID, currentFolder}) {
         ><FontAwesomeIcon icon={faArrowLeft} /></button>
       </div>
       {
-        !showMatchingCard && 
+        !showMatchingCard && !reviewMode &&
         <div className='w-full h-full flex flex-col items-center justify-center gap-8'>
           <div className='p-4'>
             <h1 className='text-primary-text text-2xl mb-2.5'>Số từ muốn học:</h1>
@@ -260,6 +269,13 @@ function MatchingSection({onClose, data, reviewMode, userID, currentFolder}) {
             addToHistory={addToHistory}
           />
         }
+        {/* {
+          showResult && (
+            <div>
+              <h1>Kết quả</h1>
+            </div>
+          )
+        } */}
         {data.length < 2 &&
           <div className='text-center'>
             <img 

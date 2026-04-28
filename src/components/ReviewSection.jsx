@@ -16,32 +16,16 @@ export default function ReviewSection({data, onClose, userID, currentFolder}) {
   const [reviewSession, setReviewSession] = useState(null);
   const generateReviewSession = () => {
     setReviewSession(true)
-    let matchingReviewItems = []
-    let fillingReviewItems = []
-    let listeningReviewItems = []
-
-    data.forEach((item) => {
-      let scheduleReview = item.scheduleReview 
-      scheduleReview.forEach((schedule) => {
-        if (schedule.mode === 'matching') {
-          matchingReviewItems.push(item)
-        } else if (schedule.mode === 'filling') {
-          fillingReviewItems.push(item)
-        } else if (schedule.mode === 'listening') {
-          listeningReviewItems.push(item)
-        }
-      })
-    })
   }
 
   return (
-    <div className="w-full">
+    <div className="w-full mb-4">
       
       {/* Compact Widget / Card Container */}
-      <div className="w-full max-w-sm bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-100 ring-1 ring-slate-900/5 transition-all duration-300">
+      <div className="w-full max-w-sm rounded-3xl shadow-xl overflow-hidden ring-1 ring-slate-900/5 transition-all duration-300">
         
         {/* Simplified Header */}
-        <div className="bg-indigo-600 p-6 text-white relative overflow-hidden">
+        <div className="bg-indigo-600 p-5 text-white relative overflow-hidden">
           {/* Decorative background element */}
           <div className="absolute -right-8 -top-8 w-40 h-40 bg-white/10 rounded-full blur-3xl"></div>
           
@@ -60,18 +44,18 @@ export default function ReviewSection({data, onClose, userID, currentFolder}) {
         {/* Word List Section */}
         <div className="px-2 pt-3 pb-2 bg-bg">
           
-          <div className="space-y-1">
+          <div className={`space-y-1 ${isExpanded ? 'max-h-50 overflow-y-auto' : ''}`}>
             {displayedWords.map((word, index) => {
               return (
-                <div key={index} className="group flex items-center p-3 hover:bg-slate-50 rounded-xl transition-colors cursor-pointer border border-transparent hover:border-slate-100">
+                <div key={index} className="group flex items-center p-3 hover:bg-primary-surface rounded-xl transition-colors cursor-pointer">
                   {/* Difficulty Indicator */}
 
                   <div className="flex-1 min-w-0">
                     <div className="flex items-baseline gap-2">
-                      <h3 className="font-bold text-slate-800 truncate">{word.name}</h3>
+                      <h3 className="font-bold text-secondary-text truncate">{word.name}</h3>
                       <span className={"text-xs  flex-shrink-0 " + word.type}>{word.type}</span>
                     </div>
-                    <p className="text-xs text-slate-500 line-clamp-1 mt-0.5">{word.definition_eng}</p>
+                    <p className="text-xs text-slate-500 line-clamp-1 mt-0.5">{word.definition_eng || word.definition_vie}</p>
                   </div>
 
                   {/* <ChevronRight size={16} className="text-slate-300 ml-2 flex-shrink-0 group-hover:text-indigo-400 transition-colors" /> */}
@@ -84,7 +68,7 @@ export default function ReviewSection({data, onClose, userID, currentFolder}) {
           {data.length > 3 && 
             <button 
               onClick={() => setIsExpanded(!isExpanded)}
-              className="w-full py-3 mt-1 text-xs text-slate-500 font-bold hover:bg-slate-50 hover:text-indigo-600 rounded-xl transition-all flex items-center justify-center gap-1 uppercase tracking-wide cursor-pointer"
+              className="w-full py-3 mt-1 text-xs text-slate-500 font-bold hover:bg-primary-surface hover:text-indigo-600 rounded-xl transition-all flex items-center justify-center gap-1 uppercase tracking-wide cursor-pointer"
             >
               {isExpanded ? (
                 <>Ẩn bớt</>
@@ -99,9 +83,9 @@ export default function ReviewSection({data, onClose, userID, currentFolder}) {
         </div>
 
         {/* Main Action Area */}
-        <div className="p-4 bg-slate-50 border-t border-slate-100">
+        <div className="p-4 bg-primary-surface">
           <button 
-            className="w-full bg-slate-900 hover:bg-slate-800 text-white py-4 rounded-2xl font-bold shadow-lg shadow-slate-200 active:scale-[0.98] transition-all flex items-center justify-center gap-2 group cursor-pointer"
+            className="w-full bg-slate-900 hover:bg-slate-800 text-white py-4 rounded-2xl font-bold active:scale-[0.98] transition-all flex items-center justify-center gap-2 group cursor-pointer"
             onClick={generateReviewSession}
           >
             <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center group-hover:bg-white/30 transition-colors">
@@ -122,6 +106,7 @@ export default function ReviewSection({data, onClose, userID, currentFolder}) {
           userID={userID} 
           currentFolder={currentFolder}
         />
+        
       </div>
       }
     </div>

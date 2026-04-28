@@ -101,37 +101,43 @@ function App() {
             setAllFolders(data.folders)
             setUserData(data);
 
-            const folders = data.folders;
-            const currentTime = new Date();
-            let updatedFolders = folders.map(folder => {
+            // const folders = data.folders;
+            // const currentTime = new Date();
+            // let updatedFolders = folders.map(folder => {
 
-              // const folder = folders[folderName];
-              const wordsFolder = folder.words
-              const updatedWords = wordsFolder.map(word => {
-                // Change old dateAdded to today time
-                if (word.dateAdded) {
-                  word.dateAdded = currentTime;
-                }
-                let diffInDays = 0;
-                let noSpaceWord = word.name.replace(/\s/g, '');
-                if (noSpaceWord.length <= 7) {
-                  diffInDays = 3;
-                }
-                else if (noSpaceWord.length >= 14) {
-                  diffInDays = 1;
-                }
-                else {
-                  diffInDays = 2;
-                }
-                // Remove scheduleReview property in each word
-                delete word.scheduleReview;
-                return {...word, diff: diffInDays, count: 0, nextReviewDate: currentTime};
-              });
-              return { ...folder, words: updatedWords };
-            })
-            updateUserFolders(user.uid, updatedFolders)
-            .then(() => alert("User folders updated successfully!"))
-            .catch(() => alert("Error updating user folders. Please try again later."))
+            //   // const folder = folders[folderName];
+            //   const wordsFolder = folder.words
+            //   const updatedWords = wordsFolder.map(word => {
+            //     // Change old dateAdded to today time
+            //     if (word.dateAdded) {
+            //       word.dateAdded = currentTime;
+            //     }
+            //     let diffInDays = 0;
+            //     let noSpaceWord = word.name.replace(/\s/g, '');
+            //     if (noSpaceWord.length <= 7) {
+            //       diffInDays = 3;
+            //     }
+            //     else if (noSpaceWord.length >= 14) {
+            //       diffInDays = 1;
+            //     }
+            //     else {
+            //       diffInDays = 2;
+            //     }
+            //     // Remove scheduleReview property in each word
+            //     delete word.scheduleReview;
+            //     return {
+            //       ...word, 
+            //       diff: diffInDays, 
+            //       count: 0, 
+            //       nextReviewDate: currentTime,
+            //       lastReview: null
+            //     };
+            //   });
+            //   return { ...folder, words: updatedWords };
+            // })
+            // updateUserFolders(user.uid, updatedFolders)
+            // .then(() => alert("User folders updated successfully!"))
+            // .catch(() => alert("Error updating user folders. Please try again later."))
 
           } else {
             setFolders([]);

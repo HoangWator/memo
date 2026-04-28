@@ -54,12 +54,28 @@ export default function AddWordModal({ onClose, userID, currentFolder, onWordAdd
       setIsLoading(true);
 
       // Create word object with proper structure
+      const noSpaceWordName = wordName.replace(/\s+/g, '-').toLowerCase();
+      let diffInDays = 0
+      if (noSpaceWordName.length >= 14) {
+        diffInDays = 1 
+      }
+      else if (noSpaceWordName.length <= 7) {
+        diffInDays = 3;
+      }
+      else {
+        diffInDays = 2;
+      }
+
       const newWord = {
         name: wordName.trim().toLowerCase(),
         type: wordType,
         definition_eng: definitionEng.trim(),
         definition_vie: definitionVie.trim(),
         dateAdded: new Date(),
+        nextReviewDate: new Date(),
+        count: 0,
+        diff: diffInDays,
+        lastReview: null
       };
 
       // Add to Firebase
@@ -84,11 +100,11 @@ export default function AddWordModal({ onClose, userID, currentFolder, onWordAdd
 
   return (
     <div
-      className="fixed top-0 left-0 w-full h-screen bg-black/50 z-50 flex justify-center sm:items-center"
+      className="fixed top-0 left-0 w-full h-screen bg-black/50 z-50 flex justify-center sm:items-center overflow-hidden"
       onClick={onClose}
     >
       <div
-        className="bg-bg flex flex-col p-6 sm:rounded-lg w-full sm:max-w-md sm:mx-4 max-h-screen overflow-y-auto"
+        className="bg-bg flex flex-col p-6 sm:rounded-lg w-full sm:max-w-md sm:mx-4 max-sm:h-screen max-sm:overflow-y-auto sm:max-h-[90vh] sm:overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header with close button */}

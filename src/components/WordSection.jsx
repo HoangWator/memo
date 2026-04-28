@@ -53,14 +53,31 @@ export default function WordSection({userID, currentFolder, onClose }) {
       // let scheduleReview = word.scheduleReview
       const nextReviewDate = word.nextReviewDate
       const nextReviewDateDigit = new Date(nextReviewDate.seconds * 1000)
-      if (
-        nextReviewDateDigit.getFullYear() === currentYear &&
-        nextReviewDateDigit.getMonth() === currentMonth && 
-        nextReviewDateDigit.getDate() === currentDate
-      ) {
-        wordsToReview.push(word)
+      const lastReviewDate = word.lastReview 
+      if (lastReviewDate) {
+        const lastReviewDateDigit = new Date(lastReviewDate.seconds * 1000)
+        if (
+          nextReviewDateDigit.getFullYear() === currentYear &&
+          nextReviewDateDigit.getMonth() === currentMonth && 
+          nextReviewDateDigit.getDate() === currentDate &&
+          lastReviewDateDigit.getFullYear() !== currentYear &&
+          lastReviewDateDigit.getMonth() !== currentMonth && 
+          lastReviewDateDigit.getDate() !== currentDate
+        ) {
+          wordsToReview.push(word)
+        }
+      }
+      else {
+        if (
+          nextReviewDateDigit.getFullYear() === currentYear &&
+          nextReviewDateDigit.getMonth() === currentMonth && 
+          nextReviewDateDigit.getDate() === currentDate
+        ) {
+          wordsToReview.push(word)
+        }
       }
     })
+
     return wordsToReview
   }
   
@@ -69,7 +86,6 @@ export default function WordSection({userID, currentFolder, onClose }) {
     setLoader(true)
     getFolderDataDB(userID, currentFolder).then((data) =>  {
         if (data) {
-          // console.log(getWordsToReview(data.words))
           setWordsToReview(getWordsToReview(data.words))
           setWords(sortWordsByDate(data.words));
           setAllWords(sortWordsByDate(data.words));
@@ -272,7 +288,6 @@ export default function WordSection({userID, currentFolder, onClose }) {
               if (data) {
                 setWords(sortWordsByDate(data.words));
                 setAllWords(sortWordsByDate(data.words));
-                setWordsToReview(getWordsToReview(sortWordsByDate(data.words)).wordsToReview);
               }
             }).catch((error) => {
               console.error("Error fetching folder data:", error);
@@ -291,13 +306,13 @@ export default function WordSection({userID, currentFolder, onClose }) {
       <div className="word-section-body p-4 flex flex-1 flex-col md:flex-row overflow-auto bg-bg">
 
         <div className="md:w-1/2 w-full border-r-0 ">
-          {/* {wordsToReview.length > 0 && 
+          {wordsToReview.length > 0 && 
             <ReviewSection 
               data={wordsToReview} 
               userID={userID}
               currentFolder={currentFolder}  
             />
-          } */}
+          }
           <button 
             onClick={() => setShowWordList(true)} 
             className='sm:hidden w-full p-3 rounded-lg bg-primary-surface text-secondary-text mb-2 cursor-pointer transform transition duration-150 hover:scale-105'
@@ -336,7 +351,7 @@ export default function WordSection({userID, currentFolder, onClose }) {
             </button>
           </div>
 
-          <div className='mt-6'>
+          <div className='mt-6 pb-6'>
             <h4 className='text-base text-primary-text font-semibold mb-2'>Quản lý thư mục</h4>
             <button 
               className='w-full block sm:w-1/2 p-3 rounded-lg bg-primary-surface text-secondary-text mb-2 cursor-pointer transform transition duration-150 hover:scale-105' 
