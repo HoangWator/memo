@@ -100,11 +100,11 @@ export default function AddWordModal({ onClose, userID, currentFolder, onWordAdd
 
   return (
     <div
-      className="fixed top-0 left-0 w-full h-screen bg-black/50 z-50 flex justify-center sm:items-center overflow-hidden"
+      className="fixed top-0 left-0 w-full h-screen bg-black/50 z-50 flex justify-center"
       onClick={onClose}
     >
       <div
-        className="bg-bg flex flex-col p-6 sm:rounded-lg w-full sm:max-w-md sm:mx-4 max-sm:h-screen max-sm:overflow-y-auto sm:max-h-[90vh] sm:overflow-y-auto"
+        className="bg-bg flex flex-col p-6 sm:rounded-lg w-full sm:max-w-md sm:mx-4 max-sm:max-h-[95vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header with close button */}

@@ -105,12 +105,13 @@ export default function RenameFolder({onCloseRenameFolderSection, userID, curren
   
 
   return (
-      <div className="flex items-center justify-center min-h-screen p-4 bg-bg">
+      <div className="fixed top-0 left-0 w-full h-screen bg-black/50 z-50 flex items-center justify-center p-4" onClick={onCloseRenameFolderSection}>
           
           {/* Rename Modal Container */}
           <div 
               id="rename-modal" 
-              className="bg-primary-surface text-primary-text p-6 md:p-8 shadow-lg rounded-xl w-full max-w-sm"
+              className="bg-bg text-primary-text p-6 md:p-8 shadow-lg rounded-xl w-full max-w-sm"
+              onClick={e => e.stopPropagation()}
           >
 
               {/* Header and Title */}

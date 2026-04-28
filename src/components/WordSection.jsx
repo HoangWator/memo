@@ -369,7 +369,7 @@ export default function WordSection({userID, currentFolder, onClose }) {
         </div>
 
         
-        <div className={"max-sm:fixed top-0 bottom-0 bg-bg w-full pr-4 pl-4 sm:w-1/2 sm:flex flex-col overflow-auto " + (showWordList ? "block" : "hidden")} >
+        <div className={"max-sm:fixed top-0 bottom-0 bg-bg w-full pr-4 pl-4 sm:w-1/2 sm:flex flex-col overflow-y-auto " + (showWordList ? "block" : "hidden")} >
           <button className=' p-2 text-secondary-text cursor-pointer -mx-3 sm:hidden' onClick={() => setShowWordList(false)}><FontAwesomeIcon icon={faX}/></button>
           <div className='sticky top-0 left-0 bg-bg z-10 p-2'>
             <div className='relative'>
@@ -450,7 +450,7 @@ export default function WordSection({userID, currentFolder, onClose }) {
 
       {editingWordIndex !== null && (
         <div className="fixed top-0 bottom-0 right-0 left-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setEditingWordIndex(null)}>
-          <div className="w-full max-sm:h-screen max-w-md sm:max-h-9/10 overflow-scroll sm:mx-4 bg-bg dark:bg-primary-surface sm:rounded-xl shadow-xl p-6" onClick={e => e.stopPropagation()}>
+          <div className="w-full max-sm:max-h-[95vh] max-w-md sm:max-h-[90vh] overflow-y-auto sm:mx-4 bg-bg dark:bg-primary-surface sm:rounded-xl shadow-xl p-6" onClick={e => e.stopPropagation()}>
             <div className='flex items-center justify-between mb-6'>
               <div>
                 <h2 className='text-xl font-semibold text-primary-text'>Chỉnh sửa từ</h2>
